@@ -1,0 +1,1195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Onpoint Services — Rent Agreement Generator</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:'Segoe UI',Arial,sans-serif;
+  min-height:100vh;
+  background:linear-gradient(135deg,#1a2a6c 0%,#1565c0 50%,#42a5f5 100%);
+  display:flex;flex-direction:column;align-items:center;
+  padding:30px 16px 0;
+}
+
+/* ── White container ── */
+.container{
+  width:100%;max-width:820px;
+  background:#fff;
+  border-radius:14px;
+  overflow:hidden;
+  box-shadow:0 8px 40px rgba(0,0,0,0.25);
+  margin-bottom:0;
+}
+
+/* ── Header bar ── */
+.site-header{
+  background:#1a2a6c;
+  padding:18px 24px;
+  text-align:center;
+}
+.site-header h1{
+  color:#fff;font-size:20px;font-weight:700;letter-spacing:0.01em;
+}
+
+/* ── Top buttons row ── */
+.top-btns{
+  padding:14px 20px 10px;
+  display:flex;gap:10px;flex-wrap:wrap;
+}
+.btn-green{
+  background:#2e7d32;color:#fff;border:none;border-radius:6px;
+  padding:9px 18px;font-size:13px;font-weight:600;cursor:pointer;
+  font-family:inherit;display:flex;align-items:center;gap:6px;
+  transition:background 0.15s;
+}
+.btn-green:hover{background:#1b5e20}
+.btn-blue-outline{
+  background:#1565c0;color:#fff;border:none;border-radius:6px;
+  padding:9px 18px;font-size:13px;font-weight:600;cursor:pointer;
+  font-family:inherit;display:flex;align-items:center;gap:6px;
+  transition:background 0.15s;
+}
+.btn-blue-outline:hover{background:#0d47a1}
+
+/* ── Section cards ── */
+.section{
+  margin:0 16px 14px;
+  background:#f8f9fa;
+  border:1px solid #e0e0e0;
+  border-left:4px solid #1565c0;
+  border-radius:8px;
+  overflow:hidden;
+}
+.section-title{
+  font-size:15px;font-weight:700;color:#1a1a2e;
+  padding:14px 18px 10px;
+}
+.section-body{
+  padding:4px 18px 18px;
+}
+
+/* ── Grids ── */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.full{grid-column:1/-1}
+
+/* ── Fields ── */
+.f{display:flex;flex-direction:column;gap:5px}
+.f label{font-size:12px;font-weight:600;color:#444}
+.f input,.f select,.f textarea{
+  font-family:inherit;font-size:13px;color:#222;
+  background:#fff;border:1px solid #ccc;border-radius:5px;
+  padding:8px 10px;outline:none;
+  transition:border-color 0.2s,box-shadow 0.2s;
+}
+.f input:focus,.f select:focus,.f textarea:focus{
+  border-color:#1565c0;box-shadow:0 0 0 3px rgba(21,101,192,0.12);
+}
+.f input[readonly]{
+  background:#e8f5e9;color:#2e7d32;
+  border-color:#a5d6a7;cursor:default;font-style:italic;
+}
+.f input::placeholder,.f textarea::placeholder{color:#aaa}
+.f textarea{resize:vertical;min-height:72px}
+.ab{
+  display:inline-block;font-size:9px;font-weight:700;
+  background:#c8e6c9;color:#2e7d32;border-radius:3px;
+  padding:1px 6px;margin-left:4px;vertical-align:middle;
+}
+
+/* ── Sub badge ── */
+.sb{
+  display:inline-block;background:#e3f2fd;color:#1565c0;
+  font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;
+  margin-bottom:8px;border:1px solid #bbdefb;
+}
+
+/* ── Tenant block ── */
+.tb{
+  background:#fff;border:1px solid #ddd;border-radius:6px;
+  padding:12px;margin-bottom:9px;position:relative;
+}
+.tb h4{font-size:12px;font-weight:700;color:#1565c0;margin-bottom:9px}
+.rb{
+  position:absolute;top:10px;right:10px;background:none;border:none;
+  color:#c62828;font-size:16px;cursor:pointer;padding:2px 6px;
+  border-radius:4px;
+}
+.rb:hover{background:#ffebee}
+.add-btn{
+  background:#fff;color:#1565c0;border:1.5px dashed #1565c0;
+  border-radius:6px;padding:9px 18px;font-size:13px;font-weight:600;
+  cursor:pointer;font-family:inherit;width:100%;margin-top:6px;
+  transition:background 0.15s;
+}
+.add-btn:hover{background:#e3f2fd}
+
+/* ── Photo upload ── */
+.pg{display:flex;flex-wrap:wrap;gap:14px;margin-top:6px}
+.ps{display:flex;flex-direction:column;align-items:center;gap:6px;width:100px}
+.ps label{font-size:10px;font-weight:600;color:#555;text-align:center;line-height:1.4;white-space:pre-line}
+.pp{
+  width:84px;height:104px;border:2px dashed #90caf9;border-radius:6px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  cursor:pointer;overflow:hidden;background:#f0f7ff;
+  transition:border-color 0.2s;position:relative;
+}
+.pp:hover{border-color:#1565c0}
+.pp img{width:100%;height:100%;object-fit:cover;display:none}
+.pp .pi{font-size:22px;opacity:0.4;color:#1565c0}
+.pp .pt{font-size:9px;color:#888;margin-top:4px;text-align:center}
+.pp input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.pp.hi .pi,.pp.hi .pt{display:none}
+.pp.hi img{display:block}
+.pp.hi{border-color:#2e7d32;border-style:solid}
+
+/* ── Action buttons inside sections ── */
+.btn-action{
+  background:#1565c0;color:#fff;border:none;border-radius:6px;
+  padding:10px 24px;font-size:13.5px;font-weight:700;cursor:pointer;
+  font-family:inherit;display:inline-flex;align-items:center;gap:8px;
+  transition:background 0.15s;margin-right:10px;margin-top:4px;
+}
+.btn-action:hover{background:#0d47a1}
+.btn-action.secondary{
+  background:#fff;color:#1565c0;border:1.5px solid #1565c0;
+}
+.btn-action.secondary:hover{background:#e3f2fd}
+
+/* ── Generate bar ── */
+.gen-bar{
+  padding:16px 20px 20px;
+  display:flex;gap:12px;flex-wrap:wrap;align-items:center;
+}
+.toast{
+  display:none;align-items:center;gap:8px;
+  background:#e8f5e9;color:#2e7d32;border:1px solid #a5d6a7;
+  border-radius:6px;padding:9px 16px;font-size:13px;font-weight:600;
+}
+.toast.show{display:flex}
+
+/* ── Modal overlay ── */
+.modal-overlay{
+  display:none;position:fixed;inset:0;
+  background:rgba(0,0,0,0.55);z-index:200;
+  align-items:center;justify-content:center;
+}
+.modal-overlay.show{display:flex}
+.modal{
+  background:#fff;border-radius:12px;padding:26px;
+  max-width:460px;width:90%;max-height:82vh;overflow-y:auto;
+  position:relative;box-shadow:0 12px 40px rgba(0,0,0,0.3);
+}
+.modal h2{font-size:16px;font-weight:700;color:#1a1a2e;margin-bottom:16px}
+.modal-close{
+  position:absolute;top:14px;right:14px;background:none;border:none;
+  color:#888;font-size:20px;cursor:pointer;padding:2px 8px;border-radius:4px;
+}
+.modal-close:hover{background:#f5f5f5;color:#333}
+.mcard{background:#f8f9fa;border-radius:8px;padding:14px;margin-bottom:12px;border-left:4px solid #1565c0}
+.mcard h3{font-size:12px;font-weight:700;color:#1565c0;margin-bottom:8px;text-transform:uppercase;letter-spacing:0.04em}
+.mcard p,.mcard li{font-size:13px;color:#444;line-height:1.7}
+.mcard ol{padding-left:18px}
+.mcard li{margin-bottom:5px}
+.mcard strong{color:#1a1a2e}
+
+/* ── Footer ── */
+footer{
+  width:100%;max-width:820px;
+  background:#1a2a6c;
+  color:#ccc;font-size:12px;text-align:center;
+  padding:14px;border-radius:0 0 14px 14px;
+  margin-bottom:30px;
+}
+
+@media(max-width:600px){
+  .g2,.g3{grid-template-columns:1fr}
+  body{padding:16px 8px 0}
+  .site-header h1{font-size:16px}
+}
+</style>
+</head>
+<body>
+
+<!-- White container -->
+<div class="container">
+
+  <!-- Header bar -->
+  <div class="site-header">
+    <h1>Onpoint Services &mdash; Rent Agreement Generator</h1>
+  </div>
+
+  <!-- Top buttons -->
+  <div class="top-btns">
+    <button class="btn-green" onclick="document.getElementById('modal_info').classList.add('show')">
+      &#128204; Rate Chart &amp; Instructions
+    </button>
+    <button class="btn-blue-outline" onclick="fillSample()">
+      &#9654; Fill Sample Data
+    </button>
+  </div>
+
+  <!-- 1. Agreement Details -->
+  <div class="section">
+    <div class="section-title">1. Agreement Details</div>
+    <div class="section-body">
+      <div class="g2">
+        <div class="f"><label>Execution Date</label><input type="date" id="exec_date"/></div>
+        <div class="f"><label>Agreement Type</label>
+          <select id="reg_type">
+            <option value="Notarized">Notarized</option>
+            <option value="Registered">Registered</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. Licensor -->
+  <div class="section">
+    <div class="section-title">2. Licensor (Owner) Details</div>
+    <div class="section-body">
+      <div class="g3">
+        <div class="f full"><label>Full Name</label>
+          <input type="text" id="ll_name" placeholder="e.g. Komal Navnath Gadakh" oninput="syncPhotos()"/>
+        </div>
+        <div class="f"><label>Age (years)</label><input type="number" id="ll_age" placeholder="e.g. 32"/></div>
+        <div class="f"><label>Occupation</label><input type="text" id="ll_occ" placeholder="e.g. Business"/></div>
+        <div class="f"><label>PAN Number</label><input type="text" id="ll_pan" placeholder="e.g. CIEPG0170M" style="text-transform:uppercase"/></div>
+        <div class="f full"><label>Full Residential Address</label>
+          <input type="text" id="ll_addr" placeholder="e.g. Paregaon Bk., Limbacha mala, Sangamner, Ahmadnagar, Maharashtra – 422611"/>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. Tenants -->
+  <div class="section">
+    <div class="section-title">3. Licensees (Tenants)</div>
+    <div class="section-body">
+      <div id="tc"></div>
+      <button class="add-btn" onclick="addTenant()">+ Add Another Tenant</button>
+    </div>
+  </div>
+
+  <!-- 4. Property -->
+  <div class="section">
+    <div class="section-title">4. Licensed Premises — Schedule I</div>
+    <div class="section-body">
+      <div class="g3">
+        <div class="f"><label>Flat No.</label><input type="text" id="flat_no" placeholder="e.g. 405"/></div>
+        <div class="f"><label>Built-up Area</label><input type="text" id="buildup" placeholder="e.g. 512 Square Foot"/></div>
+        <div class="f"><label>Floor</label><input type="text" id="prop_floor" placeholder="e.g. 4th"/></div>
+        <div class="f"><label>Building Name</label><input type="text" id="bldg_name" placeholder="e.g. Mhada Espacio"/></div>
+        <div class="f"><label>SR / Survey Number</label><input type="text" id="survey_no" placeholder="e.g. 38"/></div>
+        <div class="f"><label>Village</label><input type="text" id="village" placeholder="e.g. Balewadi"/></div>
+        <div class="f"><label>City</label><input type="text" id="prop_city" placeholder="e.g. Pune"/></div>
+        <div class="f"><label>Taluka</label><input type="text" id="taluka" placeholder="e.g. Haveli"/></div>
+        <div class="f"><label>District &amp; PIN</label><input type="text" id="dist_pin" placeholder="e.g. Pune 411045"/></div>
+        <div class="f"><label>Municipal Corporation</label><input type="text" id="corp" placeholder="e.g. Pune Municipal Corporation"/></div>
+        <div class="f"><label>Property Use</label>
+          <select id="prop_use">
+            <option value="Residential">Residential</option>
+            <option value="Commercial">Commercial</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. Period & Fee -->
+  <div class="section">
+    <div class="section-title">5. Period &amp; License Fee</div>
+    <div class="section-body">
+      <div class="g3">
+        <div class="f"><label>Start Date</label><input type="date" id="start_date" oninput="calcEnd()"/></div>
+        <div class="f"><label>Duration</label>
+          <select id="duration" onchange="calcEnd()">
+            <option value="3">3 Months</option>
+            <option value="6">6 Months</option>
+            <option value="11" selected>11 Months</option>
+            <option value="12">12 Months (1 Year)</option>
+            <option value="24">24 Months (2 Years)</option>
+            <option value="36">36 Months (3 Years)</option>
+          </select>
+        </div>
+        <div class="f">
+          <label>End Date <span class="ab">AUTO</span></label>
+          <input type="text" id="end_date" readonly placeholder="Auto-calculated"/>
+        </div>
+        <div class="f"><label>Monthly Rent (&#8377;)</label>
+          <input type="number" id="rent" placeholder="e.g. 6000" oninput="aw('rent','rent_w')"/>
+        </div>
+        <div class="f">
+          <label>Rent in Words <span class="ab">AUTO</span></label>
+          <input type="text" id="rent_w" readonly placeholder="Auto"/>
+        </div>
+        <div class="f"></div>
+        <div class="f"><label>Security Deposit (&#8377;)</label>
+          <input type="number" id="dep" placeholder="e.g. 6000" oninput="aw('dep','dep_w')"/>
+        </div>
+        <div class="f">
+          <label>Deposit in Words <span class="ab">AUTO</span></label>
+          <input type="text" id="dep_w" readonly placeholder="Auto"/>
+        </div>
+        <div class="f"><label>Deposit Paid By</label>
+          <select id="dep_mode">
+            <option value="Cash">Cash</option>
+            <option value="Cheque">Cheque</option>
+            <option value="Online Transfer">Online Transfer</option>
+            <option value="NEFT/RTGS">NEFT/RTGS</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6. Special Conditions -->
+  <div class="section">
+    <div class="section-title">6. Special Conditions <span style="font-size:12px;font-weight:400;color:#888">(optional)</span></div>
+    <div class="section-body">
+      <div class="f">
+        <label>Additional Terms &amp; Conditions</label>
+        <textarea id="misc" placeholder="e.g. No guests after 10pm, society rules apply... (leave blank if none)"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- 7. Photos -->
+  <div class="section">
+    <div class="section-title">7. Passport Photos</div>
+    <div class="section-body">
+      <p style="font-size:12px;color:#666;margin-bottom:12px;line-height:1.5">Upload passport-size photos for all parties. They appear in the signature table of the PDF.</p>
+      <div class="pg" id="pg"></div>
+    </div>
+  </div>
+
+  <!-- Generate bar -->
+  <div class="gen-bar">
+    <button class="btn-action" onclick="genPDF()">&#8595; Generate PDF Agreement</button>
+    <div class="toast" id="toast">&#10003; PDF downloaded successfully!</div>
+  </div>
+
+</div><!-- end .container -->
+
+<!-- Footer -->
+<footer>
+  Onpoint Services &bull; Developed by Saurabh Ajinath Kharat &bull; &copy; 2026
+</footer>
+
+<!-- Info Modal -->
+<div class="modal-overlay" id="modal_info" onclick="if(event.target===this)this.classList.remove('show')">
+  <div class="modal">
+    <button class="modal-close" onclick="document.getElementById('modal_info').classList.remove('show')">&#10005;</button>
+    <h2>&#128203; Instructions</h2>
+    <div class="mcard">
+      <h3>How to Use</h3>
+      <ol>
+        <li>Fill in <strong>Agreement Details</strong> — date and type.</li>
+        <li>Enter <strong>Licensor (Owner)</strong> details.</li>
+        <li>Add one or more <strong>Tenants</strong> with their details.</li>
+        <li>Fill the <strong>Licensed Premises</strong> (property) details.</li>
+        <li>Set <strong>Period &amp; License Fee</strong> — end date and amounts in words calculate automatically.</li>
+        <li>Optionally add <strong>Special Conditions</strong>.</li>
+        <li>Upload <strong>Passport Photos</strong> for all parties.</li>
+        <li>Click <strong>Generate PDF</strong> to download the agreement.</li>
+      </ol>
+    </div>
+    <div class="mcard">
+      <h3>&#9889; Auto Features</h3>
+      <p>&#8226; End date auto-calculates from start date + duration.<br>
+         &#8226; Amount in words fills automatically when you type a number.<br>
+         &#8226; Photos appear in the PDF signature table automatically.</p>
+    </div>
+    <div class="mcard">
+      <h3>&#128204; Note</h3>
+      <p>This generator is for use in <strong>Pune, Maharashtra</strong> only. The PDF matches the exact notarized format under the Maharashtra Rent Control Act, 1999.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── Number to Words ───────────────────────────────────────
+var WO=['','One','Two','Three','Four','Five','Six','Seven','Eight','Nine',
+  'Ten','Eleven','Twelve','Thirteen','Fourteen','Fifteen','Sixteen',
+  'Seventeen','Eighteen','Nineteen'];
+var WT=['','','Twenty','Thirty','Forty','Fifty','Sixty','Seventy','Eighty','Ninety'];
+function wHelper(n) {
+  if (n===0) return '';
+  if (n<20) return WO[n]+' ';
+  if (n<100) return WT[Math.floor(n/10)]+' '+wHelper(n%10);
+  if (n<1000) return WO[Math.floor(n/100)]+' Hundred '+wHelper(n%100);
+  if (n<100000) return wHelper(Math.floor(n/1000))+'Thousand '+wHelper(n%1000);
+  if (n<10000000) return wHelper(Math.floor(n/100000))+'Lakh '+wHelper(n%100000);
+  return wHelper(Math.floor(n/10000000))+'Crore '+wHelper(n%10000000);
+}
+function n2w(n) {
+  n = parseInt(n);
+  if (isNaN(n)||n<=0) return '';
+  return wHelper(n).trim().replace(/\s+/g,' ')+' Only';
+}
+function aw(srcId, destId) {
+  var val = document.getElementById(srcId).value;
+  document.getElementById(destId).value = val ? n2w(val) : '';
+}
+
+// ── End Date ──────────────────────────────────────────────
+function calcEnd() {
+  var sv = document.getElementById('start_date').value;
+  var m  = parseInt(document.getElementById('duration').value);
+  var el = document.getElementById('end_date');
+  if (!sv || isNaN(m)) { el.value=''; return; }
+  var d = new Date(sv+'T00:00:00');
+  d.setMonth(d.getMonth()+m);
+  d.setDate(d.getDate()-1);
+  el.value = pad2(d.getDate())+'/'+pad2(d.getMonth()+1)+'/'+d.getFullYear();
+}
+function pad2(n) { return String(n).padStart(2,'0'); }
+
+// ── Photo store ───────────────────────────────────────────
+var photoStore = {};
+function syncPhotos() {
+  var grid = document.getElementById('pg');
+  grid.innerHTML = '';
+  mkSlot(grid, 'lic', 'Licensor\n'+(gv('ll_name')||'Owner'));
+  for (var i=1; i<=tenantCount; i++) {
+    if (!document.getElementById('t'+i)) continue;
+    var nm = gv('tn'+i+'_name') || ('Tenant '+i);
+    mkSlot(grid, 't'+i, 'Tenant '+i+'\n'+nm);
+  }
+}
+function mkSlot(grid, key, lbl) {
+  var slot = document.createElement('div');
+  slot.className = 'ps';
+  var prev = document.createElement('div');
+  prev.className = 'pp'+(photoStore[key] ? ' hi' : '');
+  prev.id = 'pp_'+key;
+  var img = document.createElement('img');
+  img.id = 'pi_'+key;
+  if (photoStore[key]) img.src = photoStore[key];
+  prev.innerHTML = '<span class="pi">&#128444;</span><span class="pt">Click to upload</span>';
+  prev.appendChild(img);
+  var inp = document.createElement('input');
+  inp.type = 'file'; inp.accept = 'image/*';
+  inp.setAttribute('data-key', key);
+  inp.onchange = function(e) { loadPhoto(e, this.getAttribute('data-key')); };
+  prev.appendChild(inp);
+  var lab = document.createElement('label');
+  lab.textContent = lbl;
+  slot.appendChild(prev);
+  slot.appendChild(lab);
+  grid.appendChild(slot);
+}
+function loadPhoto(e, key) {
+  var file = e.target.files[0]; if (!file) return;
+  var r = new FileReader();
+  r.onload = function(ev) {
+    photoStore[key] = ev.target.result;
+    var pp = document.getElementById('pp_'+key);
+    var pi = document.getElementById('pi_'+key);
+    if (pp) pp.className = 'pp hi';
+    if (pi) pi.src = ev.target.result;
+  };
+  r.readAsDataURL(file);
+}
+
+// ── Tenants ───────────────────────────────────────────────
+var tenantCount = 0;
+function addTenant(data) {
+  tenantCount++;
+  var n = tenantCount;
+  var d = data || {};
+  var el = document.createElement('div');
+  el.className = 'tb'; el.id = 't'+n;
+  el.innerHTML =
+    '<h4>Tenant '+n+(n>1 ? '<button class="rb" onclick="remTenant('+n+')">&#10005;</button>' : '')+'</h4>'+
+    '<div class="g3">'+
+      '<div class="f full"><label>Full Name</label>'+
+        '<input type="text" id="tn'+n+'_name" placeholder="e.g. Gagan Nilesh Varpe" value="'+(d.name||'')+'" oninput="syncPhotos()"/></div>'+
+      '<div class="f"><label>Age (years)</label><input type="number" id="tn'+n+'_age" placeholder="e.g. 19" value="'+(d.age||'')+'"/></div>'+
+      '<div class="f"><label>Occupation</label><input type="text" id="tn'+n+'_occ" placeholder="e.g. Education" value="'+(d.occ||'')+'"/></div>'+
+    '</div>'+
+    '<div class="sb" style="margin-top:9px">Permanent Address</div>'+
+    '<div style="margin-top:6px">'+
+      '<div class="f"><label>Full Address</label>'+
+        '<input type="text" id="tn'+n+'_addr" placeholder="e.g. Wabale wasti, Kanoli, Sangamner, Ahmadnagar, Maharashtra – 422605" value="'+(d.addr||'')+'"/></div>'+
+    '</div>';
+  document.getElementById('tc').appendChild(el);
+  syncPhotos();
+}
+function remTenant(n) {
+  var el = document.getElementById('t'+n);
+  if (el) el.remove();
+  delete photoStore['t'+n];
+  syncPhotos();
+}
+
+// ── Helpers ───────────────────────────────────────────────
+function gv(id) {
+  var el = document.getElementById(id);
+  return el ? el.value.trim() : '';
+}
+function fmtD(str) {
+  if (!str) return '__________';
+  if (/\d{2}\/\d{2}\/\d{4}/.test(str)) return str;
+  var d = new Date(str+'T00:00:00');
+  return pad2(d.getDate())+'/'+pad2(d.getMonth()+1)+'/'+d.getFullYear();
+}
+function fmtDLong(str) {
+  if (!str) return '__________';
+  var d = new Date(str+'T00:00:00');
+  var months=['January','February','March','April','May','June',
+    'July','August','September','October','November','December'];
+  return d.getDate()+'th '+months[d.getMonth()]+' '+d.getFullYear();
+}
+function fmtMoney(n) {
+  return n ? Number(n).toLocaleString('en-IN') : '';
+}
+function getDurLabel() {
+  var s = document.getElementById('duration');
+  return s.options[s.selectedIndex].text;
+}
+function toRoman(n) {
+  return ['I','II','III','IV','V','VI','VII','VIII','IX','X'][n-1] || String(n);
+}
+
+// ── Sample Data ───────────────────────────────────────────
+function fillSample() {
+  document.getElementById('exec_date').value = '2026-03-11';
+  document.getElementById('reg_type').value = 'Notarized';
+  document.getElementById('ll_name').value = 'Komal Navnath Gadakh';
+  document.getElementById('ll_age').value = '32';
+  document.getElementById('ll_occ').value = 'Business';
+  document.getElementById('ll_pan').value = 'CIEPG0170M';
+  document.getElementById('ll_addr').value = 'Paregaon Bk., Limbacha mala, Sangamner, Ahmadnagar, Maharashtra \u2013 422611';
+  document.getElementById('flat_no').value = '405';
+  document.getElementById('buildup').value = '512 Square Foot';
+  document.getElementById('prop_floor').value = '4th';
+  document.getElementById('bldg_name').value = 'Mhada Espacio';
+  document.getElementById('survey_no').value = '38';
+  document.getElementById('village').value = 'Balewadi';
+  document.getElementById('prop_city').value = 'Pune';
+  document.getElementById('taluka').value = 'Haveli';
+  document.getElementById('dist_pin').value = 'Pune 411045';
+  document.getElementById('corp').value = 'Pune Municipal Corporation';
+  document.getElementById('start_date').value = '2025-09-01';
+  document.getElementById('duration').value = '11';
+  calcEnd();
+  document.getElementById('rent').value = '6000'; aw('rent','rent_w');
+  document.getElementById('dep').value = '6000';  aw('dep','dep_w');
+  document.getElementById('dep_mode').value = 'Cash';
+  document.getElementById('misc').value = '';
+  document.getElementById('tc').innerHTML = ''; tenantCount = 0;
+  addTenant({
+    name:'Gagan Nilesh Varpe', age:'19', occ:'Education',
+    addr:'Wabale wasti, Kanoli, Sangamner, Ahmadnagar, Maharashtra \u2013 422605'
+  });
+}
+
+// ── Init ──────────────────────────────────────────────────
+addTenant();
+
+// ── PDF ───────────────────────────────────────────────────
+function genPDF() {
+  try {
+
+    var jsPDF = window.jspdf.jsPDF;
+    var doc = new jsPDF({ unit:'pt', format:'letter' });
+    var PW = doc.internal.pageSize.getWidth();
+    var PH = doc.internal.pageSize.getHeight();
+    var ML = 72, MR = 72, TW = PW - ML - MR;
+    var y = 60, pageNum = 1;
+
+    // helpers
+    function addPage() {
+      putPageNum();
+      doc.addPage();
+      pageNum++;
+      y = 60;
+    }
+    function checkY(need) {
+      if (y + (need||30) > PH - 60) addPage();
+    }
+    function putPageNum() {
+      doc.setFont('times','normal'); doc.setFontSize(10);
+      doc.setTextColor(100,100,100);
+      doc.text(String(pageNum), PW/2, PH-20, {align:'center'});
+    }
+    function sf(style, size, r, g, b) {
+      doc.setFont('times', style||'normal');
+      doc.setFontSize(size||11);
+      doc.setTextColor(r!=null?r:0, g!=null?g:0, b!=null?b:0);
+    }
+
+    // ── Justified text ────────────────────────────────────
+    function justifyText(lines, x, startY, lineH, maxW, isLast) {
+      for (var li=0; li<lines.length; li++) {
+        var isLastLine = (li === lines.length-1);
+        if (isLast && isLastLine) {
+          doc.text(lines[li], x, startY + li*lineH);
+        } else {
+          var words = lines[li].split(' ');
+          if (words.length <= 1) {
+            doc.text(lines[li], x, startY + li*lineH);
+          } else {
+            var lineW = doc.getTextWidth(lines[li]);
+            var totalSpace = maxW - lineW;
+            var gaps = words.length - 1;
+            var extraPerGap = totalSpace / gaps;
+            var cx = x;
+            for (var wi=0; wi<words.length; wi++) {
+              doc.text(words[wi], cx, startY + li*lineH);
+              cx += doc.getTextWidth(words[wi]) + doc.getTextWidth(' ') + extraPerGap;
+            }
+          }
+        }
+      }
+    }
+
+    function writeLine(text, indent, gap) {
+      sf('normal', 11, 0,0,0);
+      var w = TW-(indent||0);
+      var lines = doc.splitTextToSize(text, w);
+      var totalH = lines.length * 15 + (gap||4);
+      checkY(totalH);
+      justifyText(lines, ML+(indent||0), y, 15, w, true);
+      y += totalH;
+    }
+
+    function writeLineStyle(text, style, indent, gap) {
+      sf(style||'normal', 11, 0,0,0);
+      var w = TW-(indent||0);
+      var lines = doc.splitTextToSize(text, w);
+      var totalH = lines.length * 15 + (gap||4);
+      checkY(totalH);
+      justifyText(lines, ML+(indent||0), y, 15, w, true);
+      y += totalH;
+    }
+
+    function hRule() {
+      y += 6;
+    }
+
+    // ── mixedLine: word-by-word wrap for bold+normal mixed segments ──
+    function mixedLine(segments, indent, gap) {
+      var x = ML + (indent||0);
+      var maxW = TW - (indent||0);
+      // Tokenise all segments into [{word, bold}]
+      var allWords = [];
+      for (var si=0; si<segments.length; si++) {
+        var seg = segments[si];
+        if (!seg.text) continue;
+        var ws = seg.text.split(' ');
+        for (var wi=0; wi<ws.length; wi++) {
+          if (ws[wi] !== '') allWords.push({word: ws[wi], bold: seg.bold});
+          // preserve space between segments at boundary
+          else if (wi===0 && si>0 && allWords.length>0) {
+            allWords[allWords.length-1].trailSpace = true;
+          }
+        }
+      }
+      // Build lines
+      var docLines = [];
+      var curLine = [];
+      var curW = 0;
+      doc.setFontSize(11);
+      for (var ai=0; ai<allWords.length; ai++) {
+        var wObj = allWords[ai];
+        if (wObj.bold) doc.setFont('times','bold'); else doc.setFont('times','normal');
+        var ww = doc.getTextWidth(wObj.word);
+        var spW = curLine.length > 0 ? doc.getTextWidth(' ') : 0;
+        if (curLine.length > 0 && curW + spW + ww > maxW) {
+          docLines.push(curLine);
+          curLine = [{word: wObj.word, bold: wObj.bold, w: ww}];
+          curW = ww;
+        } else {
+          curLine.push({word: wObj.word, bold: wObj.bold, w: ww});
+          curW += spW + ww;
+        }
+      }
+      if (curLine.length > 0) docLines.push(curLine);
+
+      // Render each line with justification
+      for (var li=0; li<docLines.length; li++) {
+        checkY(15);
+        var dLine = docLines[li];
+        var isLastLine = (li === docLines.length-1);
+        // Compute total text width and space
+        var totalW = 0;
+        for (var di=0; di<dLine.length; di++) totalW += dLine[di].w;
+        var gaps = dLine.length - 1;
+        var baseSpW = doc.getTextWidth(' ');
+        var extraSp = (!isLastLine && gaps > 0) ? (maxW - totalW - gaps*baseSpW) / gaps : 0;
+        var cx = x;
+        doc.setFontSize(11); doc.setTextColor(0,0,0);
+        for (var di=0; di<dLine.length; di++) {
+          var wObj = dLine[di];
+          if (wObj.bold) doc.setFont('times','bold'); else doc.setFont('times','normal');
+          doc.text(wObj.word, cx, y);
+          if (wObj.bold) {
+            doc.setDrawColor(0); doc.setLineWidth(0.4);
+            doc.line(cx, y+2, cx+wObj.w, y+2);
+          }
+          cx += wObj.w + (di < dLine.length-1 ? baseSpW + extraSp : 0);
+        }
+        y += 15;
+      }
+      doc.setFont('times','normal');
+      y += (gap||4);
+    }
+
+    function clause(num, title, body) {
+      var parts = body.split('\n');
+      var label = num+') '+title+':';
+      var indent = 18; // body indent from left margin
+
+      checkY(30);
+      // Draw bold label on its own line
+      doc.setFont('times','bold'); doc.setFontSize(11); doc.setTextColor(0,0,0);
+      doc.text(label, ML, y);
+      y += 16;
+
+      // First paragraph — justified, indented
+      var firstWrapped = doc.splitTextToSize(parts[0], TW - indent);
+      checkY(firstWrapped.length * 15 + 6);
+      doc.setFont('times','normal'); doc.setFontSize(11);
+      justifyText(firstWrapped, ML + indent, y, 15, TW - indent, true);
+      y += firstWrapped.length * 15 + 4;
+
+      // Extra paragraphs (after \n)
+      for (var pi=1; pi<parts.length; pi++) {
+        if (!parts[pi]) continue;
+        var rLines = doc.splitTextToSize(parts[pi], TW - indent);
+        checkY(rLines.length*15+4);
+        justifyText(rLines, ML + indent, y, 15, TW - indent, true);
+        y += rLines.length*15+4;
+      }
+      y += 8;
+    }
+
+
+
+    // Collect tenants
+    var tenants = [];
+    for (var ti=1; ti<=tenantCount; ti++) {
+      if (!document.getElementById('t'+ti)) continue;
+      var tnm = gv('tn'+ti+'_name');
+      if (!tnm) continue;
+      tenants.push({
+        name: tnm,
+        age:  gv('tn'+ti+'_age'),
+        occ:  gv('tn'+ti+'_occ'),
+        addr: gv('tn'+ti+'_addr'),
+        key:  't'+ti
+      });
+    }
+
+    // Data
+    var execDate    = gv('exec_date');
+    var execLong    = execDate ? fmtDLong(execDate) : '__________';
+    var execPlace   = 'PUNE';
+    var regType     = gv('reg_type') || 'Notarized';
+    var propUse     = gv('prop_use') || 'Residential';
+    var dur         = getDurLabel();
+    var startD      = fmtD(gv('start_date'));
+    var endD        = gv('end_date') || '__________';
+    var rentAmt     = gv('rent') ? fmtMoney(gv('rent')) : '______';
+    var rentW       = gv('rent_w') || '______';
+    var depAmt      = gv('dep') ? fmtMoney(gv('dep')) : '______';
+    var depW        = gv('dep_w') || '______';
+    var depMode     = gv('dep_mode') || 'Cash';
+    var llName      = gv('ll_name') || '________________________';
+    var llAge       = gv('ll_age')  || '__';
+    var llOcc       = gv('ll_occ')  || '____________';
+    var llPAN       = gv('ll_pan')  || '____________';
+    var llAddr      = gv('ll_addr') || '________________________';
+    var flatNo      = gv('flat_no')    || '____';
+    var builtup     = gv('buildup')    || '____';
+    var floorNo     = gv('prop_floor') || '____';
+    var bldgNm      = gv('bldg_name')  || '________________________';
+    var srNo        = gv('survey_no')  || '____';
+    var vill        = gv('village')    || '________________________';
+    var pCity       = gv('prop_city')  || '________________________';
+    var taluka      = gv('taluka')     || '________________________';
+    var distPin     = gv('dist_pin')   || '________________________';
+    var corp        = gv('corp')       || '________________________';
+    var miscText    = gv('misc');
+
+    // ════════════════════════════════════════════
+    // PAGE 1 — Title + Parties + Whereas
+    // ════════════════════════════════════════════
+
+    // Title
+    sf('bold',14); doc.setTextColor(0,0,0);
+    doc.text('LEAVE AND LICENSE AGREEMENT', PW/2, y, {align:'center'});
+    y += 22;
+    sf('bold',11);
+    doc.text('THIS LEAVE AND LICENSE AGREEMENT IS MADE AND EXECUTED', PW/2, y, {align:'center'});
+    y += 16;
+    doc.text('ON '+execLong.toUpperCase()+' AT '+execPlace.toUpperCase(), PW/2, y, {align:'center'});
+    y += 20;
+    hRule();
+
+    writeLine('Between,', 0, 8);
+
+    // Licensor — user inputs bold+underlined
+    sf('normal',11); doc.setTextColor(0,0,0);
+    mixedLine([
+      {text:(i+1 ? '' : ''), bold:false},
+      {text:llName, bold:true},
+      {text:', Age:', bold:false},
+      {text:llAge+' Years', bold:true},
+      {text:', Occupation: ', bold:false},
+      {text:llOcc, bold:true},
+      {text:',', bold:false}
+    ], 0, 2);
+    mixedLine([
+      {text:'Residing at: ', bold:false},
+      {text:llAddr, bold:true},
+      {text:'.', bold:false}
+    ], 0, 2);
+    mixedLine([
+      {text:'PAN \u2013 ', bold:false},
+      {text:llPAN, bold:true}
+    ], 0, 8);
+    writeLineStyle("HEREINAFTER called 'the Licensors (owner) (which expression shall mean and include the Licensors above named and also his/her/their respective heirs, successors, assigns, executors and administrators)", 'italic', 0, 10);
+    writeLine('AND', 0, 8);
+
+    // Tenants
+    if (tenants.length === 0) {
+      writeLine('1) ________________________, Age: __, Occupation: ____________,', 0, 2);
+      writeLine('Residing at: ________________________.', 0, 8);
+      writeLineStyle("HEREINAFTER called 'the Licensees' (Tenant) (which expression shall mean and include only Licensees above named).", 'italic', 0, 10);
+    } else {
+      for (var i=0; i<tenants.length; i++) {
+        var t = tenants[i];
+        mixedLine([
+          {text:(i+1)+') ', bold:false},
+          {text:t.name, bold:true},
+          {text:', Age: ', bold:false},
+          {text:t.age, bold:true},
+          {text:', Occupation: ', bold:false},
+          {text:t.occ, bold:true},
+          {text:',', bold:false}
+        ], 0, 2);
+        mixedLine([
+          {text:'Residing at: ', bold:false},
+          {text:t.addr, bold:true},
+          {text:'.', bold:false}
+        ], 0, 8);
+        writeLineStyle("HEREINAFTER called 'the Licensees' (Tenant) (which expression shall mean and include only Licensees above named).", 'italic', 0, 10);
+      }
+    }
+
+    hRule();
+
+    writeLine('WHEREAS the Licensors is absolutely seized and possessed of and or otherwise well and sufficiently entitled to all that constructed portion being unit described in Schedule I hereunder written and are hereafter for the sake of brevity called or referred to as Licensed Premises and is/are desirous of giving the said premises on Leave and License basis under Section 24 of the Maharashtra Rent Control Act, 1999.', 0, 8);
+    mixedLine([
+      {text:'AND WHEREAS the Licensees herein is in need of temporary premises for ', bold:false},
+      {text:propUse, bold:true},
+      {text:' use has/have approached the Licensors with a request to allow the Licensees herein to use and occupy the said premises on Leave and License basis for a period of ', bold:false},
+      {text:dur, bold:true},
+      {text:' commencing from ', bold:false},
+      {text:startD, bold:true},
+      {text:' and ending on ', bold:false},
+      {text:endD, bold:true},
+      {text:', on terms and subject to conditions hereafter appearing.', bold:false}
+    ], 0, 8);
+    mixedLine([
+      {text:'AND WHEREAS the Licensor have agreed to allow the Licensees herein to use and occupy the said Licensed premises for his aforesaid ', bold:false},
+      {text:propUse, bold:true},
+      {text:' purposes only, on Leave and License basis for above mentioned period, on terms and subject to conditions hereafter appearing;', bold:false}
+    ], 0, 10);
+    writeLineStyle('NOW THEREFORE IT IS HEREBY AGREED TO, DECLARED AND RECORDED BY AND BETWEEN THE PARTIES HERETO AS FOLLOWS: -', 'bold', 0, 10);
+
+    // clauseV — like clause but replaces [[value]] tokens with bold+underlined text
+    function clauseV(num, title, body) {
+      var label = num+') '+title+':';
+      var indent = 18;
+      checkY(30);
+      doc.setFont('times','bold'); doc.setFontSize(11); doc.setTextColor(0,0,0);
+      doc.text(label, ML, y);
+      y += 16;
+
+      // Parse body into segments: normal text and [[bold]] tokens
+      var segments = [];
+      var parts2 = body.split(/\n/);
+      for (var pj=0; pj<parts2.length; pj++) {
+        if (pj>0) segments.push({text:'\n', bold:false});
+        var tokens = parts2[pj].split(/(\[\[.*?\]\])/);
+        for (var tk=0; tk<tokens.length; tk++) {
+          var tok = tokens[tk];
+          if (/^\[\[.*\]\]$/.test(tok)) {
+            segments.push({text: tok.slice(2,-2), bold:true});
+          } else if (tok) {
+            segments.push({text: tok, bold:false});
+          }
+        }
+      }
+
+      // Render segments with justification, wrapping at TW-indent
+      var maxW = TW - indent;
+      var cx = ML + indent;
+      var lineWords = []; // {text, bold, w}
+      var lineW = 0;
+
+      function flushLine(isLast) {
+        if (lineWords.length === 0) return;
+        var totalTextW = 0;
+        for (var k=0; k<lineWords.length; k++) totalTextW += lineWords[k].w;
+        var spaces = lineWords.length - 1;
+        var baseSpace = doc.getTextWidth(' ');
+        var extraSpace = (!isLast && spaces > 0) ? (maxW - totalTextW - spaces*baseSpace) / spaces : 0;
+        var rx = ML + indent;
+        for (var k=0; k<lineWords.length; k++) {
+          if (lineWords[k].bold) {
+            doc.setFont('times','bold');
+            doc.text(lineWords[k].text, rx, y);
+            doc.setDrawColor(0); doc.setLineWidth(0.4);
+            doc.line(rx, y+2, rx+lineWords[k].w, y+2);
+          } else {
+            doc.setFont('times','normal');
+            doc.text(lineWords[k].text, rx, y);
+          }
+          rx += lineWords[k].w;
+          if (k < lineWords.length-1) rx += baseSpace + extraSpace;
+        }
+        lineWords = []; lineW = 0;
+        y += 15;
+      }
+
+      doc.setFontSize(11); doc.setTextColor(0,0,0);
+      for (var si=0; si<segments.length; si++) {
+        var seg = segments[si];
+        if (seg.text === '\n') { flushLine(true); checkY(15); continue; }
+        if (seg.bold) doc.setFont('times','bold'); else doc.setFont('times','normal');
+        var segWords = seg.text.split(' ');
+        for (var wi=0; wi<segWords.length; wi++) {
+          var word = segWords[wi]; if (!word) continue;
+          var ww = doc.getTextWidth(word);
+          var spW = (lineWords.length > 0) ? doc.getTextWidth(' ') : 0;
+          if (lineW + spW + ww > maxW && lineWords.length > 0) {
+            flushLine(false); checkY(15);
+          }
+          lineWords.push({text:word, bold:seg.bold, w:ww});
+          lineW += (lineWords.length>1 ? doc.getTextWidth(' ') : 0) + ww;
+        }
+      }
+      flushLine(true); // last line left-aligned
+      y += 6;
+    }
+
+    // Clauses 1 & 2
+    clauseV('1', 'Period',
+      'That the Licensors hereby grants to the Licensees herein a revocable leave and license, to occupy the Licensed Premises, described in Schedule I hereunder written without creating any tenancy rights or any other rights, title and interest in favour of the Licensees for a period of [['+dur+']] commencing from [['+startD+']] and ending on [['+endD+']].');
+
+    clauseV('2', 'License Fee/Rent',
+      'That the Licensees shall pay to the Licensors the following amount per month for the use of the said licensed premises.\nRs. [['+rentAmt+']]/- ([['+rentW+']]) Rent per month for the [['+dur+']]. The amount of monthly License fee shall be payable within first five days of the concerned month of Leave and License.');
+
+    clauseV('3', 'Payment of Deposit',
+      'That the Licensees have paid / shall pay the above-mentioned deposit/premium as mentioned above by [['+depMode+']]. Amount [['+depAmt+']]/- ([['+depW+']])');
+
+    clause('4', 'Maintenance Charges',
+      'That the all outgoings including all rates, taxes, levies, assessment, maintenance charges, non-occupancy charges, etc. in respect of the said premises shall be paid by the Licensor.');
+
+    clause('5', 'Electricity Charges',
+      'The Licensees herein shall pay the electricity bills directly for energy consumed on the licensed premises and should submit original receipts to Licensors indicating that the electricity bills are paid.');
+
+    clauseV('6', 'Use',
+      'That the Licensed premises shall only be used by the Licensees for [['+propUse+']] purpose. The Licensees shall maintain the said premises in its existing condition and damage, if any, caused to the said premises, the same shall be repaired by the Licensees at its own cost subject to normal wear and tear. The Licensees shall not do anything in the said premises which is or is likely to cause a nuisance to the other occupants of the said building or to the prejudice in any manner to the rights of Licensors in respect of said premises or shall not do any unlawful activities prohibited by State or Central Government.');
+
+    clause('7', 'Alteration',
+      'That the Licensees shall not make or permit to do any alteration or addition to the construction or arrangements (internal or external) to the Licensed premises without previous consent in writing from the Licensors.');
+
+    clause('8', 'No Tenancy',
+      'That the Licensees shall not claim any tenancy right and shall not have any right to transfer, assign, and sublet or grant any license or sub-license in respect of the Licensed Premises or any part thereof and also shall not mortgage or raise any loan against the said premises.');
+
+    clause('9', 'Inspection',
+      'That, the Licensors shall on reasonable notice given by the Licensors to the Licensees shall have a right of access either by himself / herself / themselves or through authorized representative to enter, view and inspect the Licensed premises at reasonable intervals.');
+
+    clause('10', 'Cancellation',
+      'That, Subject to the condition of lock in period (if any), if the Licensees commits default in regular and punctual payments of monthly compensation as herein before mentioned or commit/s breach of any of the terms, covenants and conditions of this agreement or if any legislation prohibiting the Leave and License is imposed, the Licensors shall be entitled to revoke and / or cancel the License hereby granted, by giving notice in writing of one month and the Licensees too will have the right to vacate the said premises by giving a notice in writing of one month to the Licensors as mentioned earlier.');
+
+    clause('11', 'Possession',
+      'That the immediately at on the expiration or termination or cancellation of this agreement the Licensees shall vacate the said premises without delay with all his goods and belongings. In the event of the Licensees failing and / or neglecting to remove himself and / or his articles from the said premises on expiry or sooner determination of this Agreement, the Licensors shall be entitled to recover damages at the rate of double the daily amount of compensation per day and or alternatively the Licensors shall be entitled to remove the Licensees and his belongings from the Licensed premises, without recourse to the Court of Law.');
+
+    if (miscText) {
+      clauseV('12', 'Miscellaneous', miscText);
+      clauseV('13', 'Registration',
+        'This Agreement is to be [['+regType+']] and the expenditure of Stamp duty and registration fees and incidental charges, if any, shall be borne by the Licensees Only');
+    } else {
+      clauseV('12', 'Registration',
+        'This Agreement is to be [['+regType+']] and the expenditure of Stamp duty and registration fees and incidental charges, if any, shall be borne by the Licensees Only');
+    }
+
+    // ════════════════════════════════════════════
+    // Schedule I — continues after last clause
+    // ════════════════════════════════════════════
+    y += 6;
+    checkY(60);
+    sf('bold',12); doc.setTextColor(0,0,0);
+    doc.text('SCHEDULE I', PW/2, y, {align:'center'}); y+=18;
+    sf('italic',11);
+    doc.text('(Being the correct description of premise Apartment/Flat which is the subject matter of these presents)', PW/2, y, {align:'center', maxWidth: TW});
+    y += 14;
+
+    // Render Schedule I body — user values bold+underlined
+    (function() {
+      var body = 'All that constructed portion being unit bearing Flat No \u2013 [['+flatNo+']] Built-up: [['+builtup+']], situated on the [['+floorNo+']] Floor of a Building known as [['+bldgNm+']], SR Number: [['+srNo+']], of Village: [['+vill+']], [['+pCity+']], situated within the revenue limits of Taluka [['+taluka+']] and Dist. [['+distPin+']] and situated within the limits of [['+corp+']].';
+      var maxW = TW;
+      var tokens = body.split(/(\[\[.*?\]\])/);
+      var segments = [];
+      for (var tk=0; tk<tokens.length; tk++) {
+        var tok = tokens[tk];
+        if (/^\[\[.*\]\]$/.test(tok)) {
+          segments.push({text: tok.slice(2,-2), bold:true});
+        } else if (tok) {
+          segments.push({text: tok, bold:false});
+        }
+      }
+      // Word-wrap segments with justify
+      var lineWords = [];
+      var lineW = 0;
+      function flushLine(isLast) {
+        if (!lineWords.length) return;
+        var totalTextW = 0;
+        for (var k=0; k<lineWords.length; k++) totalTextW += lineWords[k].w;
+        var spaces = lineWords.length - 1;
+        var baseSpace = doc.getTextWidth(' ');
+        var extraSpace = (!isLast && spaces > 0) ? (maxW - totalTextW - spaces*baseSpace) / spaces : 0;
+        var rx = ML;
+        doc.setFontSize(11); doc.setTextColor(0,0,0);
+        for (var k=0; k<lineWords.length; k++) {
+          if (lineWords[k].bold) {
+            doc.setFont('times','bold');
+            doc.text(lineWords[k].text, rx, y);
+            doc.setDrawColor(0); doc.setLineWidth(0.4);
+            doc.line(rx, y+2, rx+lineWords[k].w, y+2);
+          } else {
+            doc.setFont('times','normal');
+            doc.text(lineWords[k].text, rx, y);
+          }
+          rx += lineWords[k].w + (k < lineWords.length-1 ? baseSpace + extraSpace : 0);
+        }
+        lineWords = []; lineW = 0;
+        y += 15;
+      }
+      doc.setFontSize(11);
+      for (var si=0; si<segments.length; si++) {
+        var seg = segments[si];
+        if (seg.bold) doc.setFont('times','bold'); else doc.setFont('times','normal');
+        var segWords = seg.text.split(' ');
+        for (var wi=0; wi<segWords.length; wi++) {
+          var word = segWords[wi]; if (!word) continue;
+          var ww = doc.getTextWidth(word);
+          var spW = lineWords.length > 0 ? doc.getTextWidth(' ') : 0;
+          if (lineW + spW + ww > maxW && lineWords.length > 0) {
+            checkY(15); flushLine(false);
+          }
+          if (lineWords.length > 0) lineW += doc.getTextWidth(' ');
+          lineWords.push({text:word, bold:seg.bold, w:ww});
+          lineW += ww;
+        }
+      }
+      checkY(15); flushLine(true);
+    })();
+
+    y += 14;
+    writeLine('IN WITNESS WHEREOF the parties hereto have set and subscribed their respective signatures by way of putting thumb impression electronic signature hereto in the presence of witness, who are identifying the executants, on the day, month and year first above written.', 0, 16);
+
+    // ── Signature Table ───────────────────────
+    var allParties = [{ name: llName, role: 'Licensors/ Owner', key: 'lic' }];
+    for (var pi=0; pi<tenants.length; pi++) {
+      allParties.push({ name: tenants[pi].name, role: 'Licensees/Tenant', key: tenants[pi].key });
+    }
+
+    var C1x = ML, C1w = 210;
+    var C2x = ML+C1w, C2w = 110;
+    var C3x = ML+C1w+C2w, C3w = TW-C1w-C2w;
+    var ROW_H = 115, HDR_H = 46;
+
+    checkY(HDR_H + ROW_H + 10);
+    doc.setDrawColor(0); doc.setLineWidth(0.8);
+    doc.rect(C1x, y, C1w, HDR_H);
+    doc.rect(C2x, y, C2w, HDR_H);
+    doc.rect(C3x, y, C3w, HDR_H);
+    sf('bold', 9); doc.setTextColor(0,0,0);
+    doc.text('NAME OF THE EXECUTANTS', C1x+C1w/2, y+16, {align:'center'});
+    doc.text('PHOTOGRAPH',             C2x+C2w/2, y+16, {align:'center'});
+    doc.text('LEFT HAND THUMB',  C3x+C3w/2, y+10, {align:'center'});
+    doc.text('IMPRESSION &',     C3x+C3w/2, y+22, {align:'center'});
+    doc.text('SIGNATURE',        C3x+C3w/2, y+34, {align:'center'});
+    y += HDR_H;
+
+    for (var ri=0; ri<allParties.length; ri++) {
+      var party = allParties[ri];
+      checkY(ROW_H+4);
+      var ry = y;
+      doc.setLineWidth(0.8);
+      doc.rect(C1x, ry, C1w, ROW_H);
+      doc.rect(C2x, ry, C2w, ROW_H);
+      doc.rect(C3x, ry, C3w, ROW_H);
+      sf('bold',9); doc.setTextColor(0,0,0);
+      doc.text(toRoman(ri+1)+'. Signed, Sealed and Delivered', C1x+6, ry+14);
+      sf('normal',9);
+      doc.text('by within named '+party.role, C1x+6, ry+26);
+      sf('bold',10);
+      var nameW = doc.splitTextToSize(party.name, C1w-12);
+      for (var ni=0; ni<nameW.length; ni++) {
+        doc.text(nameW[ni], C1x+6, ry+42+ni*13);
+      }
+      if (photoStore[party.key]) {
+        try {
+          var mime = photoStore[party.key].split(';')[0].split(':')[1];
+          var fmt  = mime === 'image/png' ? 'PNG' : 'JPEG';
+          doc.addImage(photoStore[party.key], fmt, C2x+4, ry+4, C2w-8, ROW_H-8);
+        } catch(imgErr) {
+          sf('normal',8,150,150,150);
+          doc.text('Photo', C2x+C2w/2, ry+ROW_H/2, {align:'center'});
+        }
+      } else {
+        sf('normal',8,170,170,170);
+        doc.text('Affix',      C2x+C2w/2, ry+ROW_H/2-6, {align:'center'});
+        doc.text('Photograph', C2x+C2w/2, ry+ROW_H/2+6, {align:'center'});
+      }
+      sf('normal',8,60,60,60);
+      doc.text('Thumb Impression:', C3x+6, ry+22);
+      doc.setDrawColor(100,100,100); doc.setLineWidth(0.4);
+      doc.line(C3x+6, ry+50, C3x+C3w-6, ry+50);
+      doc.text('Signature:', C3x+6, ry+70);
+      doc.line(C3x+6, ry+95, C3x+C3w-6, ry+95);
+      y += ROW_H;
+    }
+
+    y += 20;
+    sf('bold',11); doc.setTextColor(0,0,0);
+    writeLine('Witnesses:', 0, 10);
+    sf('normal',11);
+    writeLine('1. Sign : ___________', 0, 4);
+    writeLine('   Name : __________________________________________', 0, 4);
+    writeLine('   Add  : __________________________________________', 0, 12);
+    writeLine('2. Sign : ___________', 0, 4);
+    writeLine('   Name : __________________________________________', 0, 4);
+    writeLine('   Add  : __________________________________________', 0, 6);
+
+    putPageNum();
+
+    var fn = (gv('ll_name')||'Licensor').replace(/[^a-zA-Z0-9]/g,'_').replace(/_+/g,'_');
+    var tn = tenants.length>0 ? tenants[0].name.replace(/[^a-zA-Z0-9]/g,'_').replace(/_+/g,'_') : 'Licensee';
+    doc.save('LeaveAndLicense_'+fn+'_'+tn+'.pdf');
+
+    document.getElementById('toast').classList.add('show');
+    setTimeout(function() { document.getElementById('toast').classList.remove('show'); }, 3000);
+
+  } catch(err) {
+    alert('PDF Error: '+err.message);
+    console.error(err);
+  }
+}
+</script>
+</body>
+</html>
