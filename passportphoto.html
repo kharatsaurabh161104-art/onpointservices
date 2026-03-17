@@ -37,7 +37,6 @@ body {
   border-radius: 10px;
 }
 
-/* ── Rate chart & instructions ── */
 .info-toggle {
   background: #1a7f4b;
   color: white;
@@ -139,7 +138,6 @@ body {
   line-height: 1.9;
 }
 
-/* ── History panel ── */
 .history-toggle {
   background: #0b2c6f;
   color: white;
@@ -220,20 +218,6 @@ body {
 .history-meta .h-size { font-weight: 600; font-size: 14px; color: #222; }
 .history-meta .h-date { font-size: 12px; color: #888; margin-top: 2px; }
 
-.history-download {
-  background: #2dbb63;
-  color: white;
-  border: none;
-  padding: 7px 14px;
-  border-radius: 7px;
-  font-size: 13px;
-  cursor: pointer;
-  transition: 0.2s;
-  white-space: nowrap;
-}
-
-.history-download:hover { background: #239e52; transform: none; }
-
 .history-delete {
   background: #fee;
   color: #c0392b;
@@ -260,7 +244,6 @@ body {
 
 .clear-history-btn:hover { background: #fee; transform: none; }
 
-/* ── Steps ── */
 #dropZone {
   border: 2px dashed #2d7ef7;
   padding: 35px;
@@ -379,7 +362,6 @@ button:hover { background: #1b5fd6; transform: translateY(-1px); }
 
   <div class="header">Onpoint Services Passport Photo Editor</div>
 
-  <!-- History -->
   <button class="info-toggle" onclick="toggleInfo()">&#128204; Rate Chart &amp; Instructions</button>
   <button class="history-toggle" onclick="toggleHistory()">&#128197; View History</button>
 
@@ -399,7 +381,7 @@ button:hover { background: #1b5fd6; transform: translateY(-1px); }
       </div>
 
       <div class="rate-card">
-        <div class="rate-card-header">Size: 3.5 &times; 4.5 cm</div>
+        <div class="rate-card-header">Size: 3.5 &times; 4.5 cm (Landscape)</div>
         <table>
           <tr><th>Price</th><th>Copies</th></tr>
           <tr><td class="rate-price">&#8377; 50</td><td>4 / 8 Copies</td></tr>
@@ -428,6 +410,7 @@ button:hover { background: #1b5fd6; transform: translateY(-1px); }
         <li>Use the <b>Adjustments</b> section to fine-tune brightness, contrast, or background colour.</li>
         <li>Select the quantity required from the dropdown.</li>
         <li>Click <b>Generate PDF</b> — the PDF will download automatically and a record will be saved in History.</li>
+        <li><b>Note:</b> For 3.5 × 4.5 cm, photos are printed landscape (4.5 cm wide × 3.5 cm tall) on a portrait A4 PDF — 4 photos per row.</li>
       </ol>
     </div>
   </div>
@@ -453,7 +436,7 @@ button:hover { background: #1b5fd6; transform: translateY(-1px); }
     <b>2. Select Size</b><br><br>
     <select id="ratio">
       <option value="30x37">3 x 3.7 cm</option>
-      <option value="35x45">3.5 x 4.5 cm</option>
+      <option value="35x45">3.5 x 4.5 cm (Landscape photos, Portrait PDF)</option>
       <option value="51x51">Indian Passport (2 x 2 inch)</option>
     </select>
   </div>
@@ -506,7 +489,7 @@ button:hover { background: #1b5fd6; transform: translateY(-1px); }
 const { jsPDF } = window.jspdf;
 
 /* ════════════════════════════════
-   HISTORY (stored in localStorage)
+   HISTORY
 ════════════════════════════════ */
 function getHistory() {
   return JSON.parse(localStorage.getItem("op_history") || "[]");
@@ -609,7 +592,6 @@ function renderHistory() {
   container.appendChild(clearBtn);
 }
 
-// Render history on page load
 renderHistory();
 
 /* ════════════════════════════════
@@ -623,9 +605,18 @@ let canvas = document.createElement("canvas");
 let ctx = canvas.getContext("2d");
 let originalImg = new Image();
 
+// For 35x45: photo is placed LANDSCAPE on PDF → printed width=4.5cm, height=3.5cm
+// sizes stores the ORIGINAL photo dimensions (used for crop aspect ratio & canvas)
 const sizes = {
   "30x37": { w: 30, h: 37 },
-  "35x45": { w: 35, h: 45 },
+  "35x45": { w: 35, h: 45 },   // aspect ratio for cropping
+  "51x51": { w: 51, h: 51 }
+};
+
+// PDF placement dimensions — for 35x45, photo is rotated landscape: 4.5 wide x 3.5 tall
+const pdfSizes = {
+  "30x37": { w: 30, h: 37 },
+  "35x45": { w: 45, h: 35 },   // landscape placement: width=4.5cm, height=3.5cm
   "51x51": { w: 51, h: 51 }
 };
 
@@ -786,7 +777,9 @@ function setBG(color) {
 
 function resetImage() { drawCanvas(); }
 
-/* PDF + save to history */
+/* ════════════════════════════════
+   PDF GENERATION
+════════════════════════════════ */
 function generatePDF() {
   if (images.length === 0) {
     alert("Please upload at least one photo first.");
@@ -796,62 +789,129 @@ function generatePDF() {
   try {
     const ratio = document.getElementById("ratio").value;
     const qty   = parseInt(document.getElementById("qty").value);
-    const w = sizes[ratio].w;
-    const h = sizes[ratio].h;
 
-    const orientation = (ratio === "35x45" || ratio === "51x51") ? "l" : "p";
-    const doc = new jsPDF(orientation, "mm", "a4");
-
-    const pageWidth  = orientation === "l" ? 297 : 210;
-    const pageHeight = orientation === "l" ? 210 : 297;
-
+    // Always portrait A4 PDF
+    const doc = new jsPDF("p", "mm", "a4");
+    const pageWidth  = 210;
+    const pageHeight = 297;
     const margin = 5;
-    let x = margin, y = margin, colCount = 0;
+    const gap = 4;
 
-    // Helper: get a clean JPEG dataURL for each image via a temp canvas
-    function getImgData(imgEl) {
+    // Helper: get clean JPEG dataURL
+    function getImgData(imgEl, canvasW, canvasH) {
       const tc = document.createElement("canvas");
-      tc.width  = Math.round(w * MM_TO_PX);
-      tc.height = Math.round(h * MM_TO_PX);
+      tc.width  = Math.round(canvasW);
+      tc.height = Math.round(canvasH);
       tc.getContext("2d").drawImage(imgEl, 0, 0, tc.width, tc.height);
       return tc.toDataURL("image/jpeg", 0.92);
     }
 
-    images.forEach(img => {
-      const imgData = getImgData(img);
-      for (let i = 0; i < qty; i++) {
-        doc.addImage(imgData, "JPEG", x, y, w, h);
-        doc.setLineWidth(0.25);
-        doc.setDrawColor(0);
-        doc.rect(x, y, w, h);
-        colCount++;
-        if (ratio === "51x51") {
-          const cols = (qty === 6) ? 2 : 5;
-          if (colCount === cols) { colCount = 0; x = margin; y += h + 4; }
-          else { x += w + 4; }
-        } else if (ratio === "35x45") {
-          const cols35 = qty === 4 ? 1 : qty === 8 ? 2 : qty === 16 ? 4 : 7;
-          if (colCount === cols35) { colCount = 0; x = margin; y += h + 4; }
-          else { x += w + 4; }
-        } else {
-          x += w + 4;
-          if (x + w > pageWidth) { x = margin; y += h + 4; }
+    if (ratio === "35x45") {
+      /*
+       * 3.5 x 4.5 cm → placed LANDSCAPE on portrait PDF
+       * Each photo cell: printW = 4.5 cm, printH = 3.5 cm
+       * The source image was cropped at 3.5w × 4.5h aspect → rotate 90° to place landscape
+       * 4 photos per row (4 × 4.5 = 18cm + gaps fits comfortably in 210mm portrait)
+       */
+      const printW = 45; // 4.5 cm in mm
+      const printH = 35; // 3.5 cm in mm
+      const cols = 4;
+
+      let x = margin;
+      let y = margin;
+      let colCount = 0;
+      let count = 0;
+
+      images.forEach(imgEl => {
+        // Rotate the source image 90° CW so portrait photo prints as landscape
+        const srcW = Math.round(sizes["35x45"].w * MM_TO_PX); // 3.5cm wide
+        const srcH = Math.round(sizes["35x45"].h * MM_TO_PX); // 4.5cm tall
+        const rotCanvas = document.createElement("canvas");
+        rotCanvas.width  = srcH; // becomes width after rotation
+        rotCanvas.height = srcW; // becomes height after rotation
+        const rotCtx = rotCanvas.getContext("2d");
+        rotCtx.translate(rotCanvas.width / 2, rotCanvas.height / 2);
+        rotCtx.rotate(90 * Math.PI / 180);
+        rotCtx.drawImage(imgEl, -srcW / 2, -srcH / 2, srcW, srcH);
+        const imgData = rotCanvas.toDataURL("image/jpeg", 0.92);
+
+        for (let i = 0; i < qty; i++) {
+          doc.addImage(imgData, "JPEG", x, y, printW, printH);
+          doc.setLineWidth(0.25);
+          doc.setDrawColor(0);
+          doc.rect(x, y, printW, printH);
+
+          colCount++;
+          count++;
+
+          if (colCount >= cols) {
+            colCount = 0;
+            x = margin;
+            y += printH + gap;
+          } else {
+            x += printW + gap;
+          }
+
+          if (y + printH > pageHeight) {
+            doc.addPage();
+            x = margin; y = margin; colCount = 0;
+          }
         }
-        if (y + h > pageHeight) {
-          doc.addPage();
-          x = margin; y = margin; colCount = 0;
+      });
+
+    } else if (ratio === "30x37") {
+      const pw = sizes["30x37"].w;
+      const ph = sizes["30x37"].h;
+      let x = margin, y = margin;
+
+      images.forEach(imgEl => {
+        const imgData = getImgData(imgEl, pw * MM_TO_PX, ph * MM_TO_PX);
+        for (let i = 0; i < qty; i++) {
+          doc.addImage(imgData, "JPEG", x, y, pw, ph);
+          doc.setLineWidth(0.25);
+          doc.setDrawColor(0);
+          doc.rect(x, y, pw, ph);
+          x += pw + gap;
+          if (x + pw > pageWidth) { x = margin; y += ph + gap; }
+          if (y + ph > pageHeight) { doc.addPage(); x = margin; y = margin; }
         }
-      }
-    });
+      });
+
+    } else if (ratio === "51x51") {
+      /*
+       * 2 x 2 inch (51 x 51 mm) - PORTRAIT A4
+       * qty=6  -> 3 cols x 2 rows
+       * qty=15 -> 3 cols x 5 rows
+       */
+      const pw = sizes["51x51"].w;
+      const ph = sizes["51x51"].h;
+      const cols = 3;
+      let x = margin, y = margin, colCount = 0;
+
+      images.forEach(imgEl => {
+        const imgData = getImgData(imgEl, pw * MM_TO_PX, ph * MM_TO_PX);
+        for (let i = 0; i < qty; i++) {
+          doc.addImage(imgData, "JPEG", x, y, pw, ph);
+          doc.setLineWidth(0.25);
+          doc.setDrawColor(0);
+          doc.rect(x, y, pw, ph);
+          colCount++;
+          if (colCount >= cols) { colCount = 0; x = margin; y += ph + gap; }
+          else { x += pw + gap; }
+          if (y + ph > pageHeight) { doc.addPage(); x = margin; y = margin; colCount = 0; }
+        }
+      });
+    }
 
     const sizeLabels = {
       "30x37": "3 × 3.7 cm",
-      "35x45": "3.5 × 4.5 cm",
+      "35x45": "3.5 × 4.5 cm (Landscape)",
       "51x51": "Indian Passport (2 × 2 inch)"
     };
 
     doc.save("passport_photos.pdf");
 
+    // Save thumbnail to history
     let smallThumb = null;
     if (images[0]) {
       const tc = document.createElement("canvas");
