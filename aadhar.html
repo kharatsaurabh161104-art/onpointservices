@@ -137,7 +137,7 @@
         
         <div id="mainContainer" style="display: none;">
             <h1>✂️ Smart Cards Extracted</h1>
-            <p class="subtitle">Front and Back cards (85.6mm × 53.98mm each)</p>
+            <p class="subtitle">Front and Back cards (85.6mm × 53.98mm each) - High Quality</p>
             
             <div class="status-message status-success" id="statusSuccess"></div>
             
@@ -179,6 +179,9 @@
         // BACK SIDE (उजवीकडून crop करा) 
         const BACK_LEFT = 106.6;     // 10.6cm = 106mm
         const BACK_RIGHT = 19.5;     // 2cm = 20mm
+
+        // ⬆️ QUALITY IMPROVEMENTS - Higher resolution for better output
+        const CANVAS_WIDTH_HIGH_RES = 2400; // ⬆️ Increased from 1000 to 2400 for print quality (300 DPI equivalent)
 
         const fileInput = document.getElementById('fileInput');
         const dropZone = document.getElementById('dropZone');
@@ -246,9 +249,10 @@
                 const pdf = await pdfLib.getDocument({ data: arrayBuffer, password: password }).promise;
 
                 const extractedImages = [];
+                // ⬆️ QUALITY IMPROVEMENT: Increased scale from 4.0 to 8.0 for much sharper extraction
                 for (let i = 0; i < pdf.numPages; i++) {
                     const page = await pdf.getPage(i + 1);
-                    const viewport = page.getViewport({ scale: 4.0 });
+                    const viewport = page.getViewport({ scale: 8.0 }); // ⬆️ Doubled from 4.0 to 8.0
                     const canvas = document.createElement('canvas');
                     canvas.width = viewport.width;
                     canvas.height = viewport.height;
@@ -294,17 +298,18 @@
                     const backRightPx = BACK_RIGHT * pixelsPerMmX;
                     const cropHeight = imgHeight - cropTopPx - cropBottomPx;
 
+                    // ⬆️ QUALITY IMPROVEMENT: Increased canvas resolution from 1000 to 2400 pixels
                     const canvasFront = document.createElement('canvas');
-                    canvasFront.width = 1000;
-                    canvasFront.height = Math.round(1000 / ASPECT_RATIO);
+                    canvasFront.width = CANVAS_WIDTH_HIGH_RES;  // ⬆️ 2400px for high DPI
+                    canvasFront.height = Math.round(CANVAS_WIDTH_HIGH_RES / ASPECT_RATIO);
                     canvasFront.getContext('2d').drawImage(img, frontLeftPx, cropTopPx, imgWidth - frontLeftPx - frontRightPx, cropHeight, 0, 0, canvasFront.width, canvasFront.height);
-                    croppedImages.push({ data: canvasFront.toDataURL('image/png', 0.95 ), side: 'FRONT' });
+                    croppedImages.push({ data: canvasFront.toDataURL('image/png'), side: 'FRONT' });
 
                     const canvasBack = document.createElement('canvas');
-                    canvasBack.width = 1000;
-                    canvasBack.height = Math.round(1000 / ASPECT_RATIO);
+                    canvasBack.width = CANVAS_WIDTH_HIGH_RES;  // ⬆️ 2400px for high DPI
+                    canvasBack.height = Math.round(CANVAS_WIDTH_HIGH_RES / ASPECT_RATIO);
                     canvasBack.getContext('2d').drawImage(img, backLeftPx, cropTopPx, imgWidth - backLeftPx - backRightPx, cropHeight, 0, 0, canvasBack.width, canvasBack.height);
-                    croppedImages.push({ data: canvasBack.toDataURL('image/png',0.95 ), side: 'BACK' });
+                    croppedImages.push({ data: canvasBack.toDataURL('image/png'), side: 'BACK' });
 
                     processedCount++;
                     if (processedCount === imagesToCrop.length) showCroppedImages();
@@ -316,7 +321,7 @@
         function showCroppedImages() {
             pdfPasswordSection.style.display = 'none';
             mainContainer.style.display = 'block';
-            statusSuccess.textContent = '✓ Successfully extracted ' + croppedImages.length + ' card(s)';
+            statusSuccess.textContent = '✓ Successfully extracted ' + croppedImages.length + ' card(s) in high quality';
             statusSuccess.classList.add('show');
             previewTitle.classList.add('show');
             previewSubtitle.classList.add('show');
@@ -334,7 +339,13 @@
 
         async function downloadPDF() {
             const jsPDF = window.jspdf.jsPDF;
-            const doc = new jsPDF({orientation: 'portrait', unit: 'mm', format: 'a4'});
+            // ⬆️ QUALITY IMPROVEMENT: Increased image compression for better quality in PDF
+            const doc = new jsPDF({
+                orientation: 'portrait', 
+                unit: 'mm', 
+                format: 'a4',
+                compress: false // ⬆️ Disable compression to maintain quality
+            });
             
             const cardWidth = SMART_CARD_WIDTH;
             const cardHeight = SMART_CARD_HEIGHT;
@@ -344,12 +355,14 @@
             const topMargin = 5;
             
             if (croppedImages[0]) {
+                // ⬆️ Using 'PNG' format explicitly for lossless compression
                 doc.addImage(croppedImages[0].data, 'PNG', leftMargin, topMargin, cardWidth, cardHeight);
             }
             
             if (croppedImages[1]) {
                 doc.addImage(croppedImages[1].data, 'PNG', leftMargin + cardWidth + 2.5, topMargin, cardWidth, cardHeight);
             }
+            
             // Border: 0.25pt ≈ 0.2mm
             const borderWidth = 0.2;
 
