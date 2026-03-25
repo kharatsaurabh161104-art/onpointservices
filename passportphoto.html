@@ -991,7 +991,7 @@ function generatePDF() {
       tc.width  = Math.round(canvasW);
       tc.height = Math.round(canvasH);
       tc.getContext("2d").drawImage(imgEl, 0, 0, tc.width, tc.height);
-      return tc.toDataURL("image/jpeg", 0.92);
+      return tc.toDataURL("image/jpeg", 1);
     }
 
     if (ratio === "35x45") {
@@ -1014,7 +1014,7 @@ function generatePDF() {
         rotCtx.translate(rotCanvas.width / 2, rotCanvas.height / 2);
         rotCtx.rotate(90 * Math.PI / 180);
         rotCtx.drawImage(imgEl, -srcW / 2, -srcH / 2, srcW, srcH);
-        const imgData = rotCanvas.toDataURL("image/jpeg", 0.92);
+        const imgData = rotCanvas.toDataURL("image/jpeg", 1);
 
         for (let i = 0; i < qty; i++) {
           doc.addImage(imgData, "JPEG", x, y, printW, printH);
