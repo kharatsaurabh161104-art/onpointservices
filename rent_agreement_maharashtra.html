@@ -568,7 +568,7 @@ function fillSample() {
   document.getElementById('ll_age').value = '32';
   document.getElementById('ll_occ').value = 'Business';
   document.getElementById('ll_pan').value = 'CIEPG0170M';
-  document.getElementById('ll_addr').value = 'Paregaon Bk., Limbacha mala, Sangamner, Ahmadnagar, Maharashtra \u2013 422611';
+  document.getElementById('ll_addr').value = 'Paregaon Bk., Limbacha mala, Sangamner, Ahmadnagar, Maharashtra – 422611';
   document.getElementById('flat_no').value = '405';
   document.getElementById('buildup').value = '512 Square Foot';
   document.getElementById('prop_floor').value = '4th';
@@ -589,7 +589,7 @@ function fillSample() {
   document.getElementById('tc').innerHTML = ''; tenantCount = 0;
   addTenant({
     name:'Gagan Nilesh Varpe', age:'19', occ:'Education',
-    addr:'Wabale wasti, Kanoli, Sangamner, Ahmadnagar, Maharashtra \u2013 422605'
+    addr:'Wabale wasti, Kanoli, Sangamner, Ahmadnagar, Maharashtra – 422605'
   });
 }
 
@@ -601,7 +601,8 @@ function genPDF() {
   try {
 
     var jsPDF = window.jspdf.jsPDF;
-    var doc = new jsPDF({ unit:'pt', format:'letter' });
+    // CHANGED: format from 'letter' to 'legal' (8.5 x 14 inches)
+    var doc = new jsPDF({ unit:'pt', format:'legal' });
     var PW = doc.internal.pageSize.getWidth();
     var PH = doc.internal.pageSize.getHeight();
     var ML = 72, MR = 72, TW = PW - ML - MR;
@@ -624,7 +625,8 @@ function genPDF() {
     }
     function sf(style, size, r, g, b) {
       doc.setFont('times', style||'normal');
-      doc.setFontSize(size||11);
+      // CHANGED: default font size from 11 to 13
+      doc.setFontSize(size||13);
       doc.setTextColor(r!=null?r:0, g!=null?g:0, b!=null?b:0);
     }
 
@@ -654,22 +656,26 @@ function genPDF() {
     }
 
     function writeLine(text, indent, gap) {
-      sf('normal', 11, 0,0,0);
+      // CHANGED: font size from 11 to 13
+      sf('normal', 13, 0,0,0);
       var w = TW-(indent||0);
       var lines = doc.splitTextToSize(text, w);
-      var totalH = lines.length * 15 + (gap||4);
+      // CHANGED: line height from 15 to 17 (proportional to font size increase)
+      var totalH = lines.length * 17 + (gap||4);
       checkY(totalH);
-      justifyText(lines, ML+(indent||0), y, 15, w, true);
+      justifyText(lines, ML+(indent||0), y, 17, w, true);
       y += totalH;
     }
 
     function writeLineStyle(text, style, indent, gap) {
-      sf(style||'normal', 11, 0,0,0);
+      // CHANGED: font size from 11 to 13
+      sf(style||'normal', 13, 0,0,0);
       var w = TW-(indent||0);
       var lines = doc.splitTextToSize(text, w);
-      var totalH = lines.length * 15 + (gap||4);
+      // CHANGED: line height from 15 to 17
+      var totalH = lines.length * 17 + (gap||4);
       checkY(totalH);
-      justifyText(lines, ML+(indent||0), y, 15, w, true);
+      justifyText(lines, ML+(indent||0), y, 17, w, true);
       y += totalH;
     }
 
@@ -699,7 +705,8 @@ function genPDF() {
       var docLines = [];
       var curLine = [];
       var curW = 0;
-      doc.setFontSize(11);
+      // CHANGED: font size from 11 to 13
+      doc.setFontSize(13);
       for (var ai=0; ai<allWords.length; ai++) {
         var wObj = allWords[ai];
         if (wObj.bold) doc.setFont('times','bold'); else doc.setFont('times','normal');
@@ -718,7 +725,8 @@ function genPDF() {
 
       // Render each line with justification
       for (var li=0; li<docLines.length; li++) {
-        checkY(15);
+        // CHANGED: checkY from 15 to 17
+        checkY(17);
         var dLine = docLines[li];
         var isLastLine = (li === docLines.length-1);
         // Compute total text width and space
@@ -728,7 +736,8 @@ function genPDF() {
         var baseSpW = doc.getTextWidth(' ');
         var extraSp = (!isLastLine && gaps > 0) ? (maxW - totalW - gaps*baseSpW) / gaps : 0;
         var cx = x;
-        doc.setFontSize(11); doc.setTextColor(0,0,0);
+        // CHANGED: font size from 11 to 13
+        doc.setFontSize(13); doc.setTextColor(0,0,0);
         for (var di=0; di<dLine.length; di++) {
           var wObj = dLine[di];
           if (wObj.bold) doc.setFont('times','bold'); else doc.setFont('times','normal');
@@ -739,7 +748,8 @@ function genPDF() {
           }
           cx += wObj.w + (di < dLine.length-1 ? baseSpW + extraSp : 0);
         }
-        y += 15;
+        // CHANGED: line increment from 15 to 17
+        y += 17;
       }
       doc.setFont('times','normal');
       y += (gap||4);
@@ -752,24 +762,27 @@ function genPDF() {
 
       checkY(30);
       // Draw bold label on its own line
-      doc.setFont('times','bold'); doc.setFontSize(11); doc.setTextColor(0,0,0);
+      // CHANGED: font size from 11 to 13
+      doc.setFont('times','bold'); doc.setFontSize(13); doc.setTextColor(0,0,0);
       doc.text(label, ML, y);
-      y += 16;
+      y += 18;
 
       // First paragraph — justified, indented
       var firstWrapped = doc.splitTextToSize(parts[0], TW - indent);
-      checkY(firstWrapped.length * 15 + 6);
-      doc.setFont('times','normal'); doc.setFontSize(11);
-      justifyText(firstWrapped, ML + indent, y, 15, TW - indent, true);
-      y += firstWrapped.length * 15 + 4;
+      // CHANGED: line height from 15 to 17
+      checkY(firstWrapped.length * 17 + 6);
+      doc.setFont('times','normal'); doc.setFontSize(13);
+      justifyText(firstWrapped, ML + indent, y, 17, TW - indent, true);
+      y += firstWrapped.length * 17 + 4;
 
       // Extra paragraphs (after \n)
       for (var pi=1; pi<parts.length; pi++) {
         if (!parts[pi]) continue;
         var rLines = doc.splitTextToSize(parts[pi], TW - indent);
-        checkY(rLines.length*15+4);
-        justifyText(rLines, ML + indent, y, 15, TW - indent, true);
-        y += rLines.length*15+4;
+        // CHANGED: line height from 15 to 17
+        checkY(rLines.length*17+4);
+        justifyText(rLines, ML + indent, y, 17, TW - indent, true);
+        y += rLines.length*17+4;
       }
       y += 8;
     }
@@ -827,20 +840,22 @@ function genPDF() {
     // ════════════════════════════════════════════
 
     // Title
-    sf('bold',14); doc.setTextColor(0,0,0);
+    sf('bold',16); doc.setTextColor(0,0,0);
     doc.text('LEAVE AND LICENSE AGREEMENT', PW/2, y, {align:'center'});
-    y += 22;
-    sf('bold',11);
+    y += 24;
+    // CHANGED: font size from 11 to 13
+    sf('bold',13);
     doc.text('THIS LEAVE AND LICENSE AGREEMENT IS MADE AND EXECUTED', PW/2, y, {align:'center'});
-    y += 16;
+    y += 18;
     doc.text('ON '+execLong.toUpperCase()+' AT '+execPlace.toUpperCase(), PW/2, y, {align:'center'});
-    y += 20;
+    y += 22;
     hRule();
 
     writeLine('Between,', 0, 8);
 
     // Licensor — user inputs bold+underlined
-    sf('normal',11); doc.setTextColor(0,0,0);
+    // CHANGED: font size from 11 to 13
+    sf('normal',13); doc.setTextColor(0,0,0);
     mixedLine([
       {text:(i+1 ? '' : ''), bold:false},
       {text:llName, bold:true},
@@ -856,7 +871,7 @@ function genPDF() {
       {text:'.', bold:false}
     ], 0, 2);
     mixedLine([
-      {text:'PAN \u2013 ', bold:false},
+      {text:'PAN – ', bold:false},
       {text:llPAN, bold:true}
     ], 0, 8);
     writeLineStyle("HEREINAFTER called 'the Licensors (owner) (which expression shall mean and include the Licensors above named and also his/her/their respective heirs, successors, assigns, executors and administrators)", 'italic', 0, 10);
@@ -914,9 +929,10 @@ function genPDF() {
       var label = num+') '+title+':';
       var indent = 18;
       checkY(30);
-      doc.setFont('times','bold'); doc.setFontSize(11); doc.setTextColor(0,0,0);
+      // CHANGED: font size from 11 to 13
+      doc.setFont('times','bold'); doc.setFontSize(13); doc.setTextColor(0,0,0);
       doc.text(label, ML, y);
-      y += 16;
+      y += 18;
 
       // Parse body into segments: normal text and [[bold]] tokens
       var segments = [];
@@ -962,13 +978,16 @@ function genPDF() {
           if (k < lineWords.length-1) rx += baseSpace + extraSpace;
         }
         lineWords = []; lineW = 0;
-        y += 15;
+        // CHANGED: line height from 15 to 17
+        y += 17;
       }
 
-      doc.setFontSize(11); doc.setTextColor(0,0,0);
+      // CHANGED: font size from 11 to 13
+      doc.setFontSize(13); doc.setTextColor(0,0,0);
       for (var si=0; si<segments.length; si++) {
         var seg = segments[si];
-        if (seg.text === '\n') { flushLine(true); checkY(15); continue; }
+        // CHANGED: checkY from 15 to 17
+        if (seg.text === '\n') { flushLine(true); checkY(17); continue; }
         if (seg.bold) doc.setFont('times','bold'); else doc.setFont('times','normal');
         var segWords = seg.text.split(' ');
         for (var wi=0; wi<segWords.length; wi++) {
@@ -976,7 +995,8 @@ function genPDF() {
           var ww = doc.getTextWidth(word);
           var spW = (lineWords.length > 0) ? doc.getTextWidth(' ') : 0;
           if (lineW + spW + ww > maxW && lineWords.length > 0) {
-            flushLine(false); checkY(15);
+            // CHANGED: checkY from 15 to 17
+            flushLine(false); checkY(17);
           }
           lineWords.push({text:word, bold:seg.bold, w:ww});
           lineW += (lineWords.length>1 ? doc.getTextWidth(' ') : 0) + ww;
@@ -1034,15 +1054,16 @@ function genPDF() {
     // ════════════════════════════════════════════
     y += 6;
     checkY(60);
-    sf('bold',12); doc.setTextColor(0,0,0);
-    doc.text('SCHEDULE I', PW/2, y, {align:'center'}); y+=18;
-    sf('italic',11);
+    sf('bold',14); doc.setTextColor(0,0,0);
+    doc.text('SCHEDULE I', PW/2, y, {align:'center'}); y+=20;
+    // CHANGED: font size from 11 to 13
+    sf('italic',13);
     doc.text('(Being the correct description of premise Apartment/Flat which is the subject matter of these presents)', PW/2, y, {align:'center', maxWidth: TW});
-    y += 14;
+    y += 28;
 
     // Render Schedule I body — user values bold+underlined
     (function() {
-      var body = 'All that constructed portion being unit bearing Flat No \u2013 [['+flatNo+']] Built-up: [['+builtup+']], situated on the [['+floorNo+']] Floor of a Building known as [['+bldgNm+']], SR Number: [['+srNo+']], of Village: [['+vill+']], [['+pCity+']], situated within the revenue limits of Taluka [['+taluka+']] and Dist. [['+distPin+']] and situated within the limits of [['+corp+']].';
+      var body = 'All that constructed portion being unit bearing Flat No – [['+flatNo+']] Built-up: [['+builtup+']], situated on the [['+floorNo+']] Floor of a Building known as [['+bldgNm+']], SR Number: [['+srNo+']], of Village: [['+vill+']], [['+pCity+']], situated within the revenue limits of Taluka [['+taluka+']] and Dist. [['+distPin+']] and situated within the limits of [['+corp+']].';
       var maxW = TW;
       var tokens = body.split(/(\[\[.*?\]\])/);
       var segments = [];
@@ -1065,7 +1086,8 @@ function genPDF() {
         var baseSpace = doc.getTextWidth(' ');
         var extraSpace = (!isLast && spaces > 0) ? (maxW - totalTextW - spaces*baseSpace) / spaces : 0;
         var rx = ML;
-        doc.setFontSize(11); doc.setTextColor(0,0,0);
+        // CHANGED: font size from 11 to 13
+        doc.setFontSize(13); doc.setTextColor(0,0,0);
         for (var k=0; k<lineWords.length; k++) {
           if (lineWords[k].bold) {
             doc.setFont('times','bold');
@@ -1079,9 +1101,11 @@ function genPDF() {
           rx += lineWords[k].w + (k < lineWords.length-1 ? baseSpace + extraSpace : 0);
         }
         lineWords = []; lineW = 0;
-        y += 15;
+        // CHANGED: line height from 15 to 17
+        y += 17;
       }
-      doc.setFontSize(11);
+      // CHANGED: font size from 11 to 13
+      doc.setFontSize(13);
       for (var si=0; si<segments.length; si++) {
         var seg = segments[si];
         if (seg.bold) doc.setFont('times','bold'); else doc.setFont('times','normal');
@@ -1091,14 +1115,16 @@ function genPDF() {
           var ww = doc.getTextWidth(word);
           var spW = lineWords.length > 0 ? doc.getTextWidth(' ') : 0;
           if (lineW + spW + ww > maxW && lineWords.length > 0) {
-            checkY(15); flushLine(false);
+            // CHANGED: checkY from 15 to 17
+            checkY(17); flushLine(false);
           }
           if (lineWords.length > 0) lineW += doc.getTextWidth(' ');
           lineWords.push({text:word, bold:seg.bold, w:ww});
           lineW += ww;
         }
       }
-      checkY(15); flushLine(true);
+      // CHANGED: checkY from 15 to 17
+      checkY(17); flushLine(true);
     })();
 
     y += 14;
@@ -1169,9 +1195,10 @@ function genPDF() {
     }
 
     y += 20;
-    sf('bold',11); doc.setTextColor(0,0,0);
+    // CHANGED: font size from 11 to 13
+    sf('bold',13); doc.setTextColor(0,0,0);
     writeLine('Witnesses:', 0, 10);
-    sf('normal',11);
+    sf('normal',13);
     writeLine('1. Sign : ___________', 0, 4);
     writeLine('   Name : __________________________________________', 0, 4);
     writeLine('   Add  : __________________________________________', 0, 12);
