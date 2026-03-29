@@ -522,18 +522,15 @@ function loadFromHistory(index) {
   var entry = history[index];
   if (!entry) return;
 
-  // Agreement
   document.getElementById('exec_date').value = entry.exec_date || '';
   document.getElementById('reg_type').value = entry.reg_type || '';
 
-  // Owner
   document.getElementById('ll_name').value = entry.ll_name || '';
   document.getElementById('ll_age').value = entry.ll_age || '';
   document.getElementById('ll_occ').value = entry.ll_occ || '';
   document.getElementById('ll_pan').value = entry.ll_pan || '';
   document.getElementById('ll_addr').value = entry.ll_addr || '';
 
-  // Property
   document.getElementById('flat_no').value = entry.flat_no || '';
   document.getElementById('buildup').value = entry.buildup || '';
   document.getElementById('prop_floor').value = entry.prop_floor || '';
@@ -546,7 +543,6 @@ function loadFromHistory(index) {
   document.getElementById('corp').value = entry.corp || '';
   document.getElementById('prop_use').value = entry.prop_use || '';
 
-  // Rent section
   document.getElementById('start_date').value = entry.start_date || '';
   document.getElementById('duration').value = entry.duration || '';
   document.getElementById('end_date').value = entry.end_date || '';
@@ -556,12 +552,11 @@ function loadFromHistory(index) {
   document.getElementById('dep_w').value = entry.dep_w || '';
   document.getElementById('dep_mode').value = entry.dep_mode || '';
 
-  // Misc
   document.getElementById('misc').value = entry.misc || '';
 
-  // Tenant
   document.getElementById('tc').innerHTML = '';
   tenantCount = 0;
+
   addTenant({
     name: entry.tenant1_name || '',
     age: entry.tenant1_age || '',
@@ -569,7 +564,6 @@ function loadFromHistory(index) {
     addr: entry.tenant1_addr || ''
   });
 
-  // Recalculate auto fields
   calcEnd();
   aw('rent','rent_w');
   aw('dep','dep_w');
@@ -579,7 +573,6 @@ function loadFromHistory(index) {
   document.getElementById('modal_history').classList.remove('show');
   window.scrollTo(0, 0);
 }
-
 
 function deleteFromHistory(index) {
   if (!confirm('Delete this history entry?')) return;
@@ -592,24 +585,31 @@ function deleteFromHistory(index) {
 function renderHistory() {
   var history = getHistory();
   var listEl = document.getElementById('history_list');
+
   if (history.length === 0) {
-    listEl.innerHTML = '<div class="history-empty">No history saved yet. Fill out a form and generate a PDF to save history.</div>';
+    listEl.innerHTML = '<div class="history-empty">No history saved yet.</div>';
     return;
   }
+
   listEl.innerHTML = '';
+
   history.forEach(function(entry, idx) {
     var item = document.createElement('div');
     item.className = 'history-item';
+
     item.innerHTML = 
       '<div class="history-text">' +
-        '<div class="owner">Owner: ' + (entry.ownerName || 'N/A') + '</div>' +
-        '<div class="tenant">Tenant 1: ' + (entry.tenant1Name || 'N/A') + '</div>' +
-        '<div class="timestamp">' + entry.timestamp + '</div>' +
+        '<div><b>Owner:</b> ' + (entry.ll_name || '-') + '</div>' +
+        '<div><b>Tenant:</b> ' + (entry.tenant1_name || '-') + '</div>' +
+        '<div><b>Property:</b> ' + (entry.flat_no || '') + ' ' + (entry.bldg_name || '') + ', ' + (entry.prop_city || '') + '</div>' +
+        '<div><b>Rent:</b> ₹' + (entry.rent || '-') + '</div>' +
+        '<div><b>Date:</b> ' + (entry.exec_date || '-') + '</div>' +
+        '<div style="font-size:11px;color:#777;">Saved: ' + entry.timestamp + '</div>' +
       '</div>' +
       '<div class="history-btns">' +
-        '<button class="btn-load" onclick="loadFromHistory(' + idx + ')">Load</button>' +
-        '<button class="btn-delete" onclick="deleteFromHistory(' + idx + ')">Delete</button>' +
+        '<button onclick="loadFromHistory(' + idx + ')">Load</button>' +
       '</div>';
+
     listEl.appendChild(item);
   });
 }
@@ -1011,7 +1011,7 @@ function genPDF() {
     var ownerName = gv('ll_name');
     var tenant1Name = (tenants.length > 0) ? tenants[0].name : '';
     if (ownerName || tenant1Name) {
-      saveHistory(ownerName, tenant1Name);
+      saveHistory();
     }
 
     // Data
