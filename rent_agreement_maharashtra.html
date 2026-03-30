@@ -454,8 +454,28 @@ body{
 <div class="modal-overlay" id="modal_history" onclick="if(event.target===this)this.classList.remove('show')">
   <div class="modal">
     <button class="modal-close" onclick="document.getElementById('modal_history').classList.remove('show')">&#10005;</button>
-    <h2>&#128462; History</h2>
-    <div id="history_list"></div>
+    <h2 style="display:flex;align-items:center;">
+  <span>📖 History</span>
+
+  <span onclick="toggleSearch()" 
+        style="margin-left:280px;cursor:pointer;font-size:16px;">
+        🔍
+  </span>
+</h2>
+
+
+<div id="search_container" style="display:none;margin-bottom:10px;">
+  <input 
+    type="text" 
+    id="history_search" 
+    placeholder="Search Owner / Tenant / Property..."
+    onkeyup="searchHistory()"
+    style="width:100%;padding:8px;border:1px solid #ccc;border-radius:5px;"
+  >
+</div>
+
+<div id="history_list"></div>
+
   </div>
 </div>
 
@@ -1430,6 +1450,61 @@ function genPDF() {
     console.error(err);
   }
 }
+function toggleSearch() {
+  var box = document.getElementById('search_container');
+
+  if (box.style.display === 'none') {
+    box.style.display = 'block';
+    document.getElementById('history_search').focus();
+  } else {
+    box.style.display = 'none';
+    document.getElementById('history_search').value = '';
+    renderHistory();
+  }
+}
+
+function searchHistory() {
+  var input = document.getElementById('history_search').value.toLowerCase();
+  var history = getHistory();
+  var listEl = document.getElementById('history_list');
+
+  listEl.innerHTML = '';
+
+  var filtered = history.filter(function(entry) {
+    return (
+      (entry.ll_name || '').toLowerCase().includes(input) ||
+      (entry.tenant1_name || '').toLowerCase().includes(input) ||
+      (entry.bldg_name || '').toLowerCase().includes(input) ||
+      (entry.prop_city || '').toLowerCase().includes(input)
+    );
+  });
+
+  if (filtered.length === 0) {
+    listEl.innerHTML = '<div class="history-empty">No matching results.</div>';
+    return;
+  }
+
+  filtered.forEach(function(entry, idx) {
+    var item = document.createElement('div');
+    item.className = 'history-item';
+
+    item.innerHTML = 
+      '<div class="history-text">' +
+        '<div><b>Owner:</b> ' + (entry.ll_name || '-') + '</div>' +
+        '<div><b>Tenant:</b> ' + (entry.tenant1_name || '-') + '</div>' +
+        '<div><b>Property:</b> ' + (entry.flat_no || '') + ' ' + (entry.bldg_name || '') + ', ' + (entry.prop_city || '') + '</div>' +
+        '<div><b>Rent:</b> ₹' + (entry.rent || '-') + '</div>' +
+        '<div><b>Date:</b> ' + (entry.exec_date || '-') + '</div>' +
+        '<div style="font-size:11px;color:#777;">Saved: ' + entry.timestamp + '</div>' +
+      '</div>' +
+      '<div class="history-btns">' +
+        '<button onclick="loadFromHistory(' + history.indexOf(entry) + ')">Load</button>' +
+      '</div>';
+
+    listEl.appendChild(item);
+  });
+}
+
 </script>
 </body>
 </html>
