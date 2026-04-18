@@ -46,7 +46,6 @@ body {
   overflow-x: hidden;
 }
 
-/* Mesh background */
 body::before {
   content: '';
   position: fixed; inset: 0; z-index: 0;
@@ -57,7 +56,6 @@ body::before {
   pointer-events: none;
 }
 
-/* Dot grid */
 body::after {
   content: '';
   position: fixed; inset: 0; z-index: 0;
@@ -73,7 +71,6 @@ body::after {
   padding: 0 18px;
 }
 
-/* ── Header ── */
 .site-header {
   padding: 40px 0 30px;
   text-align: center;
@@ -117,7 +114,6 @@ body::after {
   font-style: italic;
 }
 
-/* ── Top Action Buttons ── */
 .top-actions {
   display: flex;
   gap: 10px;
@@ -165,7 +161,6 @@ body::after {
   box-shadow: none;
 }
 
-/* ── Panels ── */
 .panel {
   display: none;
   background: rgba(255,255,255,0.025);
@@ -189,7 +184,6 @@ body::after {
   gap: 10px;
 }
 
-/* Rate Grid */
 .rate-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(195px, 1fr));
@@ -245,7 +239,6 @@ body::after {
 .rate-card table tr:hover td { background: rgba(255,255,255,0.035); }
 .rate-price { color: var(--success); font-weight: 600; }
 
-/* Instructions */
 .instructions-box {
   background: rgba(201,168,76,0.05);
   border: 1px solid rgba(201,168,76,0.15);
@@ -274,7 +267,6 @@ body::after {
 
 .instructions-box ol li::marker { color: var(--gold); }
 
-/* ── History ── */
 .history-empty {
   color: var(--text-dim);
   font-size: 13.5px;
@@ -359,7 +351,6 @@ body::after {
 }
 .clear-history-btn:hover { background: rgba(224,92,92,0.1); transform: none; box-shadow: none; }
 
-/* ── Step Cards ── */
 .step-card {
   background: var(--glass);
   border: 1px solid rgba(255,255,255,0.07);
@@ -387,7 +378,6 @@ body::after {
 
 .step-card.hidden { display: none !important; }
 
-/* Stagger animations */
 .step-card:nth-child(1) { animation-delay: 0.08s; }
 .step-card:nth-child(2) { animation-delay: 0.14s; }
 .step-card:nth-child(3) { animation-delay: 0.20s; }
@@ -439,7 +429,6 @@ body::after {
   margin: 0 0 20px;
 }
 
-/* ── Upload Zone ── */
 #dropZone {
   border: 1.5px dashed rgba(201,168,76,0.3);
   padding: 44px 24px;
@@ -489,7 +478,6 @@ body::after {
   position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer;
 }
 
-/* Photo Previews */
 #preview { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
 
 .thumb { position: relative; display: inline-block; }
@@ -520,7 +508,6 @@ body::after {
 }
 .deleteBtn:hover { transform: scale(1.18); background: #c0392b; box-shadow: none; }
 
-/* ── Select / Controls ── */
 .control-label {
   display: block;
   font-size: 11px;
@@ -554,7 +541,6 @@ select {
 select:focus { border-color: rgba(201,168,76,0.45); }
 select option { background: #0d1f3c; color: var(--text-main); }
 
-/* ── Type Toggle Tabs ── */
 .type-tabs {
   display: flex;
   gap: 10px;
@@ -591,7 +577,6 @@ select option { background: #0d1f3c; color: var(--text-main); }
 .type-tab.selected .tab-name { color: var(--gold-light); }
 .type-tab:hover:not(.selected) { border-color: rgba(255,255,255,0.15); background: rgba(255,255,255,0.06); }
 
-/* ── PAN Card Options ── */
 .pancard-options { display: flex; gap: 12px; flex-wrap: wrap; }
 
 .pancard-opt { flex: 1; min-width: 190px; position: relative; }
@@ -630,7 +615,6 @@ select option { background: #0d1f3c; color: var(--text-main); }
 .pancard-opt input:checked + label .opt-name { color: var(--gold-light); }
 .pancard-opt label:hover { border-color: rgba(201,168,76,0.28); }
 
-/* ── Crop ── */
 #cropSection { display: none; margin-top: 22px; text-align: center; }
 
 #cropImage {
@@ -653,10 +637,8 @@ select option { background: #0d1f3c; color: var(--text-main); }
   flex-wrap: wrap;
 }
 
-/* ── Adjustment Grid ── */
 .adj-grid { display: flex; gap: 8px; flex-wrap: wrap; }
 
-/* ── Buttons (base reset) ── */
 button {
   display: inline-flex;
   align-items: center;
@@ -683,7 +665,6 @@ button:hover {
   box-shadow: 0 6px 18px rgba(45,126,247,0.14);
 }
 
-/* Tool buttons */
 .btn-tool {
   background: rgba(255,255,255,0.05);
   border: 1px solid rgba(255,255,255,0.09);
@@ -698,7 +679,6 @@ button:hover {
   box-shadow: none;
 }
 
-/* Apply/Cancel */
 .btn-apply {
   background: rgba(46,204,130,0.14);
   border: 1px solid rgba(46,204,130,0.32);
@@ -713,7 +693,6 @@ button:hover {
 }
 .btn-cancel:hover { background: rgba(255,255,255,0.09); box-shadow: none; }
 
-/* CTA buttons */
 .btn-row { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-top: 4px; }
 
 .btn-pdf {
@@ -764,7 +743,6 @@ button:hover {
   transform: translateY(-2px);
 }
 
-/* ── Footer ── */
 .site-footer {
   position: fixed; bottom: 0; left: 0; width: 100%;
   background: rgba(8,15,30,0.96);
@@ -778,7 +756,6 @@ button:hover {
 }
 .site-footer strong { color: var(--gold); font-weight: 600; }
 
-/* ── Animations ── */
 @keyframes fadeDown {
   from { opacity: 0; transform: translateY(-16px); }
   to   { opacity: 1; transform: translateY(0); }
@@ -788,7 +765,6 @@ button:hover {
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* ── Scrollbar ── */
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: rgba(201,168,76,0.18); border-radius: 4px; }
@@ -799,20 +775,17 @@ button:hover {
 
 <div class="page-wrapper">
 
-  <!-- ══ Header ══ -->
   <header class="site-header">
     <div class="brand-badge">✦ Onpoint Services ✦</div>
     <h1>Passport <em>Photo</em> Editor</h1>
     <p class="tagline">Professional passport &amp; PAN card photos — cropped, adjusted and print‑ready</p>
   </header>
 
-  <!-- ══ Top Actions ══ -->
   <div class="top-actions">
     <button class="action-btn gold" onclick="toggleInfo()">📌 Rate Chart &amp; Instructions</button>
     <button class="action-btn slate" onclick="toggleHistory()">🗂 View History</button>
   </div>
 
-  <!-- ══ Info Panel ══ -->
   <div id="infoPanel" class="panel">
     <div class="panel-title">📋 Rate Chart</div>
     <div class="rate-grid">
@@ -869,6 +842,7 @@ button:hover {
         <li>Choose <b>Passport Photos</b> or <b>PAN Card</b>, then pick the required size.</li>
         <li>Click <b>Open Crop Tool</b> to frame the photo, then click <b>Apply Crop</b>.</li>
         <li>Use <b>Adjustments</b> to fine-tune brightness, contrast, or background colour.</li>
+        <li>Select <b>Single (1 of each)</b> in the quantity dropdown to place one copy of every uploaded photo on one PDF sheet.</li>
         <li>Click <b>Generate PDF</b> for a print-ready sheet, or <b>⬇ Download JPEG</b> for a single file.</li>
         <li>3.5 × 4.5 cm photos are printed landscape on a portrait A4 — 4 per row.</li>
         <li>PAN card JPEGs are auto-compressed to meet official size limits (18 KB / 9 KB).</li>
@@ -876,13 +850,12 @@ button:hover {
     </div>
   </div>
 
-  <!-- ══ History Panel ══ -->
   <div id="historyPanel" class="panel">
     <div class="panel-title">🗂 History</div>
     <div id="historyList"></div>
   </div>
 
-  <!-- ══ STEP 1 — Upload ══ -->
+  <!-- STEP 1 -->
   <div class="step-card">
     <div class="step-header">
       <div class="step-num">1</div>
@@ -902,7 +875,7 @@ button:hover {
     <div id="preview"></div>
   </div>
 
-  <!-- ══ STEP 2 — Type ══ -->
+  <!-- STEP 2 -->
   <div class="step-card">
     <div class="step-header">
       <div class="step-num">2</div>
@@ -912,7 +885,6 @@ button:hover {
       </div>
     </div>
     <div class="divider"></div>
-    <!-- Hidden select to preserve JS logic -->
     <select id="type" style="display:none" onchange="updateTypeUI()">
       <option value="passport">Passport Photos</option>
       <option value="pancard">Pan Card</option>
@@ -935,7 +907,7 @@ button:hover {
     </div>
   </div>
 
-  <!-- ══ STEP 2a — Passport Size ══ -->
+  <!-- STEP 2a -->
   <div id="passportSizeStep" class="step-card">
     <div class="step-header">
       <div class="step-num">2a</div>
@@ -953,7 +925,7 @@ button:hover {
     </select>
   </div>
 
-  <!-- ══ STEP 2b — PAN Card Type ══ -->
+  <!-- STEP 2b -->
   <div id="pancardTypeStep" class="step-card hidden">
     <div class="step-header">
       <div class="step-num">2b</div>
@@ -983,7 +955,7 @@ button:hover {
     </div>
   </div>
 
-  <!-- ══ STEP 3 — Crop ══ -->
+  <!-- STEP 3 -->
   <div class="step-card">
     <div class="step-header">
       <div class="step-num">3</div>
@@ -1006,7 +978,7 @@ button:hover {
     </div>
   </div>
 
-  <!-- ══ STEP 4 — Adjustments ══ -->
+  <!-- STEP 4 -->
   <div class="step-card">
     <div class="step-header">
       <div class="step-num">4</div>
@@ -1027,7 +999,7 @@ button:hover {
     </div>
   </div>
 
-  <!-- ══ STEP 5 — Passport Quantity + Download ══ -->
+  <!-- STEP 5 — Passport -->
   <div id="quantityStep" class="step-card">
     <div class="step-header">
       <div class="step-num">5</div>
@@ -1045,7 +1017,7 @@ button:hover {
     </div>
   </div>
 
-  <!-- ══ STEP 5 — PAN Card Download ══ -->
+  <!-- STEP 5 — PAN Card -->
   <div id="downloadStep" class="step-card hidden">
     <div class="step-header">
       <div class="step-num">5</div>
@@ -1060,7 +1032,7 @@ button:hover {
     </div>
   </div>
 
-</div><!-- /page-wrapper -->
+</div>
 
 <footer class="site-footer">
   Onpoint Services &nbsp;•&nbsp; Developed by <strong>Saurabh Ajinath Kharat</strong> &nbsp;•&nbsp; © 2026
@@ -1187,12 +1159,25 @@ function updatePancardType() {
   currentPancardType = document.querySelector('input[name="pancardType"]:checked').value;
 }
 
+/* ════════ UPDATED updateQty — adds "Single (1 of each)" ════════ */
 function updateQty() {
   const r = document.getElementById("ratio").value;
   const q = document.getElementById("qty");
   q.innerHTML = "";
-  const opts = r==="30x37"?[6,12,18,42]:r==="35x45"?[4,8,16,28]:[6,15];
-  opts.forEach(v => { const o=document.createElement("option"); o.value=v; o.text=v+" photos"; q.appendChild(o); });
+
+  // "Single" option — 1 copy of each uploaded photo
+  const singleOpt = document.createElement("option");
+  singleOpt.value = "single";
+  singleOpt.text  = "Single (1 of each photo)";
+  q.appendChild(singleOpt);
+
+  // Regular bulk options
+  const opts = r === "30x37" ? [6,12,18,42] : r === "35x45" ? [4,8,16,28] : [6,15];
+  opts.forEach(v => {
+    const o = document.createElement("option");
+    o.value = v; o.text = v + " photos";
+    q.appendChild(o);
+  });
 }
 
 document.getElementById("ratio").onchange = updateQty;
@@ -1206,18 +1191,18 @@ const fileInput = document.getElementById("upload");
 dropZone.addEventListener("dragover", e => {
   e.preventDefault();
   dropZone.style.borderColor = "rgba(201,168,76,0.65)";
-  dropZone.style.background = "rgba(201,168,76,0.07)";
+  dropZone.style.background  = "rgba(201,168,76,0.07)";
 });
 dropZone.addEventListener("dragleave", () => {
   dropZone.style.borderColor = "rgba(201,168,76,0.3)";
-  dropZone.style.background = "rgba(201,168,76,0.025)";
+  dropZone.style.background  = "rgba(201,168,76,0.025)";
 });
 dropZone.addEventListener("drop", e => {
   e.preventDefault();
   fileInput.files = e.dataTransfer.files;
   fileInput.dispatchEvent(new Event("change"));
   dropZone.style.borderColor = "rgba(201,168,76,0.3)";
-  dropZone.style.background = "rgba(201,168,76,0.025)";
+  dropZone.style.background  = "rgba(201,168,76,0.025)";
 });
 
 /* ── Upload ── */
@@ -1247,7 +1232,7 @@ fileInput.onchange = function(e) {
           del.setAttribute("aria-label", "Delete photo");
           del.onclick = function(ev) { ev.stopPropagation(); images.splice(index,1); wrapper.remove(); };
           wrapper.appendChild(thumb); wrapper.appendChild(del); preview.appendChild(wrapper);
-          if (index===0) { originalImg=img; thumb.classList.add("active"); drawCanvas(); }
+          if (index === 0) { originalImg = img; thumb.classList.add("active"); drawCanvas(); }
         };
         img.src = ev.target.result;
       };
@@ -1262,12 +1247,13 @@ function drawCanvas() {
     const r = document.getElementById("ratio").value;
     w = sizes[r].w; h = sizes[r].h;
   } else {
-    const k = currentPancardType==="photo" ? "pancard_photo" : "pancard_signature";
+    const k = currentPancardType === "photo" ? "pancard_photo" : "pancard_signature";
     w = sizes[k].w; h = sizes[k].h;
   }
-  canvas.width = w*MM_TO_PX; canvas.height = h*MM_TO_PX;
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-  ctx.drawImage(originalImg,0,0,canvas.width,canvas.height);
+  canvas.width  = w * MM_TO_PX;
+  canvas.height = h * MM_TO_PX;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.drawImage(originalImg, 0, 0, canvas.width, canvas.height);
 }
 
 function openCrop() {
@@ -1275,12 +1261,12 @@ function openCrop() {
   const img = document.getElementById("cropImage");
   img.src = originalImg.src;
   let aspect;
-  if (currentType==="passport") {
+  if (currentType === "passport") {
     const r = document.getElementById("ratio").value;
-    aspect = sizes[r].w/sizes[r].h;
+    aspect = sizes[r].w / sizes[r].h;
   } else {
-    const k = currentPancardType==="photo" ? "pancard_photo" : "pancard_signature";
-    aspect = sizes[k].w/sizes[k].h;
+    const k = currentPancardType === "photo" ? "pancard_photo" : "pancard_signature";
+    aspect = sizes[k].w / sizes[k].h;
   }
   if (cropper) cropper.destroy();
   cropper = new Cropper(img, { aspectRatio: aspect, viewMode: 1 });
@@ -1315,8 +1301,8 @@ function contrast(v) {
 }
 
 function setBG(color) {
-  ctx.fillStyle=color; ctx.fillRect(0,0,canvas.width,canvas.height);
-  ctx.drawImage(originalImg,0,0,canvas.width,canvas.height);
+  ctx.fillStyle = color; ctx.fillRect(0,0,canvas.width,canvas.height);
+  ctx.drawImage(originalImg, 0, 0, canvas.width, canvas.height);
   images[currentIndex].src = canvas.toDataURL();
 }
 
@@ -1359,13 +1345,16 @@ function downloadPancardJPEG() {
   } catch(err) { alert("Download failed: "+err.message); }
 }
 
-/* ════════ PDF Generation ════════ */
+/* ════════ UPDATED PDF Generation ════════ */
 function generatePDF() {
   if (!images.length) { alert("Please upload at least one photo first."); return; }
   try {
-    const ratio = document.getElementById("ratio").value;
-    const qty   = parseInt(document.getElementById("qty").value);
-    const doc   = new jsPDF("p","mm","a4");
+    const ratio   = document.getElementById("ratio").value;
+    const qtyVal  = document.getElementById("qty").value;
+    const isSingle = qtyVal === "single";
+    const qty     = isSingle ? 1 : parseInt(qtyVal);
+
+    const doc    = new jsPDF("p","mm","a4");
     const W=210, H=297, margin=5, gap=4;
 
     function imgData(el, cw, ch) {
@@ -1374,49 +1363,77 @@ function generatePDF() {
       return tc.toDataURL("image/jpeg",1);
     }
 
-    if (ratio==="35x45") {
-      const pW=45,pH=35,cols=4; let x=margin,y=margin,col=0;
+    /* ── Helper: place a single photo at (x,y) with border ── */
+    function placePhoto(doc, dataURL, x, y, pw, ph) {
+      doc.addImage(dataURL,"JPEG",x,y,pw,ph);
+      doc.setLineWidth(0.25); doc.setDrawColor(0); doc.rect(x,y,pw,ph);
+    }
+
+    /* ── Advance position, add new page if needed ── */
+    function advance(state, pw, ph, cols) {
+      state.col++;
+      if (state.col >= cols) {
+        state.col = 0; state.x = margin; state.y += ph + gap;
+      } else {
+        state.x += pw + gap;
+      }
+      if (state.y + ph > H) { doc.addPage(); state.x = margin; state.y = margin; state.col = 0; }
+    }
+
+    if (ratio === "35x45") {
+      const pW=45, pH=35, cols=4;
+      const state = { x: margin, y: margin, col: 0 };
+
       images.forEach(el => {
         const sw=Math.round(sizes["35x45"].w*MM_TO_PX), sh=Math.round(sizes["35x45"].h*MM_TO_PX);
         const rc=document.createElement("canvas"); rc.width=sh; rc.height=sw;
-        const rx=rc.getContext("2d"); rx.translate(rc.width/2,rc.height/2); rx.rotate(Math.PI/2);
-        rx.drawImage(el,-sw/2,-sh/2,sw,sh);
-        const d=rc.toDataURL("image/jpeg",1);
-        for (let i=0;i<qty;i++) {
-          doc.addImage(d,"JPEG",x,y,pW,pH);
-          doc.setLineWidth(0.25); doc.setDrawColor(0); doc.rect(x,y,pW,pH);
-          col++; if(col>=cols){col=0;x=margin;y+=pH+gap;}else{x+=pW+gap;}
-          if(y+pH>H){doc.addPage();x=margin;y=margin;col=0;}
+        const rx=rc.getContext("2d");
+        rx.translate(rc.width/2, rc.height/2); rx.rotate(Math.PI/2);
+        rx.drawImage(el, -sw/2, -sh/2, sw, sh);
+        const d = rc.toDataURL("image/jpeg",1);
+
+        const copies = isSingle ? 1 : qty;
+        for (let i = 0; i < copies; i++) {
+          placePhoto(doc, d, state.x, state.y, pW, pH);
+          advance(state, pW, pH, cols);
         }
       });
-    } else if (ratio==="30x37") {
-      const pw=sizes["30x37"].w,ph=sizes["30x37"].h; let x=margin,y=margin;
-      images.forEach(el=>{
-        const d=imgData(el,pw*MM_TO_PX,ph*MM_TO_PX);
-        for(let i=0;i<qty;i++){
-          doc.addImage(d,"JPEG",x,y,pw,ph);
-          doc.setLineWidth(0.25);doc.setDrawColor(0);doc.rect(x,y,pw,ph);
-          x+=pw+gap; if(x+pw>W){x=margin;y+=ph+gap;} if(y+ph>H){doc.addPage();x=margin;y=margin;}
+
+    } else if (ratio === "30x37") {
+      const pw=sizes["30x37"].w, ph=sizes["30x37"].h;
+      const cols = Math.floor((W - margin) / (pw + gap));
+      const state = { x: margin, y: margin, col: 0 };
+
+      images.forEach(el => {
+        const d = imgData(el, pw*MM_TO_PX, ph*MM_TO_PX);
+        const copies = isSingle ? 1 : qty;
+        for (let i = 0; i < copies; i++) {
+          placePhoto(doc, d, state.x, state.y, pw, ph);
+          advance(state, pw, ph, cols);
         }
       });
-    } else if (ratio==="51x51") {
-      const pw=sizes["51x51"].w,ph=sizes["51x51"].h,cols=3; let x=margin,y=margin,col=0;
-      images.forEach(el=>{
-        const d=imgData(el,pw*MM_TO_PX,ph*MM_TO_PX);
-        for(let i=0;i<qty;i++){
-          doc.addImage(d,"JPEG",x,y,pw,ph);
-          doc.setLineWidth(0.25);doc.setDrawColor(0);doc.rect(x,y,pw,ph);
-          col++; if(col>=cols){col=0;x=margin;y+=ph+gap;}else{x+=pw+gap;}
-          if(y+ph>H){doc.addPage();x=margin;y=margin;col=0;}
+
+    } else if (ratio === "51x51") {
+      const pw=sizes["51x51"].w, ph=sizes["51x51"].h, cols=3;
+      const state = { x: margin, y: margin, col: 0 };
+
+      images.forEach(el => {
+        const d = imgData(el, pw*MM_TO_PX, ph*MM_TO_PX);
+        const copies = isSingle ? 1 : qty;
+        for (let i = 0; i < copies; i++) {
+          placePhoto(doc, d, state.x, state.y, pw, ph);
+          advance(state, pw, ph, cols);
         }
       });
     }
 
-    const labels={"30x37":"3 × 3.7 cm","35x45":"3.5 × 4.5 cm (Landscape)","51x51":"Indian Passport (2 × 2 inch)"};
+    const labels = { "30x37":"3 × 3.7 cm", "35x45":"3.5 × 4.5 cm (Landscape)", "51x51":"Indian Passport (2 × 2 inch)" };
+    const qtyLabel = isSingle ? "Single (1 of each)" : qty + " copies";
     doc.save("passport_photos.pdf");
-    const tc=document.createElement("canvas"); tc.width=60; tc.height=60;
-    if(images[0]) tc.getContext("2d").drawImage(images[0],0,0,60,60);
-    addHistoryEntry(images[0]?tc.toDataURL("image/jpeg",0.3):null, labels[ratio]);
+
+    const tc = document.createElement("canvas"); tc.width=60; tc.height=60;
+    if (images[0]) tc.getContext("2d").drawImage(images[0],0,0,60,60);
+    addHistoryEntry(images[0]?tc.toDataURL("image/jpeg",0.3):null, labels[ratio] + " — " + qtyLabel);
   } catch(err) { alert("PDF generation failed: "+err.message); }
 }
 </script>
