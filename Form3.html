@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Form-3 Generator | Caste Scrutiny Affidavit</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Merriweather:wght@400;700&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+:root {
+  --primary: #1a3a52;
+  --secondary: #d4a574;
+  --accent: #2d5a7e;
+  --success: #10b981;
+  --danger: #ef4444;
+  --light: #f8f9fa;
+  --lighter: #f1f5f9;
+  --border: #e2e8f0;
+  --text-dark: #1f2937;
+  --text-muted: #6b7280;
+  --shadow: 0 10px 40px rgba(26, 58, 82, 0.12);
+  --shadow-hover: 0 15px 50px rgba(26, 58, 82, 0.18);
+  --radius: 12px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(135deg, #f0f4f8 0%, #e8f1f8 100%);
+  color: var(--text-dark);
+  min-height: 100vh;
+  line-height: 1.6;
+}
+
+/* HEADER */
+header {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+  padding: 12px 40px;
+  box-shadow: var(--shadow);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.header-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.logo-badge {
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.15);
+  border: 2px solid var(--secondary);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--secondary);
+}
+
+.header-text h1 {
+  font-family: 'Merriweather', serif;
+  color: white;
+  font-size: 20px;
+  margin-bottom: 2px;
+}
+
+.header-text p {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 11px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+/* MAIN CONTAINER */
+main {
+  max-width: 1100px;
+  margin: 50px auto;
+  padding: 0 20px;
+}
+
+.container {
+  display: grid;
+  grid-template-columns: 1fr 400px;
+  gap: 30px;
+  margin-bottom: 40px;
+}
+
+.form-section {
+  background: white;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 40px;
+  transition: all 0.3s ease;
+}
+
+.form-section:hover {
+  box-shadow: var(--shadow-hover);
+}
+
+/* SECTION HEADINGS */
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid var(--light);
+}
+
+.section-icon {
+  width: 32px;
+  height: 32px;
+  background: linear-gradient(135deg, var(--secondary), var(--accent));
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 18px;
+}
+
+.section-header h2 {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--primary);
+}
+
+/* FORM GRID */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.form-grid.full {
+  grid-template-columns: 1fr;
+}
+
+.form-grid.three {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+/* FORM FIELD */
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-field label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-dark);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.form-field input,
+.form-field select,
+.form-field textarea {
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  padding: 11px 14px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
+  transition: all 0.25s ease;
+  background: #fafbfc;
+}
+
+.form-field input:hover,
+.form-field select:hover,
+.form-field textarea:hover {
+  border-color: var(--secondary);
+  background: white;
+}
+
+.form-field input:focus,
+.form-field select:focus,
+.form-field textarea:focus {
+  outline: none;
+  border-color: var(--secondary);
+  background: white;
+  box-shadow: 0 0 0 4px rgba(212, 165, 116, 0.1);
+}
+
+/* SIDEBAR */
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* IMAGE UPLOAD CARD */
+.upload-card {
+  background: white;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.upload-card:hover {
+  box-shadow: var(--shadow-hover);
+}
+
+.upload-header {
+  background: linear-gradient(135deg, var(--secondary), #c9915f);
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: white;
+}
+
+.upload-header h3 {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.upload-body {
+  padding: 24px;
+}
+
+.upload-zone {
+  border: 2px dashed var(--border);
+  border-radius: 10px;
+  padding: 30px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: var(--lighter);
+}
+
+.upload-zone:hover {
+  border-color: var(--secondary);
+  background: rgba(212, 165, 116, 0.05);
+}
+
+.upload-zone.dragover {
+  border-color: var(--secondary);
+  background: rgba(212, 165, 116, 0.1);
+  transform: scale(1.02);
+}
+
+.upload-icon {
+  font-size: 32px;
+  margin-bottom: 12px;
+}
+
+.upload-zone p {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.upload-zone p strong {
+  color: var(--primary);
+  display: block;
+  margin-top: 4px;
+}
+
+#familyTreeInput {
+  display: none;
+}
+
+.preview-container {
+  margin-top: 16px;
+  display: none;
+}
+
+.preview-container.active {
+  display: block;
+}
+
+.preview-img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+
+.remove-btn {
+  width: 100%;
+  padding: 8px;
+  background: var(--danger);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.remove-btn:hover {
+  background: #dc2626;
+  transform: translateY(-2px);
+}
+
+/* INFO CARD */
+.info-card {
+  background: linear-gradient(135deg, rgba(212, 165, 116, 0.1), rgba(45, 90, 126, 0.05));
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+}
+
+.info-card h4 {
+  color: var(--primary);
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.info-card p {
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+/* ACTION BUTTONS */
+.actions {
+  display: inline-flex;
+  gap: 12px;
+  padding: 10px 18px;
+  background: white;
+  border-radius: 50px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+
+  position: fixed;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+
+
+.btn {
+  padding: 8px 20px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'Poppins', sans-serif;
+}
+
+.btn-secondary {
+  background: white;
+  color: var(--primary);
+  border: 1.5px solid var(--border);
+}
+
+.btn-secondary:hover {
+  border-color: var(--primary);
+  background: var(--lighter);
+  transform: translateY(-2px);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--secondary), #c9915f);
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 200px;
+  justify-content: center;
+}
+
+.btn-primary:hover {
+  box-shadow: 0 10px 25px rgba(212, 165, 116, 0.4);
+  transform: translateY(-2px);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+/* LOADING STATE */
+.btn.loading {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.btn.loading::after {
+  content: "";
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-left: 8px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* STATUS MESSAGE */
+.status-message {
+  padding: 14px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  margin-bottom: 16px;
+  display: none;
+}
+
+.status-message.active {
+  display: block;
+}
+
+.status-message.success {
+  background: #dcfce7;
+  border: 1px solid #86efac;
+  color: #166534;
+}
+
+.status-message.error {
+  background: #fee2e2;
+  border: 1px solid #fca5a5;
+  color: #991b1b;
+}
+
+/* FOOTER */
+footer {
+  max-width: 1100px;
+  margin: 50px auto 20px;
+  padding: 18px 20px;
+  text-align: center;
+
+  font-size: 16px;
+  color: var(--text-muted);
+
+  background: white;
+  border-radius: 10px;
+  box-shadow: var(--shadow);
+}
+
+
+/* RESPONSIVE */
+@media (max-width: 800px) {
+  .container {
+    grid-template-columns: 1fr;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .form-grid.three {
+    grid-template-columns: 1fr;
+  }
+
+  .actions {
+    flex-direction: column;
+    justify-content: stretch;
+  }
+
+  .btn-primary {
+    min-width: unset;
+  }
+
+  .form-section {
+    padding: 24px;
+  }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-content">
+    <div class="logo-badge">ⓘ</div>
+    <div class="header-text">
+      <h1>Onpoint Services Form-3 Generator</h1>
+      <p>Affidavit of Claimant / Parent(s) — Caste Scrutiny</p>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="container">
+    <!-- FORM SECTION -->
+    <div>
+      <div class="form-section">
+        <div class="section-header">
+          <div class="section-icon">👤</div>
+          <h2>Personal Information</h2>
+        </div>
+
+        <div class="form-grid">
+          <div class="form-field">
+            <label>Prefix</label>
+            <select id="prefix">
+              <option value="">Select...</option>
+              <option value="Shri">Shri</option>
+              <option value="Smt">Smt</option>
+              <option value="Kumari">Kumari</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label>Full Name</label>
+            <input type="text" id="fullName" placeholder="Enter full name"/>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div class="form-field">
+            <label>Father/Mother Name</label>
+            <input type="text" id="fatherName" placeholder="Enter father or mother name"/>
+          </div>
+          <div class="form-field">
+            <label>Age (Years)</label>
+            <input type="number" id="age" placeholder="e.g. 35" min="1" max="120"/>
+          </div>
+        </div>
+
+        <div class="form-grid full">
+          <div class="form-field">
+            <label>Occupation</label>
+            <input type="text" id="occupation" placeholder="e.g. Farmer, Teacher"/>
+          </div>
+        </div>
+
+        <div class="form-grid full">
+          <div class="form-field">
+            <label>Residential Address — Village/Town</label>
+            <input type="text" id="addressVillage" placeholder="Village or town name"/>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div class="form-field">
+            <label>Tahsil</label>
+            <input type="text" id="tahsil" placeholder="Tahsil name"/>
+          </div>
+          <div class="form-field">
+            <label>District</label>
+            <input type="text" id="district" placeholder="District name"/>
+          </div>
+        </div>
+
+        <div class="form-grid full">
+          <div class="form-field">
+            <label>Place (Current Residential Place)</label>
+            <input type="text" id="resPlace" placeholder="City/Village/Town where you currently reside"/>
+          </div>
+        </div>
+      </div>
+
+      <!-- DECLARATION SECTION -->
+      <div class="form-section" style="margin-top: 24px;">
+        <div class="section-header">
+          <div class="section-icon">✓</div>
+          <h2>Affidavit Details</h2>
+        </div>
+
+        <div class="status-message" id="statusMessage"></div>
+
+        <div class="form-grid full">
+          <div class="form-field">
+            <label>Date of Affidavit</label>
+            <input type="date" id="affidavitDate"/>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+      <!-- IMAGE UPLOAD -->
+      <div class="upload-card">
+        <div class="upload-header">
+          <span>📷</span>
+          <h3>Family Tree Photo</h3>
+        </div>
+        <div class="upload-body">
+          <div class="upload-zone" id="uploadZone" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
+            <div class="upload-icon">📁</div>
+            <p>Drag & drop your family tree photo here</p>
+            <p><strong>or click to browse</strong></p>
+          </div>
+          <input type="file" id="familyTreeInput" accept="image/*"/>
+          <div class="preview-container" id="previewContainer">
+            <img id="previewImg" class="preview-img" alt="Family tree preview"/>
+            <button class="remove-btn" onclick="removeImage()">Remove Image</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- INFO CARDS -->
+      <div class="info-card">
+        <h4>ℹ️ Form Details</h4>
+        <p>Form-3 is an affidavit to be produced along with the Caste Scrutiny application.</p>
+      </div>
+
+      <div class="info-card">
+        <h4>📸 Photo Guidelines</h4>
+        <p>Upload a clear photo of your family tree document. It will be embedded (150mm × 100mm) after section 2.</p>
+      </div>
+
+      <div class="info-card">
+        <h4>📋 Required Fields</h4>
+        <p>Name, Father/Mother Name, Age, Occupation, and Place are required for PDF generation.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ACTION BUTTONS -->
+  <div class="actions">
+    <button class="btn btn-secondary" onclick="clearForm()">↺ Clear Form</button>
+    <button class="btn btn-primary" id="downloadBtn" onclick="generatePDF()">
+      <span>⬇️ Generate PDF</span>
+    </button>
+  </div>
+</main>
+
+<footer>
+  <p>Onpoint Services  •  Developed by Saurabh Ajinath Kharat  •  © 2026</p>
+</footer>
+
+<script>
+// ═══════════════════════════════════════════════════════════════
+// DEFAULT DATE TO TODAY
+// ═══════════════════════════════════════════════════════════════
+(function() {
+  const today = new Date();
+  const dd = String(today.getDate()).padStart(2, '0');
+  const mm = String(today.getMonth() + 1).padStart(2, '0');
+  const yyyy = today.getFullYear();
+  document.getElementById('affidavitDate').value = `${yyyy}-${mm}-${dd}`;
+})();
+
+// ═══════════════════════════════════════════════════════════════
+// IMAGE UPLOAD HANDLING
+// ═══════════════════════════════════════════════════════════════
+let uploadedImageBase64 = null;
+
+const uploadZone = document.getElementById('uploadZone');
+const fileInput = document.getElementById('familyTreeInput');
+
+uploadZone.addEventListener('click', () => fileInput.click());
+
+function handleDragOver(e) {
+  e.preventDefault();
+  uploadZone.classList.add('dragover');
+}
+
+function handleDragLeave(e) {
+  e.preventDefault();
+  uploadZone.classList.remove('dragover');
+}
+
+function handleDrop(e) {
+  e.preventDefault();
+  uploadZone.classList.remove('dragover');
+  const files = e.dataTransfer.files;
+  if (files.length > 0) {
+    processFile(files[0]);
+  }
+}
+
+fileInput.addEventListener('change', (e) => {
+  if (e.target.files.length > 0) {
+    processFile(e.target.files[0]);
+  }
+});
+
+function processFile(file) {
+  if (!file) return;
+
+  // Validate type
+  if (!file.type.match('image.*')) {
+    showStatus('Only image files allowed (JPG, PNG)', 'error');
+    return;
+  }
+
+  // Validate size (10MB)
+  if (file.size > 10 * 1024 * 1024) {
+    showStatus('File must be less than 10MB', 'error');
+    return;
+  }
+
+  const reader = new FileReader();
+
+  reader.onload = function(e) {
+    uploadedImageBase64 = e.target.result;
+
+    const img = document.getElementById('previewImg');
+    img.src = uploadedImageBase64;
+
+    img.onload = () => {
+      document.getElementById('previewContainer').classList.add('active');
+      showStatus('Image uploaded successfully!', 'success');
+    };
+
+    img.onerror = () => {
+      showStatus('Image preview failed', 'error');
+    };
+  };
+
+  reader.onerror = function() {
+    showStatus('Error reading file', 'error');
+  };
+
+  reader.readAsDataURL(file);
+}
+
+function removeImage() {
+  uploadedImageBase64 = null;
+  fileInput.value = '';
+  document.getElementById('previewContainer').classList.remove('active');
+  showStatus('Image removed', 'success');
+}
+
+function showStatus(message, type) {
+  const statusEl = document.getElementById('statusMessage');
+  statusEl.textContent = message;
+  statusEl.className = `status-message active ${type}`;
+  setTimeout(() => {
+    statusEl.classList.remove('active');
+  }, 3000);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// FORM HELPERS
+// ═══════════════════════════════════════════════════════════════
+function getField(id) {
+  return (document.getElementById(id)?.value || '').trim();
+}
+
+function isoToDisplay(iso) {
+  if (!iso) return '';
+  const [y, m, d] = iso.split('-');
+  return `${d}/${m}/${y}`;
+}
+
+function clearForm() {
+  document.querySelectorAll('input[type="text"], input[type="number"], input[type="date"], textarea, select').forEach(el => {
+    if (el.id !== 'familyTreeInput') {
+      el.value = '';
+    }
+  });
+  removeImage();
+  const today = new Date();
+  const dd = String(today.getDate()).padStart(2, '0');
+  const mm = String(today.getMonth() + 1).padStart(2, '0');
+  const yyyy = today.getFullYear();
+  document.getElementById('affidavitDate').value = `${yyyy}-${mm}-${dd}`;
+  showStatus('Form cleared', 'success');
+}
+
+// ═══════════════════════════════════════════════════════════════
+// PDF GENERATION - FIXED VERSION
+// ═══════════════════════════════════════════════════════════════
+function generatePDF() {
+  const fullName = getField('fullName');
+  const fatherName = getField('fatherName');
+  const age = getField('age');
+  const occupation = getField('occupation');
+  const resPlace = getField('resPlace');
+  
+  if (!fullName || !fatherName || !age || !occupation || !resPlace) {
+    showStatus('Please fill in all required fields: Name, Father/Mother Name, Age, Occupation, and Place', 'error');
+    return;
+  }
+
+  const btn = document.getElementById('downloadBtn');
+  btn.classList.add('loading');
+
+  setTimeout(() => {
+    try {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+
+      const pageWidth = 210;
+      const pageHeight = 297;
+      const margin = 15;
+      const contentWidth = pageWidth - (2 * margin);
+      let yPos = margin + 5;
+
+      const fontSize = 11;
+      const lineHeight = 6.5;
+
+      // TITLE
+      doc.setFontSize(13);
+      doc.setFont('times', 'bold');
+      doc.text('FORM - 3', pageWidth / 2, yPos, { align: 'center' });
+      yPos += lineHeight;
+
+      doc.setFontSize(9);
+      doc.setFont('times', 'normal');
+      doc.text('[Rule 4 (1)]', pageWidth / 2, yPos, { align: 'center' });
+      yPos += lineHeight;
+
+      doc.setFontSize(11);
+      doc.setFont('times', 'bold');
+      doc.text('AFFIDAVIT OF CLAIMANT / PARENT(S)', pageWidth / 2, yPos, { align: 'center' });
+      yPos += lineHeight;
+
+      doc.setFontSize(9);
+      doc.setFont('times', 'normal');
+      doc.text('(Rule 4, Order 18 of the Code of Civil Procedure, 1908)', pageWidth / 2, yPos, { align: 'center' });
+      yPos += lineHeight + 2;
+
+      // Get all form values
+      const prefix = getField('prefix') || 'Shri';
+
+      // FIXED RELATION LOGIC
+      let relation = 'daughter of';
+      if (prefix === 'Shri') {
+        relation = 'son of';
+      }
+
+      const addressVillage = getField('addressVillage');
+      const tahsil = getField('tahsil');
+      const district = getField('district');
+      const state = getField('state');
+      const affDate = isoToDisplay(getField('affidavitDate'));
+
+      // PARAGRAPH 1 - Build text parts
+      doc.setFontSize(fontSize);
+      doc.setFont('times', 'normal');
+
+      // Helper function to print mixed bold + normal text with proper wrapping
+      function printMixedText(doc, parts, x, y, maxWidth) {
+        let currentX = x;
+        let currentY = y;
+        const lineHeight = 6.5;
+        let isFirstWord = true;
+
+        parts.forEach(p => {
+          doc.setFont('times', p.bold ? 'bold' : 'normal');
+
+          const words = p.text.split(' ').filter(w => w.length > 0);
+
+          words.forEach((word) => {
+            // Add space before word (except first word)
+            const spaceWidth = doc.getTextWidth(' ');
+            const wordWidth = doc.getTextWidth(word);
+            const totalWidth = isFirstWord ? wordWidth : spaceWidth + wordWidth;
+
+            // Check if word fits on current line
+            if (currentX + totalWidth > x + maxWidth && currentX > x) {
+              currentY += lineHeight;
+              currentX = x;
+              isFirstWord = true;
+            }
+
+            // Add space before word if not first word
+            if (!isFirstWord) {
+              doc.text(' ', currentX, currentY);
+              currentX += spaceWidth;
+            }
+
+            doc.text(word, currentX, currentY);
+            currentX += wordWidth;
+            isFirstWord = false;
+          });
+        });
+
+        return currentY;
+      }
+
+      // Build opening paragraph with proper structure
+      yPos = printMixedText(doc, [
+        { text: 'I, ' },
+        { text: prefix + ' ' + fullName, bold: true },
+        { text: `, ${relation} Shri/Smt. ` },
+        { text: fatherName, bold: true },
+        { text: ', aged :  ' },
+        { text: age , bold: true },
+        { text: ' years, Occupation : ' },
+        { text: occupation, bold: true },
+        { text: ', Residing at : ' },
+        { text: addressVillage, bold: true },
+        { text: ', Tahsil : ' },
+        { text: tahsil, bold: true },
+        { text: ', District : ' },
+        { text: district, bold: true },
+        { text: ', State : Maharashtra ' },
+        { text: ', hereby solemnly affirm as under:' }
+      ], margin, yPos, contentWidth);
+
+      yPos += 8;
+
+      // SECTION 2
+      doc.setFont('times', 'bold');
+      doc.text('2. I hereby give the genealogy tree of my family and relatives, which is as under:', margin, yPos);
+      yPos += lineHeight + 3;
+
+      // INSERT IMAGE AFTER SECTION 2
+      if (uploadedImageBase64) {
+        try {
+          const imgWidth = 150;   // 150mm
+          const imgHeight = 100;  // 100mm
+          
+          if (yPos + imgHeight > pageHeight - margin) {
+            doc.addPage();
+            yPos = margin;
+          }
+          
+          const imgX = (pageWidth - imgWidth) / 2;
+          let format = 'JPEG';
+          if (uploadedImageBase64.includes('image/png')) {
+            format = 'PNG';
+          }
+
+          doc.addImage(uploadedImageBase64, format, imgX, yPos, imgWidth, imgHeight);
+          yPos += imgHeight + 8;
+        } catch (imgErr) {
+          console.error('Image embed error:', imgErr);
+          yPos += 5;
+        }
+      }
+
+      // SECTION 3
+      if (yPos > pageHeight - 60) {
+        doc.addPage();
+        yPos = margin;
+      }
+
+      doc.setFont('times', 'bold');
+
+      const section3Text = `3. Other relevant submissions to be made or any essential explanation to be made, in support of Caste / Tribe claim, including the sociology, anthropological and ethnological (anthropological moorings and ethnology kinship), genetical traits, of the Caste/Tribes, if any:`;
+
+      const section3Lines = doc.splitTextToSize(section3Text, contentWidth);
+
+      // Print section 3 (word-wrapped, non-justified)
+      section3Lines.forEach((line) => {
+        if (yPos > pageHeight - 30) {
+          doc.addPage();
+          yPos = margin;
+        }
+        doc.text(line, margin, yPos);
+        yPos += lineHeight;
+      });
+
+      yPos += 5;
+
+      // DECLARATION
+      const declText = 'To the best of my knowledge and belief the information given in application FORM -1 and in this affidavit is based on facts and is correct.';
+      const declLines = doc.splitTextToSize(declText, contentWidth);
+      
+      if (yPos + (declLines.length * lineHeight) + 10 > pageHeight - 25) {
+        doc.addPage();
+        yPos = margin;
+      }
+
+      declLines.forEach(line => {
+        doc.text(line, margin, yPos);
+        yPos += lineHeight;
+      });
+      yPos += 8;
+
+      // PLACE & DATE
+      if (yPos > pageHeight - 25) {
+        doc.addPage();
+        yPos = margin;
+      }
+
+      doc.setFont('times', 'normal');
+      doc.text('Place: ', margin, yPos);
+      doc.setFont('times', 'bold');
+      doc.text(resPlace, margin + 20, yPos);
+      yPos += lineHeight + 1;
+
+      doc.setFont('times', 'normal');
+      doc.text('Date: ', margin, yPos);
+      doc.setFont('times', 'bold');
+      doc.text(affDate, margin + 20, yPos);
+      yPos += lineHeight + 6;
+
+      // SIGNATURE AREA
+      doc.setFont('times', 'normal');
+      doc.text('Signature .........................................', pageWidth - margin, yPos, { align: 'right' });
+      yPos += lineHeight + 1;
+
+      doc.setFontSize(11);
+      doc.setFont('times', 'bold');
+      doc.text(fullName, pageWidth - margin, yPos, { align: 'right' });
+
+      // PAGE BORDER
+      doc.setDrawColor(0, 0, 0);
+      doc.setLineWidth(0.7);
+      doc.rect(5, 5, pageWidth - 10, pageHeight - 10);
+
+      // SAVE PDF
+      const filename = fullName.replace(/[^a-zA-Z0-9]/g, '_');
+      doc.save(`Form3_${filename}_Affidavit.pdf`);
+
+      showStatus('PDF generated and downloaded successfully!', 'success');
+    } catch (error) {
+      console.error(error);
+      showStatus('Error generating PDF: ' + error.message, 'error');
+    } finally {
+      btn.classList.remove('loading');
+    }
+  }, 300);
+}
+</script>
+
+</body>
+</html>

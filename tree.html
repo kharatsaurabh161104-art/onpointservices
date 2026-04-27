@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Family Tree</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Crimson+Pro:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:  #2b1f14;
+    --gold:#c9a84c; --gl:#e8cc80;
+    --pan: #ede4d0; --cr:#f5f0e8;
+    --bm:  #6b4c35; --bl:#a07850;
+    --gd:  #2d4a2a; --gm:#4a7a44;
+    --sh:  rgba(61,43,31,.18);
+  }
+  *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+  body { background:var(--bg); font-family:'Crimson Pro',Georgia,serif; min-height:100vh; display:flex; flex-direction:column; }
+
+  header { text-align:center; padding:20px 20px 8px; }
+  header::after { content:''; display:block; margin:7px auto 0; width:180px; height:2px; background:linear-gradient(90deg,transparent,var(--gold),transparent); }
+  header h1 { font-family:'Playfair Display',serif; color:var(--gl); font-size:1.9rem; letter-spacing:3px; }
+  header p  { color:var(--bl); font-size:.82rem; letter-spacing:2px; text-transform:uppercase; margin-top:2px; }
+
+  .layout { display:flex; flex:1; padding:12px 14px 14px; max-width:1400px; margin:0 auto; width:100%; }
+
+  /* SIDEBAR */
+  .sidebar { width:310px; min-width:270px; flex-shrink:0; display:flex; flex-direction:column; gap:11px; }
+  .panel { background:linear-gradient(160deg,var(--pan) 80%,var(--cr)); border-radius:10px; border:1.5px solid var(--gold); box-shadow:0 4px 18px var(--sh); padding:13px 13px 11px; position:relative; overflow:hidden; }
+  .panel::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg,var(--gold),var(--gl),var(--gold)); border-radius:10px 10px 0 0; }
+  .ptitle { font-family:'Playfair Display',serif; color:#3d2b1f; font-size:.95rem; font-weight:700; letter-spacing:1px; margin-bottom:10px; display:flex; align-items:center; gap:6px; }
+
+  label { display:block; color:var(--bm); font-size:.76rem; letter-spacing:.7px; text-transform:uppercase; font-weight:600; margin-bottom:3px; margin-top:7px; }
+  label:first-of-type { margin-top:0; }
+  input,select { width:100%; background:rgba(255,255,255,.65); border:1.5px solid var(--bl); border-radius:5px; padding:5px 8px; font-family:'Crimson Pro',Georgia,serif; font-size:.9rem; color:#3d2b1f; outline:none; transition:border-color .2s,box-shadow .2s; }
+  input:focus,select:focus { border-color:var(--gold); box-shadow:0 0 0 3px rgba(201,168,76,.12); }
+  select option { background:var(--cr); color:#3d2b1f; }
+
+  .btn-add { margin-top:11px; width:100%; background:linear-gradient(135deg,var(--gd),var(--gm)); color:var(--cr); border:none; border-radius:7px; padding:8px 0; font-family:'Playfair Display',serif; font-size:.9rem; font-weight:700; letter-spacing:1px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:5px; transition:transform .14s; }
+  .btn-add:hover { background:linear-gradient(135deg,#4a7a44,#6eab65); transform:translateY(-1px); }
+
+  .btn-dl { width:100%; background:linear-gradient(135deg,var(--bm),var(--bl)); color:var(--cr); border:none; border-radius:7px; padding:8px 0; font-family:'Playfair Display',serif; font-size:.88rem; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:5px; transition:transform .14s; }
+  .btn-dl:hover { background:linear-gradient(135deg,var(--gold),var(--gl)); color:#3d2b1f; transform:translateY(-1px); }
+
+  .btn-clr { width:100%; background:transparent; color:#c0392b; border:1.5px solid #c0392b; border-radius:7px; padding:6px 0; font-family:'Crimson Pro',Georgia,serif; font-size:.85rem; font-weight:600; cursor:pointer; margin-top:5px; transition:background .18s,color .18s; }
+  .btn-clr:hover { background:#c0392b; color:#fff; }
+
+  .mlist { max-height:165px; overflow-y:auto; display:flex; flex-direction:column; gap:3px; scrollbar-width:thin; scrollbar-color:var(--gold) transparent; }
+  .chip { display:flex; align-items:center; justify-content:space-between; background:rgba(255,255,255,.5); border:1px solid var(--bl); border-radius:4px; padding:2px 6px; font-size:.78rem; color:#3d2b1f; animation:fi .25s ease; line-height:1.25; }
+  .chip .cn { font-weight:600; } .chip .cr2 { font-size:.7rem; color:var(--bl); font-style:italic; }
+  .chip .cbtn { background:none; border:none; color:var(--bl); cursor:pointer; font-size:.8rem; padding:0 2px; display:inline; margin-left:2px; }
+  .chip .cbtn.del { color:#c0392b; }
+  @keyframes fi { from{opacity:0;transform:translateX(-5px)} to{opacity:1;transform:none} }
+
+  .toast { display:none; background:var(--gd); color:var(--cr); border-radius:5px; padding:5px 9px; font-size:.82rem; margin-top:6px; text-align:center; }
+  .toast.on { display:block; animation:fi .25s ease; }
+
+  /* MODAL */
+  .modal { display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,.5); z-index:1000; align-items:center; justify-content:center; }
+  .modal.on { display:flex; }
+  .modal-box { background:var(--cr); border-radius:12px; padding:20px; max-width:380px; width:90%; box-shadow:0 8px 32px rgba(0,0,0,.3); }
+  .modal-box h2 { font-family:'Playfair Display',serif; color:#3d2b1f; margin-bottom:15px; font-size:1.2rem; }
+  .modal-box label { margin-top:10px; }
+  .modal-buttons { display:flex; gap:8px; margin-top:18px; }
+  .modal-buttons button { flex:1; padding:8px 12px; border:none; border-radius:6px; font-weight:600; cursor:pointer; transition:transform .14s; }
+  .modal-buttons button:hover { transform:translateY(-1px); }
+  .btn-save { background:linear-gradient(135deg,var(--gd),var(--gm)); color:var(--cr); }
+  .btn-cancel { background:#ccc; color:#333; }
+
+  /* TREE */
+  .tree-area { flex:1; margin-left:14px; display:flex; flex-direction:column; }
+  .cwrap { flex:1; background:#f8f5ee; border-radius:11px; border:2px solid var(--gold); box-shadow:0 6px 28px var(--sh); overflow:auto; position:relative; min-height:380px; display:flex; align-items:center; justify-content:center; padding:8px; }
+  #treeCanvas { display:block; }
+  .empty { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); text-align:center; color:var(--bl); width:220px; pointer-events:none; }
+  .empty span { font-size:2.8rem; opacity:.38; display:block; margin-bottom:7px; }
+  .empty p { font-family:'Playfair Display',serif; font-size:.95rem; font-style:italic; opacity:.5; }
+/* FOOTER */
+footer{
+  text-align:center;
+  padding:16px;
+  background:#6b4c35;
+  color:#ffffff;
+  font-size:14px;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Onpoint Services</h1>
+  <p>Map Your Bloodline</p>
+</header>
+
+<div class="layout">
+  <aside class="sidebar">
+
+    <div class="panel">
+      <div class="ptitle">👤 Add Member</div>
+      <label>Full Name</label>
+      <input type="text" id="iName" placeholder="e.g. John Smith" maxlength="40">
+      <label>Date of Birth</label>
+      <input type="date" id="iDob">
+      <label>Gender</label>
+      <select id="iGender">
+        <option value="">— Select —</option>
+        <option value="male">Male</option>
+        <option value="female">Female</option>
+        <option value="other">Other</option>
+      </select>
+      <label>Relation</label>
+      <select id="iRel">
+        <option value="">— Select —</option>
+        <option value="Applicant">Applicant (Self)</option>
+        <option value="Father">Father</option>
+        <option value="Mother">Mother</option>
+        <option value="Spouse">Spouse / Partner</option>
+        <option value="Son">Son</option>
+        <option value="Daughter">Daughter</option>
+        <option value="Brother">Brother</option>
+        <option value="Sister">Sister</option>
+        <option value="Grandfather">Grandfather</option>
+        <option value="Grandmother">Grandmother</option>
+        <option value="Uncle">Uncle</option>
+        <option value="Aunt">Aunt</option>
+        <option value="Cousin">Cousin</option>
+      </select>
+      <label>Parent / Connected To</label>
+      <select id="iParent"><option value="">— None / Root —</option></select>
+      <label>Remark (Optional)</label>
+      <input type="text" id="iRemark" placeholder="e.g. Expired / Lives abroad / etc">
+      <button class="btn-add" onclick="addMember()">＋ Add to Tree</button>
+      <div class="toast" id="toast">✔ Member added!</div>
+    </div>
+
+    <div class="panel">
+      <div class="ptitle">📋 Members (<span id="mc">0</span>)</div>
+      <div class="mlist" id="mlist">
+        <div style="color:var(--bl);font-size:.83rem;text-align:center;padding:6px;">No members yet.</div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="ptitle">💾 Actions</div>
+      <button class="btn-dl" onclick="dlJPEG()">⬇ Download JPEG </button>
+      <button class="btn-clr" onclick="clearAll()">🗑 Clear All</button>
+    </div>
+
+  </aside>
+
+  <main class="tree-area">
+    <div class="cwrap" id="wrap">
+      <div class="empty" id="empty"><span>🌿</span><p>Add your first family member to begin.</p></div>
+      <canvas id="treeCanvas"></canvas>
+    </div>
+  </main>
+</div>
+
+<!-- EDIT MODAL -->
+<div class="modal" id="editModal">
+  <div class="modal-box">
+    <h2>Edit Member</h2>
+    <label>Full Name</label>
+    <input type="text" id="eName" maxlength="40">
+    <label>Date of Birth</label>
+    <input type="date" id="eDob">
+    <label>Gender</label>
+    <select id="eGender">
+      <option value="">— Select —</option>
+      <option value="male">Male</option>
+      <option value="female">Female</option>
+      <option value="other">Other</option>
+    </select>
+    <label>Relation</label>
+    <select id="eRel">
+      <option value="">— Select —</option>
+      <option value="Applicant">Applicant (Self)</option>
+      <option value="Father">Father</option>
+      <option value="Mother">Mother</option>
+      <option value="Spouse">Spouse / Partner</option>
+      <option value="Son">Son</option>
+      <option value="Daughter">Daughter</option>
+      <option value="Brother">Brother</option>
+      <option value="Sister">Sister</option>
+      <option value="Grandfather">Grandfather</option>
+      <option value="Grandmother">Grandmother</option>
+      <option value="Uncle">Uncle</option>
+      <option value="Aunt">Aunt</option>
+      <option value="Cousin">Cousin</option>
+    </select>
+    <label>Parent / Connected To</label>
+    <select id="eParent"><option value="">— None / Root —</option></select>
+    <label>Remark (Optional)</label>
+    <input type="text" id="eRemark" placeholder="e.g. Expired / Lives abroad / etc">
+    <div class="modal-buttons">
+      <button class="btn-save" onclick="saveEdit()">💾 Save</button>
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+<footer>
+  <span>Onpoint Services</span> &nbsp;•&nbsp; Developed by <span>Saurabh Ajinath Kharat</span> &nbsp;•&nbsp; © 2026
+</footer>
+
+<script>
+/* ===== DATA ===== */
+let members=[], nid=1, editingId=null;
+const SK='ft3';
+function load(){ try{const d=JSON.parse(localStorage.getItem(SK)||'{}');members=d.m||[];nid=d.n||1;}catch(e){} }
+function save(){ try{localStorage.setItem(SK,JSON.stringify({m:members,n:nid}));}catch(e){} }
+
+/* ===== MEMBER OPS ===== */
+function addMember(){
+  const name=document.getElementById('iName').value.trim();
+  const dob=document.getElementById('iDob').value;
+  const gender=document.getElementById('iGender').value;
+  const rel=document.getElementById('iRel').value;
+  const remark=document.getElementById('iRemark').value.trim();
+  const pid=document.getElementById('iParent').value;
+  if(!name){alert('Enter a name.');return;}
+  if(!rel){alert('Select a relation.');return;}
+  if(rel==='Applicant'&&members.find(m=>m.relation==='Applicant')){alert('Applicant already exists.');return;}
+  members.push({id:nid++,name,dob,gender,relation:rel,parentId:pid?parseInt(pid):null,remark});
+  save();renderAll();showToast();
+  document.getElementById('iName').value='';
+  document.getElementById('iDob').value='';
+  document.getElementById('iGender').value='';
+  document.getElementById('iRel').value='';
+  document.getElementById('iParent').value='';
+  document.getElementById('iRemark').value='';
+}
+
+function editMember(id){
+  const member=members.find(m=>m.id===id);
+  if(!member)return;
+  editingId=id;
+  document.getElementById('eName').value=member.name;
+  document.getElementById('eDob').value=member.dob||'';
+  document.getElementById('eGender').value=member.gender||'';
+  document.getElementById('eRel').value=member.relation;
+  document.getElementById('eRemark').value=member.remark||'';
+  renderParentSelect('eParent',member.parentId);
+  document.getElementById('editModal').classList.add('on');
+}
+
+function renderParentSelect(selectId,selectedId){
+  const s=document.getElementById(selectId);
+  s.innerHTML='<option value="">— None / Root —</option>';
+  members.forEach(m=>{
+    if(m.id!==editingId){
+      const o=document.createElement('option');
+      o.value=m.id;
+      o.textContent=`${m.name} (${m.relation})`;
+      s.appendChild(o);
+    }
+  });
+  s.value=selectedId||'';
+}
+
+function saveEdit(){
+  if(editingId===null)return;
+  const member=members.find(m=>m.id===editingId);
+  if(!member)return;
+  const name=document.getElementById('eName').value.trim();
+  const rel=document.getElementById('eRel').value;
+  if(!name){alert('Enter a name.');return;}
+  if(!rel){alert('Select a relation.');return;}
+  
+  member.name=name;
+  member.dob=document.getElementById('eDob').value;
+  member.gender=document.getElementById('eGender').value;
+  member.relation=rel;
+  member.remark=document.getElementById('eRemark').value.trim();
+  const pid=document.getElementById('eParent').value;
+  member.parentId=pid?parseInt(pid):null;
+  
+  save();renderAll();closeModal();showToast('updated');
+}
+
+function closeModal(){
+  document.getElementById('editModal').classList.remove('on');
+  editingId=null;
+}
+
+function delMember(id){
+  if(!confirm('Remove this member and descendants?'))return;
+  const kill=[id,...desc(id)];
+  members=members.filter(m=>!kill.includes(m.id));
+  save();renderAll();
+}
+
+function desc(id){
+  const ch=members.filter(m=>m.parentId===id).map(m=>m.id);
+  return ch.reduce((a,c)=>[...a,...desc(c)],ch);
+}
+
+function clearAll(){if(!confirm('Clear all?'))return;members=[];nid=1;save();renderAll();}
+
+/* ===== UI ===== */
+function renderAll(){renderList();renderParentDefault();drawTree();}
+
+function renderList(){
+  const el=document.getElementById('mlist');
+  document.getElementById('mc').textContent=members.length;
+  if(!members.length){el.innerHTML='<div style="color:var(--bl);font-size:.83rem;text-align:center;padding:6px;">No members yet.</div>';return;}
+  el.innerHTML=members.map(m=>`<div class="chip"><div><span class="cn">${esc(m.name)}</span><span class="cr2"> · ${esc(m.relation)}</span></div><button class="cbtn" onclick="editMember(${m.id})" title="Edit">✎</button><button class="cbtn del" onclick="delMember(${m.id})" title="Delete">✕</button></div>`).join('');
+}
+
+function renderParentDefault(){
+  const s=document.getElementById('iParent'),v=s.value;
+  s.innerHTML='<option value="">— None / Root —</option>';
+  members.forEach(m=>{const o=document.createElement('option');o.value=m.id;o.textContent=`${m.name} (${m.relation})`;s.appendChild(o);});
+  s.value=v;
+}
+
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg==='updated'?'✔ Member updated!':'✔ Member added!';
+  t.classList.add('on');
+  setTimeout(()=>t.classList.remove('on'),1800);
+}
+
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+/* ===== DRAW ===== */
+function buildH(){
+  const map={};
+  members.forEach(m=>{map[m.id]={...m,children:[]};});
+  const roots=[];
+  members.forEach(m=>{
+    if(m.parentId&&map[m.parentId])map[m.parentId].children.push(map[m.id]);
+    else roots.push(map[m.id]);
+  });
+  return roots;
+}
+
+function getMaxDepth(roots){
+  let maxD=0;
+  function traverse(node,d){
+    maxD=Math.max(maxD,d);
+    node.children.forEach(c=>traverse(c,d+1));
+  }
+  roots.forEach(r=>traverse(r,0));
+  return maxD;
+}
+
+function drawTree(){
+  const cv=document.getElementById('treeCanvas');
+  const wrap=document.getElementById('wrap');
+  const empty=document.getElementById('empty');
+  if(!members.length){empty.style.display='';cv.style.display='none';return;}
+  empty.style.display='none'; cv.style.display='block';
+
+  const roots=buildH();
+  const maxDepth=getMaxDepth(roots);
+  const levels=maxDepth+1;
+
+  /* Dynamic sizing based on generations */
+  const PX=37.795;
+  const BASE_W=15, BASE_H=10;
+  const H_PER_GEN=2; // add 2cm per generation beyond 2
+  const finalH=Math.max(BASE_H,BASE_H+(Math.max(0,levels-2)*H_PER_GEN));
+  
+  const W=Math.round(BASE_W*PX);
+  const H=Math.round(finalH*PX);
+
+  /* node box */
+  const NW=140, NH=72;
+  const HGAP=28;
+  const DROP=20;
+  const TITLE_H=30;
+  const FOOTER_H=16;
+  const PAD=12;
+
+  /* X layout */
+  let xc=0;
+  function ax(node,d){
+    node._d=d;
+    if(!node.children.length){node._x=xc;xc+=NW+HGAP;}
+    else{
+      node.children.forEach(c=>ax(c,d+1));
+      node._x=(node.children[0]._x+node.children[node.children.length-1]._x)/2;
+    }
+  }
+  roots.forEach(r=>ax(r,0));
+
+  /* depth map */
+  const byD={};
+  function cd(node){(byD[node._d]=byD[node._d]||[]).push(node);node.children.forEach(cd);}
+  roots.forEach(cd);
+
+  /* Y layout — evenly spaced inside canvas */
+  const avail=H-TITLE_H-FOOTER_H-PAD*2;
+  const VGAP=levels>1?Math.max(18,Math.round((avail-levels*NH)/(levels-1))):0;
+  const dy={};
+  let ya=TITLE_H+PAD;
+  for(let d=0;d<=maxDepth;d++){dy[d]=ya;ya+=NH+VGAP;}
+  function ay(node){node._y=dy[node._d];node.children.forEach(ay);}
+  roots.forEach(ay);
+
+  /* center X */
+  let minX=1e9,maxX=-1e9;
+  function sx(n){if(n._x<minX)minX=n._x;if(n._x>maxX)maxX=n._x;n.children.forEach(sx);}
+  roots.forEach(sx);
+  const ox=(W-(maxX-minX+NW))/2-minX;
+
+  /* setup canvas */
+  cv.width=W; cv.height=H;
+  const ww=wrap.clientWidth-18, wh=wrap.clientHeight-18;
+  const sf=Math.min(ww/W,wh/H,1);
+  cv.style.width=(W*sf)+'px'; cv.style.height=(H*sf)+'px';
+
+  const ctx=cv.getContext('2d');
+  ctx.clearRect(0,0,W,H);
+
+  /* white bg */
+  ctx.fillStyle='#fff';
+  ctx.fillRect(0,0,W,H);
+
+  /* outer border */
+  ctx.strokeStyle='#111'; ctx.lineWidth=1.2;
+  ctx.strokeRect(4,4,W-8,H-8);
+
+  /* title */
+  ctx.fillStyle='#000';
+  ctx.font='bold 13px Arial,sans-serif';
+  ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillText('Family Tree',W/2,TITLE_H/2+3);
+
+  /* ── EDGES: orthogonal straight lines ── */
+  ctx.strokeStyle='#000'; ctx.lineWidth=1;
+  function drawEdges(node){
+    if(!node.children.length)return;
+    const px=ox+node._x+NW/2;
+    const py=node._y+NH;
+    const midY=py+DROP;
+
+    ctx.beginPath();
+    ctx.moveTo(px,py); ctx.lineTo(px,midY);
+    const fx=ox+node.children[0]._x+NW/2;
+    const lx=ox+node.children[node.children.length-1]._x+NW/2;
+    ctx.moveTo(fx,midY); ctx.lineTo(lx,midY);
+    node.children.forEach(ch=>{
+      const cx=ox+ch._x+NW/2;
+      ctx.moveTo(cx,midY); ctx.lineTo(cx,ch._y);
+    });
+    ctx.stroke();
+    node.children.forEach(drawEdges);
+  }
+  roots.forEach(drawEdges);
+
+  /* ── NODES: plain rectangles, Arial text ── */
+  function fitFont(text,maxW,sz,bold){
+    while(sz>=6){
+      ctx.font=(bold?'bold ':'')+sz+'px Arial,sans-serif';
+      if(ctx.measureText(text).width<=maxW)break;
+      sz-=0.5;
+    }
+    return sz;
+  }
+
+  function drawNode(node){
+    const nx=ox+node._x, ny=node._y;
+    const CX=nx+NW/2;
+    const INNER=NW-14;
+
+    /* box */
+    ctx.fillStyle='#fff';
+    ctx.fillRect(nx,ny,NW,NH);
+    ctx.strokeStyle='#000';
+    ctx.strokeRect(nx,ny,NW,NH);
+
+    ctx.fillStyle='#000';
+    ctx.textAlign='center';
+    ctx.textBaseline='middle';
+
+    const hasDob = !!node.dob;
+    const hasRemark = !!node.remark;
+
+    let rows = 2;
+    if(hasDob) rows++;
+    if(hasRemark) rows++;
+
+    const rowH = NH / (rows + 1);
+    let row = 1;
+
+    // Name
+    const nSz=fitFont(node.name,INNER,11,true);
+    ctx.font=`bold ${nSz}px Arial`;
+    ctx.fillText(node.name,CX,ny+rowH*row);
+    row++;
+
+    // Relation
+    const rSz=fitFont(node.relation,INNER,10,false);
+    ctx.font=`${rSz}px Arial`;
+    ctx.fillText(node.relation,CX,ny+rowH*row);
+    row++;
+
+    // DOB
+    if(hasDob){
+      const pts=node.dob.split('-');
+      const ds=pts.length===3?`${pts[2]}/${pts[1]}/${pts[0]}`:node.dob;
+      const dSz=fitFont(ds,INNER,9,false);
+      ctx.font=`${dSz}px Arial`;
+      ctx.fillText(ds,CX,ny+rowH*row);
+      row++;
+    }
+
+    // Remark
+    if(hasRemark){
+      const remSz=fitFont(node.remark,INNER,9,false);
+      ctx.font=`italic ${remSz}px Arial`;
+      ctx.fillStyle='#555';
+      ctx.fillText(node.remark,CX,ny+rowH*row);
+    }
+
+    node.children.forEach(drawNode);
+  }
+
+  roots.forEach(drawNode);
+
+  /* footer */
+  ctx.fillStyle='#aaa'; ctx.font='8px Arial,sans-serif';
+  ctx.textAlign='right'; ctx.textBaseline='bottom';
+  ctx.fillText('Generated '+new Date().toLocaleDateString(),W-10,H-6);
+}
+
+/* ===== DOWNLOAD: exact size @300dpi ===== */
+function dlJPEG(){
+  if(!members.length){alert('Add members first.');return;}
+  
+  const roots=buildH();
+  const maxDepth=getMaxDepth(roots);
+  const levels=maxDepth+1;
+  
+  const C2I=0.393701,DPI=600;
+  const BASE_W=15, BASE_H=10;
+  const H_PER_GEN=2;
+  const finalH=Math.max(BASE_H,BASE_H+(Math.max(0,levels-2)*H_PER_GEN));
+  
+  const PW=Math.round(BASE_W*C2I*DPI);
+  const PH=Math.round(finalH*C2I*DPI);
+  
+  const sc=document.getElementById('treeCanvas');
+  const off=document.createElement('canvas');
+  off.width=PW; off.height=PH;
+  const c=off.getContext('2d');
+  c.fillStyle='#fff'; c.fillRect(0,0,PW,PH);
+  const scale=Math.min(PW/sc.width,PH/sc.height);
+  const dw=sc.width*scale, dh=sc.height*scale;
+  c.drawImage(sc,(PW-dw)/2,(PH-dh)/2,dw,dh);
+  
+  c.strokeStyle='#000'; c.lineWidth=3;
+  c.strokeRect(8,8,PW-16,PH-16);
+  
+  const a=document.createElement('a');
+  a.download='family-tree.jpg';
+  a.href=off.toDataURL('image/jpeg',1);
+  a.click();
+}
+
+/* ===== INIT ===== */
+load(); renderAll();
+window.addEventListener('resize',drawTree);
+</script>
+</body>
+</html>
