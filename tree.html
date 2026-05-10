@@ -22,10 +22,10 @@
   header h1 { font-family:'Playfair Display',serif; color:var(--gl); font-size:1.9rem; letter-spacing:3px; }
   header p  { color:var(--bl); font-size:.82rem; letter-spacing:2px; text-transform:uppercase; margin-top:2px; }
 
-  .layout { display:flex; flex:1; padding:12px 14px 14px; max-width:1400px; margin:0 auto; width:100%; }
+  .layout { display:flex; flex:1; padding:12px 12px 14px; max-width:100%; margin:0; width:100%; gap:12px; }
 
   /* SIDEBAR */
-  .sidebar { width:310px; min-width:270px; flex-shrink:0; display:flex; flex-direction:column; gap:11px; }
+  .sidebar { width:300px; min-width:280px; flex-shrink:0; display:flex; flex-direction:column; gap:11px; }
   .panel { background:linear-gradient(160deg,var(--pan) 80%,var(--cr)); border-radius:10px; border:1.5px solid var(--gold); box-shadow:0 4px 18px var(--sh); padding:13px 13px 11px; position:relative; overflow:hidden; }
   .panel::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg,var(--gold),var(--gl),var(--gold)); border-radius:10px 10px 0 0; }
   .ptitle { font-family:'Playfair Display',serif; color:#3d2b1f; font-size:.95rem; font-weight:700; letter-spacing:1px; margin-bottom:10px; display:flex; align-items:center; gap:6px; }
@@ -68,7 +68,7 @@
   .btn-cancel { background:#ccc; color:#333; }
 
   /* TREE */
-  .tree-area { flex:1; margin-left:14px; display:flex; flex-direction:column; }
+  .tree-area { flex:1; margin-left:0; display:flex; flex-direction:column; min-width:0; }
   .cwrap { flex:1; background:#f8f5ee; border-radius:11px; border:2px solid var(--gold); box-shadow:0 6px 28px var(--sh); overflow:auto; position:relative; min-height:380px; display:flex; align-items:center; justify-content:center; padding:8px; }
   #treeCanvas { display:block; }
   .empty { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); text-align:center; color:var(--bl); width:220px; pointer-events:none; }
@@ -81,6 +81,19 @@ footer{
   background:#6b4c35;
   color:#ffffff;
   font-size:14px;
+}
+
+/* RESPONSIVE DESIGN */
+@media(max-width:1200px){
+  .layout { padding:10px 10px 14px; }
+  .sidebar { width:280px; min-width:260px; }
+}
+
+@media(max-width:900px){
+  .layout { flex-direction:column; padding:10px 10px 14px; }
+  .sidebar { width:100%; min-width:100%; }
+  .tree-area { margin-left:0; margin-top:12px; }
+  .cwrap { min-height:300px; }
 }
 </style>
 </head>
@@ -118,11 +131,39 @@ footer{
         <option value="Daughter">Daughter</option>
         <option value="Brother">Brother</option>
         <option value="Sister">Sister</option>
+        <option value="Step-Brother">Step-Brother</option>
+        <option value="Step-Sister">Step-Sister</option>
+        <option value="Half-Brother">Half-Brother</option>
+        <option value="Half-Sister">Half-Sister</option>
+        <option value="Step-Father">Step-Father</option>
+        <option value="Step-Mother">Step-Mother</option>
+        <option value="Son-in-law">Son-in-law</option>
+        <option value="Daughter-in-law">Daughter-in-law</option>
+        <option value="Father-in-law">Father-in-law</option>
+        <option value="Mother-in-law">Mother-in-law</option>
+        <option value="Brother-in-law">Brother-in-law</option>
+        <option value="Sister-in-law">Sister-in-law</option>
         <option value="Grandfather">Grandfather</option>
         <option value="Grandmother">Grandmother</option>
+        <option value="Great-Grandfather">Great-Grandfather</option>
+        <option value="Great-Grandmother">Great-Grandmother</option>
+        <option value="Great-Great-Grandfather">Great-Great-Grandfather</option>
+        <option value="Great-Great-Grandmother">Great-Great-Grandmother</option>
+        <option value="Great-Great-Great-Grandfather">Great-Great-Great-Grandfather</option>
+        <option value="Great-Great-Great-Grandmother">Great-Great-Great-Grandmother</option>
         <option value="Uncle">Uncle</option>
         <option value="Aunt">Aunt</option>
+        <option value="Grand-Uncle">Grand-Uncle</option>
+        <option value="Grand-Aunt">Grand-Aunt</option>
         <option value="Cousin">Cousin</option>
+        <option value="First-Cousin-Once-Removed">First-Cousin-Once-Removed</option>
+        <option value="Second-Cousin">Second-Cousin</option>
+        <option value="Grandson">Grandson</option>
+        <option value="Granddaughter">Granddaughter</option>
+        <option value="Great-Grandson">Great-Grandson</option>
+        <option value="Great-Granddaughter">Great-Granddaughter</option>
+        <option value="Great-Great-Grandson">Great-Great-Grandson</option>
+        <option value="Great-Great-Granddaughter">Great-Great-Granddaughter</option>
       </select>
       <label>Parent / Connected To</label>
       <select id="iParent"><option value="">— None / Root —</option></select>
@@ -181,11 +222,39 @@ footer{
       <option value="Daughter">Daughter</option>
       <option value="Brother">Brother</option>
       <option value="Sister">Sister</option>
+      <option value="Step-Brother">Step-Brother</option>
+      <option value="Step-Sister">Step-Sister</option>
+      <option value="Half-Brother">Half-Brother</option>
+      <option value="Half-Sister">Half-Sister</option>
+      <option value="Step-Father">Step-Father</option>
+      <option value="Step-Mother">Step-Mother</option>
+      <option value="Son-in-law">Son-in-law</option>
+      <option value="Daughter-in-law">Daughter-in-law</option>
+      <option value="Father-in-law">Father-in-law</option>
+      <option value="Mother-in-law">Mother-in-law</option>
+      <option value="Brother-in-law">Brother-in-law</option>
+      <option value="Sister-in-law">Sister-in-law</option>
       <option value="Grandfather">Grandfather</option>
       <option value="Grandmother">Grandmother</option>
+      <option value="Great-Grandfather">Great-Grandfather</option>
+      <option value="Great-Grandmother">Great-Grandmother</option>
+      <option value="Great-Great-Grandfather">Great-Great-Grandfather</option>
+      <option value="Great-Great-Grandmother">Great-Great-Grandmother</option>
+      <option value="Great-Great-Great-Grandfather">Great-Great-Great-Grandfather</option>
+      <option value="Great-Great-Great-Grandmother">Great-Great-Great-Grandmother</option>
       <option value="Uncle">Uncle</option>
       <option value="Aunt">Aunt</option>
+      <option value="Grand-Uncle">Grand-Uncle</option>
+      <option value="Grand-Aunt">Grand-Aunt</option>
       <option value="Cousin">Cousin</option>
+      <option value="First-Cousin-Once-Removed">First-Cousin-Once-Removed</option>
+      <option value="Second-Cousin">Second-Cousin</option>
+      <option value="Grandson">Grandson</option>
+      <option value="Granddaughter">Granddaughter</option>
+      <option value="Great-Grandson">Great-Grandson</option>
+      <option value="Great-Granddaughter">Great-Granddaughter</option>
+      <option value="Great-Great-Grandson">Great-Great-Grandson</option>
+      <option value="Great-Great-Granddaughter">Great-Great-Granddaughter</option>
     </select>
     <label>Parent / Connected To</label>
     <select id="eParent"><option value="">— None / Root —</option></select>
@@ -354,22 +423,27 @@ function drawTree(){
   const maxDepth=getMaxDepth(roots);
   const levels=maxDepth+1;
 
-  /* Dynamic sizing based on generations */
-  const PX=37.795;
-  const BASE_W=15, BASE_H=10;
-  const H_PER_GEN=2; // add 2cm per generation beyond 2
-  const finalH=Math.max(BASE_H,BASE_H+(Math.max(0,levels-2)*H_PER_GEN));
+  /* Dynamic sizing based on generations with 5mm vertical gap */
+  const PX=37.795; // pixels per cm at standard DPI
+  const MM_TO_PX=3.779528; // conversion factor: 5mm ≈ 19px
+  const VGAP_MM=5; // 5mm vertical gap between levels
+  const HGAP_MM=5; // 5mm horizontal gap between nodes
+  const MARGIN_MM=5; // 5mm margin on all sides
   
-  const W=Math.round(BASE_W*PX);
-  const H=Math.round(finalH*PX);
-
-  /* node box */
+  const VGAP_PX=Math.round(VGAP_MM*MM_TO_PX); // ~19 pixels
+  const HGAP_PX=Math.round(HGAP_MM*MM_TO_PX); // ~19 pixels
+  const MARGIN_PX=Math.round(MARGIN_MM*MM_TO_PX); // ~19 pixels
+  
+  const BASE_W=15; // base width in cm
+  const BASE_H=10; // base height in cm
+  
+  /* node box dimensions */
   const NW=140, NH=72;
-  const HGAP=28;
+  const HGAP=HGAP_PX; // Use 5mm instead of fixed 28
   const DROP=20;
   const TITLE_H=30;
   const FOOTER_H=16;
-  const PAD=12;
+  const PAD=MARGIN_PX; // Use 5mm margin
 
   /* X layout */
   let xc=0;
@@ -388,20 +462,35 @@ function drawTree(){
   function cd(node){(byD[node._d]=byD[node._d]||[]).push(node);node.children.forEach(cd);}
   roots.forEach(cd);
 
-  /* Y layout — evenly spaced inside canvas */
-  const avail=H-TITLE_H-FOOTER_H-PAD*2;
-  const VGAP=levels>1?Math.max(18,Math.round((avail-levels*NH)/(levels-1))):0;
-  const dy={};
-  let ya=TITLE_H+PAD;
-  for(let d=0;d<=maxDepth;d++){dy[d]=ya;ya+=NH+VGAP;}
-  function ay(node){node._y=dy[node._d];node.children.forEach(ay);}
-  roots.forEach(ay);
-
-  /* center X */
+  /* Calculate required width based on node layout */
   let minX=1e9,maxX=-1e9;
   function sx(n){if(n._x<minX)minX=n._x;if(n._x>maxX)maxX=n._x;n.children.forEach(sx);}
   roots.forEach(sx);
-  const ox=(W-(maxX-minX+NW))/2-minX;
+  
+  const contentWidth=maxX-minX+NW; // Actual content width
+  const requiredW=2*MARGIN_PX+contentWidth;
+  const minW=Math.round(BASE_W*PX);
+  const W=Math.max(minW,requiredW); // Auto-expand if needed
+
+  /* Y layout — with fixed 5mm gap between levels, auto-expand height, 5mm margins, centered vertically */
+  const requiredH=MARGIN_PX+TITLE_H+MARGIN_PX+(levels*NH)+((levels-1)*VGAP_PX)+FOOTER_H+MARGIN_PX;
+  const minH=Math.round(BASE_H*PX);
+  const H=Math.max(minH,requiredH); // Auto-expand if needed
+  
+  // Calculate vertical centering offset
+  const contentH=(levels*NH)+((levels-1)*VGAP_PX);
+  const availableH=H-MARGIN_PX-TITLE_H-MARGIN_PX-FOOTER_H-MARGIN_PX;
+  const verticalOffset=(availableH-contentH)/2;
+  
+  const dy={};
+  let ya=MARGIN_PX+TITLE_H+MARGIN_PX+verticalOffset;
+  for(let d=0;d<=maxDepth;d++){dy[d]=ya;ya+=NH+VGAP_PX;}
+  
+  function ay(node){node._y=dy[node._d];node.children.forEach(ay);}
+  roots.forEach(ay);
+
+  /* center X with margin consideration */
+  const ox=MARGIN_PX+(W-2*MARGIN_PX-(maxX-minX+NW))/2-minX;
 
   /* setup canvas */
   cv.width=W; cv.height=H;
@@ -416,15 +505,13 @@ function drawTree(){
   ctx.fillStyle='#fff';
   ctx.fillRect(0,0,W,H);
 
-  /* outer border */
-  ctx.strokeStyle='#111'; ctx.lineWidth=1.2;
-  ctx.strokeRect(4,4,W-8,H-8);
 
-  /* title */
+
+  /* title - centered */
   ctx.fillStyle='#000';
   ctx.font='bold 13px Arial,sans-serif';
   ctx.textAlign='center'; ctx.textBaseline='middle';
-  ctx.fillText('Family Tree',W/2,TITLE_H/2+3);
+  ctx.fillText('Family Tree',W/2,MARGIN_PX+TITLE_H/2);
 
   /* ── EDGES: orthogonal straight lines ── */
   ctx.strokeStyle='#000'; ctx.lineWidth=1;
@@ -518,13 +605,13 @@ function drawTree(){
 
   roots.forEach(drawNode);
 
-  /* footer */
+  /* footer with margin consideration */
   ctx.fillStyle='#aaa'; ctx.font='8px Arial,sans-serif';
   ctx.textAlign='right'; ctx.textBaseline='bottom';
-  ctx.fillText('Generated '+new Date().toLocaleDateString(),W-10,H-6);
+  ctx.fillText('Generated '+new Date().toLocaleDateString(),W-MARGIN_PX-5,H-MARGIN_PX+4);
 }
 
-/* ===== DOWNLOAD: exact size @300dpi ===== */
+/* ===== DOWNLOAD: exact size @600dpi with auto-expanding width & height ===== */
 function dlJPEG(){
   if(!members.length){alert('Add members first.');return;}
   
@@ -533,12 +620,40 @@ function dlJPEG(){
   const levels=maxDepth+1;
   
   const C2I=0.393701,DPI=600;
-  const BASE_W=15, BASE_H=10;
-  const H_PER_GEN=2;
-  const finalH=Math.max(BASE_H,BASE_H+(Math.max(0,levels-2)*H_PER_GEN));
+  const MM_TO_PX=3.779528;
+  const VGAP_MM=5;
+  const HGAP_MM=5;
+  const MARGIN_MM=5;
+  const VGAP_PX=Math.round(VGAP_MM*MM_TO_PX);
+  const HGAP_PX=Math.round(HGAP_MM*MM_TO_PX);
+  const MARGIN_PX=Math.round(MARGIN_MM*MM_TO_PX);
   
-  const PW=Math.round(BASE_W*C2I*DPI);
-  const PH=Math.round(finalH*C2I*DPI);
+  const BASE_W=15, BASE_H=10;
+  const NW=140, NH=72;
+  
+  /* Calculate width */
+  let xc=0;
+  function axCalc(node,d){
+    if(!node.children.length){node._x=xc;xc+=NW+HGAP_PX;}
+    else{
+      node.children.forEach(c=>axCalc(c,d+1));
+      node._x=(node.children[0]._x+node.children[node.children.length-1]._x)/2;
+    }
+  }
+  let minX=1e9,maxX=-1e9;
+  function sxCalc(n){if(n._x<minX)minX=n._x;if(n._x>maxX)maxX=n._x;n.children.forEach(sxCalc);}
+  roots.forEach(r=>axCalc(r,0));
+  roots.forEach(sxCalc);
+  
+  const contentWidth=maxX-minX+NW;
+  const requiredW_PX=2*MARGIN_PX+contentWidth;
+  const minW_PX=Math.round(BASE_W*C2I*DPI);
+  const PW=Math.max(minW_PX,Math.round(requiredW_PX));
+  
+  /* Calculate height */
+  const requiredH_PX=MARGIN_PX+30+MARGIN_PX+(levels*NH)+((levels-1)*VGAP_PX)+16+MARGIN_PX;
+  const minH_PX=Math.round(BASE_H*C2I*DPI);
+  const PH=Math.max(minH_PX,requiredH_PX);
   
   const sc=document.getElementById('treeCanvas');
   const off=document.createElement('canvas');
@@ -550,7 +665,7 @@ function dlJPEG(){
   c.drawImage(sc,(PW-dw)/2,(PH-dh)/2,dw,dh);
   
   c.strokeStyle='#000'; c.lineWidth=3;
-  c.strokeRect(8,8,PW-16,PH-16);
+  c.strokeRect(MARGIN_PX+2, MARGIN_PX+2, PW-2*MARGIN_PX-4, PH-2*MARGIN_PX-4);
   
   const a=document.createElement('a');
   a.download='family-tree.jpg';
