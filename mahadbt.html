@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>MAHA DBT Declaration Form | Onpoint Services</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Noto Sans Devanagari',sans-serif;
+}
+
+body{
+background:#f4f7fb;
+min-height:100vh;
+}
+
+.header{
+background:#0d47a1;
+color:#fff;
+text-align:center;
+padding:20px;
+}
+
+.header h1{
+font-size:30px;
+margin-bottom:5px;
+}
+
+.header p{
+font-size:15px;
+opacity:.9;
+}
+
+.container{
+max-width:1000px;
+margin:25px auto;
+padding:25px;
+background:#fff;
+border-radius:15px;
+box-shadow:0 5px 20px rgba(0,0,0,.1);
+}
+
+.form-grid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:15px;
+}
+
+.form-group{
+display:flex;
+flex-direction:column;
+}
+
+.form-group label{
+margin-bottom:5px;
+font-weight:600;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea{
+padding:12px;
+border:1px solid #ccc;
+border-radius:8px;
+font-size:15px;
+}
+
+.full{
+grid-column:1/-1;
+}
+
+.btn{
+background:#0d47a1;
+color:#fff;
+border:none;
+padding:14px 25px;
+border-radius:10px;
+cursor:pointer;
+font-size:16px;
+font-weight:600;
+margin-top:15px;
+}
+
+.btn:hover{
+background:#08306b;
+}
+
+.preview{
+display:none;
+}
+
+.preview h2{
+text-align:center;
+margin-bottom:25px;
+}
+
+.signature{
+display:flex;
+justify-content:space-between;
+margin-top:60px;
+}
+
+.footer{
+margin-top:40px;
+background:#0d47a1;
+color:white;
+text-align:center;
+padding:15px;
+font-size:14px;
+}
+
+@page{
+    size:A4;
+    margin:2.5cm;
+}
+
+@media print {
+
+.header,
+.form-grid,
+.footer{
+    display:none !important;
+}
+
+.container{
+    max-width:100% !important;
+    width:100% !important;
+    margin:0 !important;
+    padding:0 !important;
+    border:none !important;
+    box-shadow:none !important;
+    background:white !important;
+}
+
+#preview{
+    display:block !important;
+    margin:0 !important;
+    padding:0 !important;
+    border:none !important;
+    outline:none !important;
+    box-shadow:none !important;
+    background:white !important;
+    text-align:justify !important;
+    line-height:2 !important;
+    text-align:justify !important;
+}
+
+body{
+    background:white !important;
+}
+
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+<h1>MAHA DBT Declaration Form</h1>
+<p>Onpoint Services</p>
+</div>
+
+<div class="container">
+
+<div class="form-grid">
+
+<div class="form-group">
+<label>पालकांचे नाव</label>
+<input type="text" id="parentName" placeholder="अजिनाथ खरात"></div>
+
+<div class="form-group">
+<label>पत्ता</label>
+<input type="text" id="address" placeholder="संपूर्ण पत्ता टाका"></div>
+
+<div class="form-group">
+<label>तालुका</label>
+<input type="text" id="taluka" placeholder="उदा. माळशिरस"></div>
+
+<div class="form-group">
+<label>जिल्हा</label>
+<input type="text" id="district" placeholder="उदा. सोलापूर"></div>
+
+<div class="form-group">
+<label>एकूण अपत्ये</label>
+<input type="number" id="totalChildren">
+</div>
+
+<div class="form-group">
+<label>मुले</label>
+<input type="number" id="sons">
+</div>
+
+<div class="form-group">
+<label>मुली</label>
+<input type="number" id="daughters">
+</div>
+
+<div class="form-group">
+<label>विद्यार्थ्याचे नाव</label>
+<input type="text" id="studentName" placeholder="सौरभ अजिनाथ खरात"></div>
+
+<div class="form-group">
+<label>क्रमांक</label>
+<select id="order">
+<option>प्रथम</option>
+<option>द्वितीय</option>
+<option>तृतीय</option>
+<option>चतुर्थ</option>
+</select>
+</div>
+
+<div class="form-group">
+<label>लिंग</label>
+<select id="gender">
+<option>पुरुष</option>
+<option>स्त्री</option>
+</select>
+</div>
+
+<div class="form-group full">
+<label>महाविद्यालय / विद्यालय</label>
+<input type="text" id="college" placeholder="महाविद्यालय / विद्यालयाचे नाव"></div>
+
+<div class="form-group full">
+<label>अभ्यासक्रम</label>
+<input type="text" id="course" placeholder="उदा. B.E/ B.Tech Robotics and Automation"></div>
+
+<div class="form-group full">
+<label>Scholarship Scheme</label>
+<select id="scheme">
+<option value="">Select Scheme</option>
+
+<option>
+Rajarshi Chhatrapati Shahu Maharaj Shikshan Shulkh Shishyavrutti Yojna (EBC)
+</option>
+
+<option>
+Dr Panjabrao Deshmukh Vastigruh Nirvah Bhatta Yojna (DTE)
+</option>
+
+<option>
+Government of India Post-Matric Scholarship
+</option>
+
+</select>
+</div>
+
+<div class="form-group">
+<label>पूर्वी लाभ घेतलेल्या अपत्यांची संख्या</label>
+<input type="number" id="beneficiaryCount">
+</div>
+
+<div class="form-group">
+<label>लाभार्थी नाव 1</label>
+<input type="text" id="b1">
+</div>
+
+<div class="form-group">
+<label>लाभार्थी नाव 2</label>
+<input type="text" id="b2">
+</div>
+
+<div class="form-group">
+<label>लाभार्थी नाव 3</label>
+<input type="text" id="b3">
+</div>
+
+<div class="form-group">
+<label>लाभार्थी नाव 4</label>
+<input type="text" id="b4">
+</div>
+
+<div class="form-group">
+<label>दिनांक</label>
+<input type="date" id="date">
+</div>
+
+<div class="form-group">
+<label>ठिकाण</label>
+<input type="text" id="place" placeholder="उदा. पुणे"></div>
+
+<div class="form-group full">
+<button class="btn" onclick="generateAndPrint()">
+Print Declaration
+</button>
+</div>
+
+</div>
+
+<div id="preview" class="preview"></div>
+
+</div>
+
+<div class="footer">
+Onpoint Services • Developed by Saurabh Ajinath Kharat • © 2026
+</div>
+
+<script>
+window.onload = function () {
+    const today = new Date();
+
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const dd = String(today.getDate()).padStart(2, '0');
+
+    document.getElementById('date').value = `${yyyy}-${mm}-${dd}`;
+};
+
+function generateForm(){
+
+const parentName=document.getElementById('parentName').value;
+const address=document.getElementById('address').value;
+const taluka=document.getElementById('taluka').value;
+const district=document.getElementById('district').value;
+const totalChildren=document.getElementById('totalChildren').value;
+const sons=document.getElementById('sons').value;
+const daughters=document.getElementById('daughters').value;
+const studentName=document.getElementById('studentName').value;
+const order=document.getElementById('order').value;
+const college=document.getElementById('college').value;
+const course=document.getElementById('course').value;
+const scheme=document.getElementById('scheme').value;
+const beneficiaryCount=document.getElementById('beneficiaryCount').value;
+const b1=document.getElementById('b1').value;
+const b2=document.getElementById('b2').value;
+const b3=document.getElementById('b3').value;
+const b4=document.getElementById('b4').value;
+const rawDate = document.getElementById('date').value;
+
+let date = "";
+
+if(rawDate){
+    const parts = rawDate.split("-");
+    date = `${parts[2]}/${parts[1]}/${parts[0]}`;
+}
+const place=document.getElementById('place').value;
+const gender=document.getElementById('gender').value;
+
+let childText = gender === "स्त्री" ? "ही" : "हा";
+let pronounText = gender === "स्त्री" ? "ती" : "तो";
+let genderSuffix = gender === "स्त्री" ? "ची" : "चा";
+let studentSignature =
+    gender === "स्त्री"
+    ? "विद्यार्थिनीची स्वाक्षरी"
+    : "विद्यार्थ्याची स्वाक्षरी";
+
+document.getElementById('preview').style.display='block';
+
+document.getElementById('preview').innerHTML=`
+
+<h2>प्रतिज्ञापत्र</h2>
+
+<p>
+मी श्री./श्रीमती <b>${parentName}</b>
+रा. <b>${address}</b>
+ता. <b>${taluka}</b>
+जि. <b>${district}</b>
+येथील कायम रहिवासी असून मला एकूण <b>${totalChildren}</b> अपत्य आहेत.
+त्यापैकी <b>${sons}</b> मुले व <b>${daughters}</b> मुली आहेत.
+<b>${studentName}</b> ${childText} <b>${order}</b> क्रमांका${genderSuffix} लाभार्थी अपत्य
+(<b>${gender}</b>) आहे.
+${pronounText} <b>${college}</b> या महाविद्यालय/विद्यालयामध्ये
+<b>${course}</b> या अभ्यासक्रमास शिक्षण घेत असून ${pronounText}
+<b>${scheme}</b> या शिष्यवृत्ती योजनेसाठी अर्ज करीत आहे.
+यापूर्वी माझ्या कुटुंबातील एकूण <b>${beneficiaryCount}</b> अपत्यांनी (पुरुष / स्त्री) शिष्यवृत्तीचा लाभ घेतलेला आहे. त्यांची नावे
+</p>
+
+<p>
+1) ${b1}<br>
+2) ${b2}<br>
+3) ${b3}<br>
+4) ${b4}
+</p>
+
+<p>
+हि आहेत. वर दिलेली माहिती ही पूर्णतः खरी असून त्याची सर्वस्वी जबाबदारी माझी आहे त्यामध्ये काही खोटे आढळल्यास माझ्या पाल्याला मिळणारी शिष्यवृत्ती व्याजासह शासनास परत करील अशी हमी देत आहे. तसेच शासन निर्णयानुसार होणाऱ्या कारवाईस मी व्यक्तिशः जबाबदार असेल
+</p>
+<br><br>
+<div class="signature">
+<div>
+${gender === "स्त्री" ? "विद्यार्थिनीची स्वाक्षरी" : "विद्यार्थ्याची स्वाक्षरी"}
+</div>
+
+<div>
+पालकांची स्वाक्षरी
+</div>
+</div>
+
+
+दिनांक : ${date}<br>
+ठिकाण : ${place}
+
+`;
+
+}
+function generateAndPrint() {
+    generateForm();
+    setTimeout(() => {
+        window.print();
+    }, 300);
+}
+</script>
+
+</body>
+</html>
