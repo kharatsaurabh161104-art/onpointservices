@@ -108,12 +108,19 @@ margin-top:60px;
 }
 
 .footer{
-margin-top:40px;
+position:fixed;
+bottom:0;
+left:0;
+width:100%;
+
 background:#0d47a1;
 color:white;
+
 text-align:center;
 padding:15px;
+
 font-size:14px;
+z-index:999;
 }
 
 @page{
@@ -234,22 +241,51 @@ body{
 
 <div class="form-group full">
 <label>Scholarship Scheme</label>
-<select id="scheme">
-<option value="">Select Scheme</option>
 
-<option>
-Rajarshi Chhatrapati Shahu Maharaj Shikshan Shulkh Shishyavrutti Yojna (EBC)
-</option>
+<input 
+type="text"
+id="scheme"
+list="schemeList"
+placeholder="Scholarship Scheme">
 
-<option>
-Dr Panjabrao Deshmukh Vastigruh Nirvah Bhatta Yojna (DTE)
-</option>
+<datalist id="schemeList">
 
-<option>
-Government of India Post-Matric Scholarship
-</option>
+<option value="Rajarshi Chhatrapati Shahu Maharaj Shikshan Shulkh Shishyavrutti Yojna (EBC)">
 
-</select>
+<option value="Dr Panjabrao Deshmukh Vastigruh Nirvah Bhatta Yojna (DTE)">
+
+<option value="Government of India Post-Matric Scholarship">
+
+<option value="Post Matric Scholarship to OBC Students">
+
+<option value="Tuition Fees and Examination Fees to OBC Students">
+
+<option value="Post Matric Scholarship to SBC Students">
+
+<option value="Tuition Fees and Examination Fees to SBC Students">
+
+<option value="Post Matric Scholarship to VJNT Students">
+
+<option value="Tuition Fees and Examination Fees to VJNT Students">
+
+<option value="Post Matric Tuition Fee and Examination Fee (Freeship)">
+
+<option value="Post Matric Scholarship Scheme for ST Students">
+
+<option value="Minority Scholarship Part II (DHE)">
+
+<option value="Merit Cum Means Scholarship for Professional and Technical Courses">
+
+<option value="Eklavya Scholarship">
+
+<option value="State Government Open Merit Scholarship">
+
+<option value="AICTE Pragati Scholarship">
+
+<option value="AICTE Saksham Scholarship">
+
+</datalist>
+
 </div>
 
 <div class="form-group">
@@ -351,7 +387,6 @@ let studentSignature =
     ? "विद्यार्थिनीची स्वाक्षरी"
     : "विद्यार्थ्याची स्वाक्षरी";
 
-document.getElementById('preview').style.display='block';
 
 document.getElementById('preview').innerHTML=`
 
@@ -380,7 +415,7 @@ ${pronounText} <b>${college}</b> या महाविद्यालय/वि
 </p>
 
 <p>
-हि आहेत. वर दिलेली माहिती ही पूर्णतः खरी असून त्याची सर्वस्वी जबाबदारी माझी आहे त्यामध्ये काही खोटे आढळल्यास माझ्या पाल्याला मिळणारी शिष्यवृत्ती व्याजासह शासनास परत करील अशी हमी देत आहे. तसेच शासन निर्णयानुसार होणाऱ्या कारवाईस मी व्यक्तिशः जबाबदार असेल
+ही आहेत. वर दिलेली माहिती ही पूर्णतः खरी असून त्याची सर्वस्वी जबाबदारी माझी आहे त्यामध्ये काही खोटे आढळल्यास माझ्या पाल्याला मिळणारी शिष्यवृत्ती व्याजासह शासनास परत करील अशी हमी देत आहे. तसेच शासन निर्णयानुसार होणाऱ्या कारवाईस मी व्यक्तिशः जबाबदार असेल.
 </p>
 <br><br>
 <div class="signature">
