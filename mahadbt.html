@@ -232,12 +232,64 @@ body{
 </div>
 
 <div class="form-group full">
+
 <label>महाविद्यालय / विद्यालय</label>
-<input type="text" id="college" placeholder="महाविद्यालय / विद्यालयाचे नाव"></div>
+
+<input 
+type="text"
+id="college"
+list="collegeList"
+placeholder="Zeal College of Engineering and Research, Narhe, Pune">
+
+<datalist id="collegeList">
+
+<option value="Zeal College of Engineering and Research, Narhe, Pune">
+
+<option value="Zeal Institute of Management & Computer Application, Narhe, Pune">
+
+<option value="Zeal Institute of Business Administration, Computer Application & Research, Narhe, Pune">
+
+</datalist>
+
+</div>
 
 <div class="form-group full">
+
 <label>अभ्यासक्रम</label>
-<input type="text" id="course" placeholder="उदा. B.E/ B.Tech Robotics and Automation"></div>
+
+<input 
+type="text"
+id="course"
+list="courseList"
+placeholder="उदा. B.E/ B.Tech Robotics and Automation">
+
+<datalist id="courseList">
+
+<option value="MBA">
+
+<option value="MCA">
+
+<option value="Computer Engineering">
+
+<option value="Information Technology Engineering">
+
+<option value="Civil Engineering">
+
+<option value="Mechanical Engineering">
+
+<option value="Robotics and Automation Engineering">
+
+<option value="Artificial Intelligence and Data Science Engineering">
+
+<option value="Artificial Intelligence and Machine Learning Engineering">
+
+<option value="Electronics and Telecommunication Engineering">
+
+<option value="Electronics and Computer Engineering">
+
+</datalist>
+
+</div>
 
 <div class="form-group full">
 <label>Scholarship Scheme</label>
@@ -401,7 +453,7 @@ document.getElementById('preview').innerHTML=`
 त्यापैकी <b>${sons}</b> मुले व <b>${daughters}</b> मुली आहेत.
 <b>${studentName}</b> ${childText} <b>${order}</b> क्रमांका${genderSuffix} लाभार्थी अपत्य
 (<b>${gender}</b>) आहे.
-${pronounText} <b>${college}</b> या महाविद्यालय/विद्यालयामध्ये
+${pronounText} <b>${college}</b> या महाविद्यालयामध्ये
 <b>${course}</b> या अभ्यासक्रमास शिक्षण घेत असून ${pronounText}
 <b>${scheme}</b> या शिष्यवृत्ती योजनेसाठी अर्ज करीत आहे.
 यापूर्वी माझ्या कुटुंबातील एकूण <b>${beneficiaryCount}</b> अपत्यांनी (पुरुष / स्त्री) शिष्यवृत्तीचा लाभ घेतलेला आहे. त्यांची नावे
