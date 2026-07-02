@@ -193,6 +193,8 @@ body::after {
   backdrop-filter: blur(12px);
 }
 
+.hidden { display: none !important; }
+
 .section-title {
   font-family: 'Playfair Display', serif;
   font-size: 14px;
@@ -886,21 +888,7 @@ button:hover {
   <!-- LEFT WORKSPACE -->
   <div class="workspace">
     
-    <!-- Step 1: Upload -->
-    <div class="section">
-      <div class="section-title">📷 Upload Photos</div>
-      <div id="dropZone">
-        <span class="upload-icon">📷</span>
-        <p>Drag & Drop</p>
-        <span class="sub">or</span>
-        <span class="browse-chip">Browse</span>
-        <input type="file" id="upload" multiple accept="image/*">
-      </div>
-      <button onclick="clearAllPhotos()" style="width: 100%; margin-top: 10px; background: rgba(224,92,92,0.09); border: 1px solid rgba(224,92,92,0.22); color: #e05c5c;">✕ Clear All</button>
-      <div id="preview"></div>
-    </div>
-
-    <!-- Step 2: Type Selection -->
+    <!-- Step 1: Type Selection -->
     <div class="section">
       <div class="section-title">📋 Type</div>
       <select id="type" style="display:none" onchange="updateTypeUI()">
@@ -925,7 +913,21 @@ button:hover {
       </div>
     </div>
 
-    <!-- Passport Size -->
+    <!-- Step 2: Upload -->
+    <div class="section">
+      <div class="section-title">📷 Upload Photos</div>
+      <div id="dropZone">
+        <span class="upload-icon">📷</span>
+        <p>Drag & Drop</p>
+        <span class="sub">or</span>
+        <span class="browse-chip">Browse</span>
+        <input type="file" id="upload" multiple accept="image/*">
+      </div>
+      <button onclick="clearAllPhotos()" style="width: 100%; margin-top: 10px; background: rgba(224,92,92,0.09); border: 1px solid rgba(224,92,92,0.22); color: #e05c5c;">✕ Clear All</button>
+      <div id="preview"></div>
+    </div>
+
+    <!-- Step 3: Passport Size -->
     <div class="section" id="passportSizeStep">
       <div class="section-title">📏 Size</div>
       <label class="control-label">Photo Size</label>
@@ -936,7 +938,7 @@ button:hover {
       </select>
     </div>
 
-    <!-- PAN Card Type -->
+    <!-- Step 3: PAN Card Type -->
     <div class="section hidden" id="pancardTypeStep">
       <div class="section-title">🆔 PAN Type</div>
       <div class="pancard-options">
@@ -959,7 +961,7 @@ button:hover {
       </div>
     </div>
 
-    <!-- Step 3: Crop -->
+    <!-- Step 4: Crop -->
     <div class="section">
       <div class="section-title">✂️ Crop</div>
       <button onclick="openCrop()" style="width: 100%;">Open Crop Tool</button>
@@ -973,7 +975,7 @@ button:hover {
       </div>
     </div>
 
-    <!-- Step 4: Adjustments -->
+    <!-- Step 5: Adjustments -->
     <div class="section">
       <div class="section-title">⚙️ Adjust</div>
       <div class="adj-grid">
@@ -987,7 +989,7 @@ button:hover {
       </div>
     </div>
 
-    <!-- Step 5: Download -->
+    <!-- Step 6: Download -->
     <div class="section">
       <div class="section-title">📥 Download</div>
       <div class="btn-row">
@@ -1063,9 +1065,10 @@ button:hover {
   <div class="instructions-box">
     <h4>📝 How to Use</h4>
     <ol>
+      <li>Select Type — Passport or PAN Card</li>
       <li>Upload photos — shown in selection order (#1, #2, #3...)</li>
       <li>Set quantity for each photo using the input below thumbnail</li>
-      <li>Select Type and Size</li>
+      <li>Select Size (Passport) or Photo/Signature (PAN Card)</li>
       <li>Crop with advanced controls (rotate, flip, zoom)</li>
       <li>Adjust brightness, contrast, background</li>
       <li>Generate PDF or download JPEG</li>
