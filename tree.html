@@ -74,27 +74,57 @@
   .empty { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); text-align:center; color:var(--bl); width:220px; pointer-events:none; }
   .empty span { font-size:2.8rem; opacity:.38; display:block; margin-bottom:7px; }
   .empty p { font-family:'Playfair Display',serif; font-size:.95rem; font-style:italic; opacity:.5; }
-/* FOOTER */
-footer{
-  text-align:center;
-  padding:16px;
-  background:#6b4c35;
-  color:#ffffff;
-  font-size:14px;
+
+ /* ===== FOOTER ===== */
+footer {
+    background: linear-gradient(135deg, #3d2b1f, #6b4c35);
+    color: #f5f0e8;
+    text-align: center;
+    padding: 18px 15px;
+    border-top: 3px solid #c9a84c;
+    font-family: "Times New Roman", serif;
+    font-size: 15px;
+    line-height: 1.8;
+    letter-spacing: 0.5px;
+    box-shadow: 0 -3px 12px rgba(0,0,0,0.15);
 }
 
-/* RESPONSIVE DESIGN */
-@media(max-width:1200px){
-  .layout { padding:10px 10px 14px; }
-  .sidebar { width:280px; min-width:260px; }
+footer strong {
+    color: #e8cc80;
+    font-size: 17px;
+    font-weight: bold;
 }
 
-@media(max-width:900px){
-  .layout { flex-direction:column; padding:10px 10px 14px; }
-  .sidebar { width:100%; min-width:100%; }
-  .tree-area { margin-left:0; margin-top:12px; }
-  .cwrap { min-height:300px; }
+footer .tagline {
+    display: block;
+    color: #d8c9a8;
+    font-size: 13px;
+    font-style: italic;
+    margin: 4px 0;
 }
+
+footer .developer {
+    color: #ffffff;
+    font-weight: 600;
+}
+
+footer .copyright {
+    display: block;
+    margin-top: 6px;
+    font-size: 12px;
+    color: #cdbb9d;
+}
+  /* RESPONSIVE DESIGN */
+  @media(max-width:1200px){
+    .layout { padding:10px 10px 14px; }
+    .sidebar { width:280px; min-width:260px; }
+  }
+  @media(max-width:900px){
+    .layout { flex-direction:column; padding:10px 10px 14px; }
+    .sidebar { width:100%; min-width:100%; }
+    .tree-area { margin-left:0; margin-top:12px; }
+    .cwrap { min-height:300px; }
+  }
 </style>
 </head>
 <body>
@@ -182,7 +212,7 @@ footer{
 
     <div class="panel">
       <div class="ptitle">💾 Actions</div>
-      <button class="btn-dl" onclick="dlJPEG()">⬇ Download JPEG </button>
+      <button class="btn-dl" onclick="dlJPEG()">⬇ Download JPEG</button>
       <button class="btn-clr" onclick="clearAll()">🗑 Clear All</button>
     </div>
 
@@ -266,8 +296,18 @@ footer{
     </div>
   </div>
 </div>
+
 <footer>
-  <span>Onpoint Services</span> &nbsp;•&nbsp; Developed by <span>Saurabh Ajinath Kharat</span> &nbsp;•&nbsp; © 2026
+    <strong>SK Tech Services &amp; Solutions</strong>
+    <span class="tagline">Smart Solutions for the Digital World</span>
+
+    <span class="developer">
+        Developed by Saurabh Ajinath Kharat
+    </span>
+
+    <span class="copyright">
+        © 2026 SK Tech Services &amp; Solutions. All Rights Reserved.
+    </span>
 </footer>
 
 <script>
@@ -333,7 +373,6 @@ function saveEdit(){
   const rel=document.getElementById('eRel').value;
   if(!name){alert('Enter a name.');return;}
   if(!rel){alert('Select a relation.');return;}
-  
   member.name=name;
   member.dob=document.getElementById('eDob').value;
   member.gender=document.getElementById('eGender').value;
@@ -341,7 +380,6 @@ function saveEdit(){
   member.remark=document.getElementById('eRemark').value.trim();
   const pid=document.getElementById('eParent').value;
   member.parentId=pid?parseInt(pid):null;
-  
   save();renderAll();closeModal();showToast('updated');
 }
 
@@ -390,7 +428,7 @@ function showToast(msg){
 
 function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 
-/* ===== DRAW ===== */
+/* ===== SHARED TREE LAYOUT HELPERS ===== */
 function buildH(){
   const map={};
   members.forEach(m=>{map[m.id]={...m,children:[]};});
@@ -404,56 +442,37 @@ function buildH(){
 
 function getMaxDepth(roots){
   let maxD=0;
-  function traverse(node,d){
-    maxD=Math.max(maxD,d);
-    node.children.forEach(c=>traverse(c,d+1));
-  }
+  function traverse(node,d){maxD=Math.max(maxD,d);node.children.forEach(c=>traverse(c,d+1));}
   roots.forEach(r=>traverse(r,0));
   return maxD;
 }
 
-function drawTree(){
-  const cv=document.getElementById('treeCanvas');
-  const wrap=document.getElementById('wrap');
-  const empty=document.getElementById('empty');
-  if(!members.length){empty.style.display='';cv.style.display='none';return;}
-  empty.style.display='none'; cv.style.display='block';
+/* ===== CORE RENDERER — draws on any canvas context at any pixel scale =====
+   scale=1  → screen preview
+   scale=4  → high-res export (crisp at any zoom)
+   All dimensions are defined at scale=1 and multiplied internally.
+*/
+function renderTreeOnCtx(ctx, W, H, scale){
+  const s = scale; // shorthand
+
+  /* base metrics (at scale=1, same as original drawTree) */
+  const NW=140*s, NH=72*s;
+  const HGAP=19*s;
+  const DROP=20*s;
+  const TITLE_H=30*s;
+  const FOOTER_H=16*s;
+  const PAD=19*s; // ~5mm margin
 
   const roots=buildH();
   const maxDepth=getMaxDepth(roots);
   const levels=maxDepth+1;
-
-  /* Dynamic sizing based on generations with 5mm vertical gap */
-  const PX=37.795; // pixels per cm at standard DPI
-  const MM_TO_PX=3.779528; // conversion factor: 5mm ≈ 19px
-  const VGAP_MM=5; // 5mm vertical gap between levels
-  const HGAP_MM=5; // 5mm horizontal gap between nodes
-  const MARGIN_MM=5; // 5mm margin on all sides
-  
-  const VGAP_PX=Math.round(VGAP_MM*MM_TO_PX); // ~19 pixels
-  const HGAP_PX=Math.round(HGAP_MM*MM_TO_PX); // ~19 pixels
-  const MARGIN_PX=Math.round(MARGIN_MM*MM_TO_PX); // ~19 pixels
-  
-  const BASE_W=15; // base width in cm
-  const BASE_H=10; // base height in cm
-  
-  /* node box dimensions */
-  const NW=140, NH=72;
-  const HGAP=HGAP_PX; // Use 5mm instead of fixed 28
-  const DROP=20;
-  const TITLE_H=30;
-  const FOOTER_H=16;
-  const PAD=MARGIN_PX; // Use 5mm margin
 
   /* X layout */
   let xc=0;
   function ax(node,d){
     node._d=d;
     if(!node.children.length){node._x=xc;xc+=NW+HGAP;}
-    else{
-      node.children.forEach(c=>ax(c,d+1));
-      node._x=(node.children[0]._x+node.children[node.children.length-1]._x)/2;
-    }
+    else{node.children.forEach(c=>ax(c,d+1));node._x=(node.children[0]._x+node.children[node.children.length-1]._x)/2;}
   }
   roots.forEach(r=>ax(r,0));
 
@@ -462,219 +481,204 @@ function drawTree(){
   function cd(node){(byD[node._d]=byD[node._d]||[]).push(node);node.children.forEach(cd);}
   roots.forEach(cd);
 
-  /* Calculate required width based on node layout */
+  /* content bounds */
   let minX=1e9,maxX=-1e9;
   function sx(n){if(n._x<minX)minX=n._x;if(n._x>maxX)maxX=n._x;n.children.forEach(sx);}
   roots.forEach(sx);
-  
-  const contentWidth=maxX-minX+NW; // Actual content width
-  const requiredW=2*MARGIN_PX+contentWidth;
-  const minW=Math.round(BASE_W*PX);
-  const W=Math.max(minW,requiredW); // Auto-expand if needed
 
-  /* Y layout — with fixed 5mm gap between levels, auto-expand height, 5mm margins, centered vertically */
-  const requiredH=MARGIN_PX+TITLE_H+MARGIN_PX+(levels*NH)+((levels-1)*VGAP_PX)+FOOTER_H+MARGIN_PX;
-  const minH=Math.round(BASE_H*PX);
-  const H=Math.max(minH,requiredH); // Auto-expand if needed
-  
-  // Calculate vertical centering offset
-  const contentH=(levels*NH)+((levels-1)*VGAP_PX);
-  const availableH=H-MARGIN_PX-TITLE_H-MARGIN_PX-FOOTER_H-MARGIN_PX;
-  const verticalOffset=(availableH-contentH)/2;
-  
+  /* Y layout */
+  const VGAP=19*s;
+  const contentH=(levels*NH)+((levels-1)*VGAP);
+  const availableH=H-PAD-TITLE_H-PAD-FOOTER_H-PAD;
+  const verticalOffset=Math.max(0,(availableH-contentH)/2);
   const dy={};
-  let ya=MARGIN_PX+TITLE_H+MARGIN_PX+verticalOffset;
-  for(let d=0;d<=maxDepth;d++){dy[d]=ya;ya+=NH+VGAP_PX;}
-  
+  let ya=PAD+TITLE_H+PAD+verticalOffset;
+  for(let d=0;d<=maxDepth;d++){dy[d]=ya;ya+=NH+VGAP;}
   function ay(node){node._y=dy[node._d];node.children.forEach(ay);}
   roots.forEach(ay);
 
-  /* center X with margin consideration */
-  const ox=MARGIN_PX+(W-2*MARGIN_PX-(maxX-minX+NW))/2-minX;
-
-  /* setup canvas */
-  cv.width=W; cv.height=H;
-  const ww=wrap.clientWidth-18, wh=wrap.clientHeight-18;
-  const sf=Math.min(ww/W,wh/H,1);
-  cv.style.width=(W*sf)+'px'; cv.style.height=(H*sf)+'px';
-
-  const ctx=cv.getContext('2d');
-  ctx.clearRect(0,0,W,H);
+  /* center X */
+  const ox=PAD+(W-2*PAD-(maxX-minX+NW))/2-minX;
 
   /* white bg */
   ctx.fillStyle='#fff';
   ctx.fillRect(0,0,W,H);
 
-
-
-  /* title - centered */
+  /* title */
   ctx.fillStyle='#000';
-  ctx.font='bold 13px Arial,sans-serif';
-  ctx.textAlign='center'; ctx.textBaseline='middle';
-  ctx.fillText('Family Tree',W/2,MARGIN_PX+TITLE_H/2);
+  ctx.font = `bold ${13*s}px "Times New Roman", serif`;
+  ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillText('Family Tree',W/2,PAD+TITLE_H/2);
 
-  /* ── EDGES: orthogonal straight lines ── */
-  ctx.strokeStyle='#000'; ctx.lineWidth=1;
+  /* edges */
+  ctx.strokeStyle='#000';ctx.lineWidth=1*s;
   function drawEdges(node){
     if(!node.children.length)return;
-    const px=ox+node._x+NW/2;
-    const py=node._y+NH;
-    const midY=py+DROP;
-
+    const px=ox+node._x+NW/2, py=node._y+NH, midY=py+DROP;
     ctx.beginPath();
-    ctx.moveTo(px,py); ctx.lineTo(px,midY);
+    ctx.moveTo(px,py);ctx.lineTo(px,midY);
     const fx=ox+node.children[0]._x+NW/2;
     const lx=ox+node.children[node.children.length-1]._x+NW/2;
-    ctx.moveTo(fx,midY); ctx.lineTo(lx,midY);
+    ctx.moveTo(fx,midY);ctx.lineTo(lx,midY);
     node.children.forEach(ch=>{
       const cx=ox+ch._x+NW/2;
-      ctx.moveTo(cx,midY); ctx.lineTo(cx,ch._y);
+      ctx.moveTo(cx,midY);ctx.lineTo(cx,ch._y);
     });
     ctx.stroke();
     node.children.forEach(drawEdges);
   }
   roots.forEach(drawEdges);
 
-  /* ── NODES: plain rectangles, Arial text ── */
+  /* nodes */
   function fitFont(text,maxW,sz,bold){
-    while(sz>=6){
-      ctx.font=(bold?'bold ':'')+sz+'px Arial,sans-serif';
+    while(sz>=6*s){
+        ctx.font = (bold ? 'bold ' : '') + sz + 'px "Times New Roman", serif';
       if(ctx.measureText(text).width<=maxW)break;
-      sz-=0.5;
+      sz-=0.5*s;
     }
     return sz;
   }
 
   function drawNode(node){
-    const nx=ox+node._x, ny=node._y;
+    const nx=ox+node._x,ny=node._y;
     const CX=nx+NW/2;
-    const INNER=NW-14;
+    const INNER=NW-14*s;
 
-    /* box */
-    ctx.fillStyle='#fff';
-    ctx.fillRect(nx,ny,NW,NH);
-    ctx.strokeStyle='#000';
-    ctx.strokeRect(nx,ny,NW,NH);
+    ctx.fillStyle='#fff';ctx.fillRect(nx,ny,NW,NH);
+    ctx.strokeStyle='#000';ctx.lineWidth=1*s;ctx.strokeRect(nx,ny,NW,NH);
 
-    ctx.fillStyle='#000';
-    ctx.textAlign='center';
-    ctx.textBaseline='middle';
+    ctx.fillStyle='#000';ctx.textAlign='center';ctx.textBaseline='middle';
 
-    const hasDob = !!node.dob;
-    const hasRemark = !!node.remark;
-
-    let rows = 2;
-    if(hasDob) rows++;
-    if(hasRemark) rows++;
-
-    const rowH = NH / (rows + 1);
-    let row = 1;
+    const hasDob=!!node.dob, hasRemark=!!node.remark;
+    let rows=2;
+    if(hasDob)rows++;if(hasRemark)rows++;
+    const rowH=NH/(rows+1);
+    let row=1;
 
     // Name
-    const nSz=fitFont(node.name,INNER,11,true);
-    ctx.font=`bold ${nSz}px Arial`;
-    ctx.fillText(node.name,CX,ny+rowH*row);
-    row++;
+    const nSz=fitFont(node.name,INNER,11*s,true);
+    ctx.font = `bold ${nSz}px "Times New Roman", serif`;
+    ctx.fillText(node.name,CX,ny+rowH*row);row++;
 
     // Relation
-    const rSz=fitFont(node.relation,INNER,10,false);
-    ctx.font=`${rSz}px Arial`;
-    ctx.fillText(node.relation,CX,ny+rowH*row);
-    row++;
+    const rSz=fitFont(node.relation,INNER,10*s,false);
+    ctx.font = `${rSz}px "Times New Roman", serif`;
+    ctx.fillText(node.relation,CX,ny+rowH*row);row++;
 
     // DOB
     if(hasDob){
       const pts=node.dob.split('-');
       const ds=pts.length===3?`${pts[2]}/${pts[1]}/${pts[0]}`:node.dob;
-      const dSz=fitFont(ds,INNER,9,false);
-      ctx.font=`${dSz}px Arial`;
-      ctx.fillText(ds,CX,ny+rowH*row);
-      row++;
+      const dSz=fitFont(ds,INNER,9*s,false);
+      ctx.font = `${dSz}px "Times New Roman", serif`;
+      ctx.fillText(ds,CX,ny+rowH*row);row++;
     }
 
     // Remark
     if(hasRemark){
-      const remSz=fitFont(node.remark,INNER,9,false);
-      ctx.font=`italic ${remSz}px Arial`;
-      ctx.fillStyle='#555';
-      ctx.fillText(node.remark,CX,ny+rowH*row);
+      const remSz=fitFont(node.remark,INNER,9*s,false);
+      ctx.font=`italic ${remSz}px "Times New Roman", serif`;
+      ctx.fillStyle='#555';ctx.fillText(node.remark,CX,ny+rowH*row);
     }
 
     node.children.forEach(drawNode);
   }
-
   roots.forEach(drawNode);
 
-  /* footer with margin consideration */
-  ctx.fillStyle='#aaa'; ctx.font='8px Arial,sans-serif';
-  ctx.textAlign='right'; ctx.textBaseline='bottom';
-  ctx.fillText('Generated '+new Date().toLocaleDateString(),W-MARGIN_PX-5,H-MARGIN_PX+4);
+  /* footer */
+  ctx.fillStyle='#aaa';ctx.font=`${8*s}px "Times New Roman", serif`;
+  ctx.textAlign='right';ctx.textBaseline='bottom';
+  ctx.fillText('Generated '+new Date().toLocaleDateString(),W-PAD-5*s,H-PAD+4*s);
 }
 
-/* ===== DOWNLOAD: exact size @600dpi with auto-expanding width & height ===== */
-function dlJPEG(){
-  if(!members.length){alert('Add members first.');return;}
-  
+/* ===== CALCULATE CANVAS DIMENSIONS (shared by screen + export) ===== */
+function calcCanvasDims(scale){
+  const s=scale;
+  const NW=140*s, NH=72*s, HGAP=19*s, VGAP=19*s;
+  const PAD=19*s, TITLE_H=30*s, FOOTER_H=16*s;
+  const BASE_W=15, BASE_H=10;
+  const PX_PER_CM=37.795*s;
+
   const roots=buildH();
   const maxDepth=getMaxDepth(roots);
   const levels=maxDepth+1;
-  
-  const C2I=0.393701,DPI=600;
-  const MM_TO_PX=3.779528;
-  const VGAP_MM=5;
-  const HGAP_MM=5;
-  const MARGIN_MM=5;
-  const VGAP_PX=Math.round(VGAP_MM*MM_TO_PX);
-  const HGAP_PX=Math.round(HGAP_MM*MM_TO_PX);
-  const MARGIN_PX=Math.round(MARGIN_MM*MM_TO_PX);
-  
-  const BASE_W=15, BASE_H=10;
-  const NW=140, NH=72;
-  
-  /* Calculate width */
+
+  /* x pass to measure width */
   let xc=0;
-  function axCalc(node,d){
-    if(!node.children.length){node._x=xc;xc+=NW+HGAP_PX;}
-    else{
-      node.children.forEach(c=>axCalc(c,d+1));
-      node._x=(node.children[0]._x+node.children[node.children.length-1]._x)/2;
-    }
+  function axW(node){
+    if(!node.children.length){node._xw=xc;xc+=NW+HGAP;}
+    else{node.children.forEach(c=>axW(c));node._xw=(node.children[0]._xw+node.children[node.children.length-1]._xw)/2;}
   }
+  roots.forEach(axW);
   let minX=1e9,maxX=-1e9;
-  function sxCalc(n){if(n._x<minX)minX=n._x;if(n._x>maxX)maxX=n._x;n.children.forEach(sxCalc);}
-  roots.forEach(r=>axCalc(r,0));
-  roots.forEach(sxCalc);
-  
+  function sxW(n){if(n._xw<minX)minX=n._xw;if(n._xw>maxX)maxX=n._xw;n.children.forEach(sxW);}
+  roots.forEach(sxW);
+
   const contentWidth=maxX-minX+NW;
-  const requiredW_PX=2*MARGIN_PX+contentWidth;
-  const minW_PX=Math.round(BASE_W*C2I*DPI);
-  const PW=Math.max(minW_PX,Math.round(requiredW_PX));
-  
-  /* Calculate height */
-  const requiredH_PX=MARGIN_PX+30+MARGIN_PX+(levels*NH)+((levels-1)*VGAP_PX)+16+MARGIN_PX;
-  const minH_PX=Math.round(BASE_H*C2I*DPI);
-  const PH=Math.max(minH_PX,requiredH_PX);
-  
-  const sc=document.getElementById('treeCanvas');
+  const requiredW=2*PAD+contentWidth;
+  const minW=Math.round(BASE_W*PX_PER_CM/s);
+  const W=Math.max(minW,Math.ceil(requiredW));
+
+  const requiredH=PAD+TITLE_H+PAD+(levels*NH)+((levels-1)*VGAP)+FOOTER_H+PAD;
+  const minH=Math.round(BASE_H*PX_PER_CM/s);
+  const H=Math.max(minH,Math.ceil(requiredH));
+
+  return {W,H};
+}
+
+/* ===== SCREEN DRAW ===== */
+function drawTree(){
+  const cv=document.getElementById('treeCanvas');
+  const wrap=document.getElementById('wrap');
+  const empty=document.getElementById('empty');
+  if(!members.length){empty.style.display='';cv.style.display='none';return;}
+  empty.style.display='none';cv.style.display='block';
+
+  /* Use devicePixelRatio for crisp screen rendering too */
+  const dpr=window.devicePixelRatio||1;
+  const {W,H}=calcCanvasDims(1);
+
+  cv.width=W*dpr;cv.height=H*dpr;
+  const ww=wrap.clientWidth-18,wh=wrap.clientHeight-18;
+  const sf=Math.min(ww/W,wh/H,1);
+  cv.style.width=(W*sf)+'px';cv.style.height=(H*sf)+'px';
+
+  const ctx=cv.getContext('2d');
+  ctx.scale(dpr,dpr); // scale all drawing by dpr for retina sharpness
+  renderTreeOnCtx(ctx,W,H,1);
+}
+
+/* ===== HIGH-RES JPEG DOWNLOAD =====
+   Redraws tree natively at EXPORT_SCALE × the layout dimensions.
+   No drawImage() scaling — every pixel is painted fresh.
+   EXPORT_SCALE=4 → effectively ~4× resolution = crisp at any zoom.
+*/
+function dlJPEG(){
+  if(!members.length){alert('Add members first.');return;}
+
+  const EXPORT_SCALE=4; // 4× native resolution: crisp text & lines
+  const {W,H}=calcCanvasDims(EXPORT_SCALE);
+
   const off=document.createElement('canvas');
-  off.width=PW; off.height=PH;
-  const c=off.getContext('2d');
-  c.fillStyle='#fff'; c.fillRect(0,0,PW,PH);
-  const scale=Math.min(PW/sc.width,PH/sc.height);
-  const dw=sc.width*scale, dh=sc.height*scale;
-  c.drawImage(sc,(PW-dw)/2,(PH-dh)/2,dw,dh);
-  
-  c.strokeStyle='#000'; c.lineWidth=3;
-  c.strokeRect(MARGIN_PX+2, MARGIN_PX+2, PW-2*MARGIN_PX-4, PH-2*MARGIN_PX-4);
-  
+  off.width=W;off.height=H;
+  const ctx=off.getContext('2d');
+
+  /* enable font anti-aliasing hint */
+  ctx.imageSmoothingEnabled=true;
+  ctx.imageSmoothingQuality='high';
+
+  renderTreeOnCtx(ctx,W,H,EXPORT_SCALE);
+
+
+
   const a=document.createElement('a');
   a.download='family-tree.jpg';
-  a.href=off.toDataURL('image/jpeg',1);
+  a.href=off.toDataURL('image/jpeg',0.97); // 0.97 = near-lossless quality
   a.click();
 }
 
 /* ===== INIT ===== */
-load(); renderAll();
+load();renderAll();
 window.addEventListener('resize',drawTree);
 </script>
 </body>
