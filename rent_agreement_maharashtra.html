@@ -78,6 +78,13 @@ body{
 .g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
 .full{grid-column:1/-1}
 
+/* ── DOB row ── */
+.dob-row{
+  display:grid;
+  grid-template-columns:1fr 1.5fr 1.2fr;
+  gap:8px;
+}
+
 /* ── Fields ── */
 .f{display:flex;flex-direction:column;gap:5px}
 .f label{font-size:12px;font-weight:600;color:#444}
@@ -238,13 +245,22 @@ body{
   font-size: 13px;
 }
 
+/* ── DOB label helper ── */
+.dob-label {
+  font-size:12px;font-weight:600;color:#444;margin-bottom:5px;display:block;
+}
+
 @media(max-width:600px){
   .g2,.g3{grid-template-columns:1fr}
+  .dob-row{grid-template-columns:1fr 1fr 1fr}
   body{padding:16px 8px 0}
   .site-header h1{font-size:16px}
   .history-item{flex-direction:column;align-items:flex-start}
   .history-btns{width:100%;margin-top:10px}
   .history-btns button{flex:1}
+}
+@media(max-width:400px){
+  .dob-row{grid-template-columns:1fr}
 }
 </style>
 </head>
@@ -295,8 +311,35 @@ body{
         <div class="f full"><label>Full Name</label>
           <input type="text" id="ll_name" placeholder="e.g. Komal Navnath Gadakh" oninput="syncPhotos()"/>
         </div>
-        <div class="f"><label>Age (years)</label><input type="number" id="ll_age" placeholder="e.g. 32"/></div>
-        <div class="f"><label>Occupation</label><input type="text" id="ll_occ" placeholder="e.g. Business"/></div>
+
+        <!-- DOB for Licensor -->
+        <div class="f full">
+          <label class="dob-label">Date of Birth</label>
+          <div class="dob-row">
+            <div class="f">
+              <select id="ll_dob_day" onchange="calculateOwnerAge()">
+                <option value="">Day</option>
+              </select>
+            </div>
+            <div class="f">
+              <select id="ll_dob_month" onchange="calculateOwnerAge()">
+                <option value="">Month</option>
+              </select>
+            </div>
+            <div class="f">
+              <select id="ll_dob_year" onchange="calculateOwnerAge()">
+                <option value="">Year</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="f"><label>Age (years)</label>
+          <input type="number" id="ll_age" placeholder="e.g. 32"/>
+        </div>
+        <div class="f"><label>Occupation</label>
+          <input type="text" id="ll_occ" placeholder="e.g. Business" list="dl_occ"/>
+        </div>
         <div class="f"><label>PAN Number</label><input type="text" id="ll_pan" placeholder="e.g. CIEPG0170M" style="text-transform:uppercase"/></div>
         <div class="f full"><label>Full Residential Address</label>
           <input type="text" id="ll_addr" placeholder="e.g. Paregaon Bk., Limbacha mala, Sangamner, Ahmadnagar, Maharashtra – 422611"/>
@@ -324,11 +367,21 @@ body{
         <div class="f"><label>Floor</label><input type="text" id="prop_floor" placeholder="e.g. 4th"/></div>
         <div class="f"><label>Building Name</label><input type="text" id="bldg_name" placeholder="e.g. Mhada Espacio"/></div>
         <div class="f"><label>SR / Survey Number</label><input type="text" id="survey_no" placeholder="e.g. 38"/></div>
-        <div class="f"><label>Village</label><input type="text" id="village" placeholder="e.g. Balewadi"/></div>
-        <div class="f"><label>City</label><input type="text" id="prop_city" placeholder="e.g. Pune"/></div>
-        <div class="f"><label>Taluka</label><input type="text" id="taluka" placeholder="e.g. Haveli"/></div>
-        <div class="f"><label>District &amp; PIN</label><input type="text" id="dist_pin" placeholder="e.g. Pune 411045"/></div>
-        <div class="f"><label>Municipal Corporation</label><input type="text" id="corp" placeholder="e.g. Pune Municipal Corporation"/></div>
+        <div class="f"><label>Village</label>
+          <input type="text" id="village" placeholder="e.g. Balewadi" list="dl_village"/>
+        </div>
+        <div class="f"><label>City</label>
+          <input type="text" id="prop_city" placeholder="e.g. Pune" list="dl_city"/>
+        </div>
+        <div class="f"><label>Taluka</label>
+          <input type="text" id="taluka" placeholder="e.g. Haveli" list="dl_taluka"/>
+        </div>
+        <div class="f"><label>District &amp; PIN</label>
+          <input type="text" id="dist_pin" placeholder="e.g. Pune 411045" list="dl_distpin"/>
+        </div>
+        <div class="f"><label>Municipal Corporation</label>
+          <input type="text" id="corp" placeholder="e.g. Pune Municipal Corporation" list="dl_corp"/>
+        </div>
         <div class="f"><label>Property Use</label>
           <select id="prop_use">
             <option value="Residential">Residential</option>
@@ -415,7 +468,7 @@ body{
 </div><!-- end .container -->
 
 <!-- Footer -->
-<footer>
+<footer class="footer">
   Onpoint Services &bull; Developed by Saurabh Ajinath Kharat &bull; &copy; 2026
 </footer>
 
@@ -428,8 +481,8 @@ body{
       <h3>How to Use</h3>
       <ol>
         <li>Fill in <strong>Agreement Details</strong> — date and type.</li>
-        <li>Enter <strong>Licensor (Owner)</strong> details.</li>
-        <li>Add one or more <strong>Tenants</strong> with their details.</li>
+        <li>Enter <strong>Licensor (Owner)</strong> details including Date of Birth.</li>
+        <li>Add one or more <strong>Tenants</strong> with their details and DOB.</li>
         <li>Fill the <strong>Licensed Premises</strong> (property) details.</li>
         <li>Set <strong>Period &amp; License Fee</strong> — end date and amounts in words calculate automatically.</li>
         <li>Optionally add <strong>Special Conditions</strong>.</li>
@@ -441,6 +494,8 @@ body{
       <h3>&#9889; Auto Features</h3>
       <p>&#8226; End date auto-calculates from start date + duration.<br>
          &#8226; Amount in words fills automatically when you type a number.<br>
+         &#8226; Age auto-calculates when Date of Birth is selected.<br>
+         &#8226; Age can still be manually edited after auto-calculation.<br>
          &#8226; Photos appear in the PDF signature table automatically.</p>
     </div>
     <div class="mcard">
@@ -455,32 +510,219 @@ body{
   <div class="modal">
     <button class="modal-close" onclick="document.getElementById('modal_history').classList.remove('show')">&#10005;</button>
     <h2 style="display:flex;align-items:center;">
-  <span>📖 History</span>
+      <span>&#128214; History</span>
+      <span onclick="toggleSearch()"
+            style="margin-left:auto;cursor:pointer;font-size:16px;margin-right:28px;">
+            &#128269;
+      </span>
+    </h2>
 
-  <span onclick="toggleSearch()" 
-        style="margin-left:260px;cursor:pointer;font-size:16px;">
-        🔍
-  </span>
-</h2>
+    <div id="search_container" style="display:none;margin-bottom:10px;">
+      <input
+        type="text"
+        id="history_search"
+        placeholder="Search Owner / Tenant / Property..."
+        onkeyup="searchHistory()"
+        style="width:100%;padding:8px;border:1px solid #ccc;border-radius:5px;font-family:inherit;font-size:13px;"
+      >
+    </div>
 
-
-<div id="search_container" style="display:none;margin-bottom:10px;">
-  <input 
-    type="text" 
-    id="history_search" 
-    placeholder="Search Owner / Tenant / Property..."
-    onkeyup="searchHistory()"
-    style="width:100%;padding:8px;border:1px solid #ccc;border-radius:5px;"
-  >
-</div>
-
-<div id="history_list"></div>
-
+    <div id="history_list"></div>
   </div>
 </div>
 
+<!-- ── Datalists ── -->
+<datalist id="dl_occ">
+  <option value="Student">
+  <option value="Business">
+  <option value="Service">
+  <option value="Self Employed">
+  <option value="Housewife">
+  <option value="Retired">
+  <option value="Professional">
+</datalist>
+
+<datalist id="dl_village">
+  <option value="Narhe">
+  <option value="Balewadi">
+  <option value="Baner">
+  <option value="Wakad">
+  <option value="Hinjewadi">
+  <option value="Kothrud">
+  <option value="Hadapsar">
+  <option value="Undri">
+  <option value="Kondhwa">
+  <option value="Pimple Saudagar">
+</datalist>
+
+<datalist id="dl_city">
+  <option value="Pune">
+  <option value="Pimpri">
+  <option value="Chinchwad">
+  <option value="Mumbai">
+  <option value="Nashik">
+  <option value="Aurangabad">
+  <option value="Nagpur">
+</datalist>
+
+<datalist id="dl_taluka">
+  <option value="Haveli">
+  <option value="Mulshi">
+  <option value="Maval">
+  <option value="Purandar">
+  <option value="Bhor">
+  <option value="Velhe">
+  <option value="Junnar">
+  <option value="Ambegaon">
+  <option value="Khed">
+  <option value="Shirur">
+  <option value="Daund">
+  <option value="Indapur">
+  <option value="Baramati">
+</datalist>
+
+<datalist id="dl_distpin">
+  <option value="Pune 411001">
+  <option value="Pune 411041">
+  <option value="Pune 411045">
+  <option value="Pune 411057">
+  <option value="Pune 411021">
+  <option value="Pune 411038">
+  <option value="Pune 411027">
+  <option value="Pune 411048">
+  <option value="Pimpri-Chinchwad 411017">
+  <option value="Pimpri-Chinchwad 411018">
+  <option value="Pimpri-Chinchwad 411033">
+</datalist>
+
+<datalist id="dl_corp">
+  <option value="Pune Municipal Corporation">
+  <option value="Pimpri Chinchwad Municipal Corporation">
+  <option value="Gram Panchayat">
+</datalist>
+
 <script>
-// ── History Management ────────────────────────────────────
+// ════════════════════════════════════════════════════════
+// DOB HELPERS
+// ════════════════════════════════════════════════════════
+
+var MONTHS = [
+  'January','February','March','April','May','June',
+  'July','August','September','October','November','December'
+];
+
+/**
+ * Populate Day, Month, Year dropdowns for a given prefix.
+ * prefix: e.g. 'll_dob' → creates selects: ll_dob_day, ll_dob_month, ll_dob_year
+ */
+function populateDOBSelects(prefix, dobValue) {
+  var dayEl   = document.getElementById(prefix + '_day');
+  var monEl   = document.getElementById(prefix + '_month');
+  var yearEl  = document.getElementById(prefix + '_year');
+  if (!dayEl || !monEl || !yearEl) return;
+
+  // Populate days 1-31
+  dayEl.innerHTML = '<option value="">Day</option>';
+  for (var d = 1; d <= 31; d++) {
+    dayEl.innerHTML += '<option value="' + d + '">' + d + '</option>';
+  }
+
+  // Populate months
+  monEl.innerHTML = '<option value="">Month</option>';
+  for (var m = 0; m < 12; m++) {
+    var mv = String(m + 1).padStart(2, '0');
+    monEl.innerHTML += '<option value="' + mv + '">' + MONTHS[m] + '</option>';
+  }
+
+  // Populate years from current year down to 1900
+  yearEl.innerHTML = '<option value="">Year</option>';
+  var curYear = new Date().getFullYear();
+  for (var y = curYear; y >= 1900; y--) {
+    yearEl.innerHTML += '<option value="' + y + '">' + y + '</option>';
+  }
+
+  // If a dobValue is provided (YYYY-MM-DD), set the selections
+  if (dobValue && /^\d{4}-\d{2}-\d{2}$/.test(dobValue)) {
+    var parts = dobValue.split('-');
+    var yr = parts[0], mo = parts[1], dy = parseInt(parts[2], 10);
+    yearEl.value = yr;
+    monEl.value  = mo;
+    dayEl.value  = dy;
+  }
+}
+
+/**
+ * Read DOB selects and return YYYY-MM-DD string, or '' if incomplete.
+ */
+function getDOBFromSelects(prefix) {
+  var dayEl  = document.getElementById(prefix + '_day');
+  var monEl  = document.getElementById(prefix + '_month');
+  var yearEl = document.getElementById(prefix + '_year');
+  if (!dayEl || !monEl || !yearEl) return '';
+  var d = dayEl.value, m = monEl.value, y = yearEl.value;
+  if (!d || !m || !y) return '';
+  return y + '-' + m + '-' + String(d).padStart(2, '0');
+}
+
+/**
+ * Core age calculation from a YYYY-MM-DD string.
+ * Returns calculated age as integer, or null if invalid.
+ */
+function calculateAgeFromDOB(dobValue) {
+  if (!dobValue || !/^\d{4}-\d{2}-\d{2}$/.test(dobValue)) return null;
+  var parts = dobValue.split('-');
+  var yr = parseInt(parts[0], 10);
+  var mo = parseInt(parts[1], 10);
+  var dy = parseInt(parts[2], 10);
+
+  // Validate the date is real
+  var testDate = new Date(yr, mo - 1, dy);
+  if (
+    testDate.getFullYear() !== yr ||
+    testDate.getMonth() !== mo - 1 ||
+    testDate.getDate() !== dy
+  ) {
+    return null; // invalid calendar date e.g. Feb 31
+  }
+
+  var today = new Date();
+  var age = today.getFullYear() - yr;
+  // Check if birthday has occurred this year yet
+  var birthThisYear = new Date(today.getFullYear(), mo - 1, dy);
+  if (today < birthThisYear) {
+    age--;
+  }
+  if (age < 0) return null;
+  return age;
+}
+
+/**
+ * Calculate and set age for the Licensor (Owner).
+ */
+function calculateOwnerAge() {
+  var dob = getDOBFromSelects('ll_dob');
+  var age = calculateAgeFromDOB(dob);
+  if (age !== null) {
+    document.getElementById('ll_age').value = age;
+  }
+}
+
+/**
+ * Calculate and set age for a specific tenant by number.
+ */
+function calculateTenantAge(n) {
+  var dob = getDOBFromSelects('tn' + n + '_dob');
+  var age = calculateAgeFromDOB(dob);
+  if (age !== null) {
+    var ageEl = document.getElementById('tn' + n + '_age');
+    if (ageEl) ageEl.value = age;
+  }
+}
+
+// ════════════════════════════════════════════════════════
+// HISTORY MANAGEMENT
+// ════════════════════════════════════════════════════════
+
 function getHistory() {
   var stored = localStorage.getItem('rentAgreementHistory');
   return stored ? JSON.parse(stored) : [];
@@ -489,46 +731,61 @@ function getHistory() {
 function saveHistory() {
   var history = getHistory();
 
+  // Collect tenant DOBs dynamically
+  var tenantDOBs = {};
+  for (var ti = 1; ti <= tenantCount; ti++) {
+    if (document.getElementById('t' + ti)) {
+      tenantDOBs['tenant' + ti + '_dob'] = getDOBFromSelects('tn' + ti + '_dob');
+    }
+  }
+
   var entry = {
     exec_date: gv('exec_date'),
-    reg_type: gv('reg_type'),
+    reg_type:  gv('reg_type'),
 
     ll_name: gv('ll_name'),
-    ll_age: gv('ll_age'),
-    ll_occ: gv('ll_occ'),
-    ll_pan: gv('ll_pan'),
+    ll_dob:  getDOBFromSelects('ll_dob'),
+    ll_age:  gv('ll_age'),
+    ll_occ:  gv('ll_occ'),
+    ll_pan:  gv('ll_pan'),
     ll_addr: gv('ll_addr'),
 
-    flat_no: gv('flat_no'),
-    buildup: gv('buildup'),
+    flat_no:    gv('flat_no'),
+    buildup:    gv('buildup'),
     prop_floor: gv('prop_floor'),
-    bldg_name: gv('bldg_name'),
-    survey_no: gv('survey_no'),
-    village: gv('village'),
-    prop_city: gv('prop_city'),
-    taluka: gv('taluka'),
-    dist_pin: gv('dist_pin'),
-    corp: gv('corp'),
-    prop_use: gv('prop_use'),
+    bldg_name:  gv('bldg_name'),
+    survey_no:  gv('survey_no'),
+    village:    gv('village'),
+    prop_city:  gv('prop_city'),
+    taluka:     gv('taluka'),
+    dist_pin:   gv('dist_pin'),
+    corp:       gv('corp'),
+    prop_use:   gv('prop_use'),
 
     start_date: gv('start_date'),
-    duration: gv('duration'),
-    end_date: gv('end_date'),
-    rent: gv('rent'),
-    rent_w: gv('rent_w'),
-    dep: gv('dep'),
-    dep_w: gv('dep_w'),
-    dep_mode: gv('dep_mode'),
+    duration:   gv('duration'),
+    end_date:   gv('end_date'),
+    rent:       gv('rent'),
+    rent_w:     gv('rent_w'),
+    dep:        gv('dep'),
+    dep_w:      gv('dep_w'),
+    dep_mode:   gv('dep_mode'),
 
     misc: gv('misc'),
 
     tenant1_name: gv('tn1_name'),
-    tenant1_age: gv('tn1_age'),
-    tenant1_occ: gv('tn1_occ'),
+    tenant1_dob:  getDOBFromSelects('tn1_dob'),
+    tenant1_age:  gv('tn1_age'),
+    tenant1_occ:  gv('tn1_occ'),
     tenant1_addr: gv('tn1_addr'),
 
     timestamp: new Date().toLocaleString()
   };
+
+  // Merge in extra tenant DOBs
+  for (var k in tenantDOBs) {
+    entry[k] = tenantDOBs[k];
+  }
 
   history.unshift(entry);
   if (history.length > 20) history.pop();
@@ -536,58 +793,65 @@ function saveHistory() {
   localStorage.setItem('rentAgreementHistory', JSON.stringify(history));
 }
 
-
 function loadFromHistory(index) {
   var history = getHistory();
   var entry = history[index];
   if (!entry) return;
 
   document.getElementById('exec_date').value = entry.exec_date || '';
-  document.getElementById('reg_type').value = entry.reg_type || '';
+  document.getElementById('reg_type').value  = entry.reg_type  || '';
 
   document.getElementById('ll_name').value = entry.ll_name || '';
-  document.getElementById('ll_age').value = entry.ll_age || '';
-  document.getElementById('ll_occ').value = entry.ll_occ || '';
-  document.getElementById('ll_pan').value = entry.ll_pan || '';
+  document.getElementById('ll_occ').value  = entry.ll_occ  || '';
+  document.getElementById('ll_pan').value  = entry.ll_pan  || '';
   document.getElementById('ll_addr').value = entry.ll_addr || '';
 
-  document.getElementById('flat_no').value = entry.flat_no || '';
-  document.getElementById('buildup').value = entry.buildup || '';
+  // Populate owner DOB — then recalculate age; fall back to stored age
+  populateDOBSelects('ll_dob', entry.ll_dob || '');
+  if (entry.ll_dob) {
+    calculateOwnerAge();
+  } else {
+    document.getElementById('ll_age').value = entry.ll_age || '';
+  }
+
+  document.getElementById('flat_no').value    = entry.flat_no    || '';
+  document.getElementById('buildup').value    = entry.buildup    || '';
   document.getElementById('prop_floor').value = entry.prop_floor || '';
-  document.getElementById('bldg_name').value = entry.bldg_name || '';
-  document.getElementById('survey_no').value = entry.survey_no || '';
-  document.getElementById('village').value = entry.village || '';
-  document.getElementById('prop_city').value = entry.prop_city || '';
-  document.getElementById('taluka').value = entry.taluka || '';
-  document.getElementById('dist_pin').value = entry.dist_pin || '';
-  document.getElementById('corp').value = entry.corp || '';
-  document.getElementById('prop_use').value = entry.prop_use || '';
+  document.getElementById('bldg_name').value  = entry.bldg_name  || '';
+  document.getElementById('survey_no').value  = entry.survey_no  || '';
+  document.getElementById('village').value    = entry.village    || '';
+  document.getElementById('prop_city').value  = entry.prop_city  || '';
+  document.getElementById('taluka').value     = entry.taluka     || '';
+  document.getElementById('dist_pin').value   = entry.dist_pin   || '';
+  document.getElementById('corp').value       = entry.corp       || '';
+  document.getElementById('prop_use').value   = entry.prop_use   || '';
 
   document.getElementById('start_date').value = entry.start_date || '';
-  document.getElementById('duration').value = entry.duration || '';
-  document.getElementById('end_date').value = entry.end_date || '';
-  document.getElementById('rent').value = entry.rent || '';
-  document.getElementById('rent_w').value = entry.rent_w || '';
-  document.getElementById('dep').value = entry.dep || '';
-  document.getElementById('dep_w').value = entry.dep_w || '';
-  document.getElementById('dep_mode').value = entry.dep_mode || '';
+  document.getElementById('duration').value   = entry.duration   || '';
+  document.getElementById('end_date').value   = entry.end_date   || '';
+  document.getElementById('rent').value       = entry.rent       || '';
+  document.getElementById('rent_w').value     = entry.rent_w     || '';
+  document.getElementById('dep').value        = entry.dep        || '';
+  document.getElementById('dep_w').value      = entry.dep_w      || '';
+  document.getElementById('dep_mode').value   = entry.dep_mode   || '';
 
   document.getElementById('misc').value = entry.misc || '';
 
+  // Rebuild tenants
   document.getElementById('tc').innerHTML = '';
   tenantCount = 0;
 
   addTenant({
     name: entry.tenant1_name || '',
-    age: entry.tenant1_age || '',
-    occ: entry.tenant1_occ || '',
+    dob:  entry.tenant1_dob  || '',
+    age:  entry.tenant1_age  || '',
+    occ:  entry.tenant1_occ  || '',
     addr: entry.tenant1_addr || ''
   });
 
   calcEnd();
-  aw('rent','rent_w');
-  aw('dep','dep_w');
-
+  aw('rent', 'rent_w');
+  aw('dep',  'dep_w');
   syncPhotos();
 
   document.getElementById('modal_history').classList.remove('show');
@@ -617,12 +881,12 @@ function renderHistory() {
     var item = document.createElement('div');
     item.className = 'history-item';
 
-    item.innerHTML = 
+    item.innerHTML =
       '<div class="history-text">' +
         '<div><b>Owner:</b> ' + (entry.ll_name || '-') + '</div>' +
         '<div><b>Tenant:</b> ' + (entry.tenant1_name || '-') + '</div>' +
         '<div><b>Property:</b> ' + (entry.flat_no || '') + ' ' + (entry.bldg_name || '') + ', ' + (entry.prop_city || '') + '</div>' +
-        '<div><b>Rent:</b> ₹' + (entry.rent || '-') + '</div>' +
+        '<div><b>Rent:</b> &#8377;' + (entry.rent || '-') + '</div>' +
         '<div><b>Date:</b> ' + (entry.exec_date || '-') + '</div>' +
         '<div style="font-size:11px;color:#777;">Saved: ' + entry.timestamp + '</div>' +
       '</div>' +
@@ -639,820 +903,8 @@ function openHistoryModal() {
   document.getElementById('modal_history').classList.add('show');
 }
 
-// ── Number to Words ───────────────────────────────────────
-var WO=['','One','Two','Three','Four','Five','Six','Seven','Eight','Nine',
-  'Ten','Eleven','Twelve','Thirteen','Fourteen','Fifteen','Sixteen',
-  'Seventeen','Eighteen','Nineteen'];
-var WT=['','','Twenty','Thirty','Forty','Fifty','Sixty','Seventy','Eighty','Ninety'];
-function wHelper(n) {
-  if (n===0) return '';
-  if (n<20) return WO[n]+' ';
-  if (n<100) return WT[Math.floor(n/10)]+' '+wHelper(n%10);
-  if (n<1000) return WO[Math.floor(n/100)]+' Hundred '+wHelper(n%100);
-  if (n<100000) return wHelper(Math.floor(n/1000))+'Thousand '+wHelper(n%1000);
-  if (n<10000000) return wHelper(Math.floor(n/100000))+'Lakh '+wHelper(n%100000);
-  return wHelper(Math.floor(n/10000000))+'Crore '+wHelper(n%10000000);
-}
-function n2w(n) {
-  n = parseInt(n);
-  if (isNaN(n)||n<=0) return '';
-  return wHelper(n).trim().replace(/\s+/g,' ')+' Rupees Only';
-}
-function aw(srcId, destId) {
-  var val = document.getElementById(srcId).value;
-  document.getElementById(destId).value = val ? n2w(val) : '';
-}
-
-// ── End Date ──────────────────────────────────────────────
-function calcEnd() {
-  var sv = document.getElementById('start_date').value;
-  var m  = parseInt(document.getElementById('duration').value);
-  var el = document.getElementById('end_date');
-  if (!sv || isNaN(m)) { el.value=''; return; }
-  var d = new Date(sv+'T00:00:00');
-  d.setMonth(d.getMonth()+m);
-  d.setDate(d.getDate()-1);
-  el.value = pad2(d.getDate())+'/'+pad2(d.getMonth()+1)+'/'+d.getFullYear();
-}
-function pad2(n) { return String(n).padStart(2,'0'); }
-
-// ── Photo store ───────────────────────────────────────────
-var photoStore = {};
-function syncPhotos() {
-  var grid = document.getElementById('pg');
-  grid.innerHTML = '';
-  mkSlot(grid, 'lic', 'Licensor\n'+(gv('ll_name')||'Owner'));
-  for (var i=1; i<=tenantCount; i++) {
-    if (!document.getElementById('t'+i)) continue;
-    var nm = gv('tn'+i+'_name') || ('Tenant '+i);
-    mkSlot(grid, 't'+i, 'Tenant '+i+'\n'+nm);
-  }
-}
-function mkSlot(grid, key, lbl) {
-  var slot = document.createElement('div');
-  slot.className = 'ps';
-  var prev = document.createElement('div');
-  prev.className = 'pp'+(photoStore[key] ? ' hi' : '');
-  prev.id = 'pp_'+key;
-  var img = document.createElement('img');
-  img.id = 'pi_'+key;
-  if (photoStore[key]) img.src = photoStore[key];
-  prev.innerHTML = '<span class="pi">&#128444;</span><span class="pt">Click to upload</span>';
-  prev.appendChild(img);
-  var inp = document.createElement('input');
-  inp.type = 'file'; inp.accept = 'image/*';
-  inp.setAttribute('data-key', key);
-  inp.onchange = function(e) { loadPhoto(e, this.getAttribute('data-key')); };
-  prev.appendChild(inp);
-  var lab = document.createElement('label');
-  lab.textContent = lbl;
-  slot.appendChild(prev);
-  slot.appendChild(lab);
-  grid.appendChild(slot);
-}
-function loadPhoto(e, key) {
-  var file = e.target.files[0]; if (!file) return;
-  var r = new FileReader();
-  r.onload = function(ev) {
-    photoStore[key] = ev.target.result;
-    var pp = document.getElementById('pp_'+key);
-    var pi = document.getElementById('pi_'+key);
-    if (pp) pp.className = 'pp hi';
-    if (pi) pi.src = ev.target.result;
-  };
-  r.readAsDataURL(file);
-}
-
-// ── Tenants ───────────────────────────────────────────────
-var tenantCount = 0;
-function addTenant(data) {
-  tenantCount++;
-  var n = tenantCount;
-  var d = data || {};
-  var el = document.createElement('div');
-  el.className = 'tb'; el.id = 't'+n;
-  el.innerHTML =
-    '<h4>Tenant '+n+(n>1 ? '<button class="rb" onclick="remTenant('+n+')">&#10005;</button>' : '')+'</h4>'+
-    '<div class="g3">'+
-      '<div class="f full"><label>Full Name</label>'+
-        '<input type="text" id="tn'+n+'_name" placeholder="e.g. Gagan Nilesh Varpe" value="'+(d.name||'')+'" oninput="syncPhotos()"/></div>'+
-      '<div class="f"><label>Age (years)</label><input type="number" id="tn'+n+'_age" placeholder="e.g. 19" value="'+(d.age||'')+'"/></div>'+
-      '<div class="f"><label>Occupation</label><input type="text" id="tn'+n+'_occ" placeholder="e.g. Education" value="'+(d.occ||'')+'"/></div>'+
-    '</div>'+
-    '<div class="sb" style="margin-top:9px">Permanent Address</div>'+
-    '<div style="margin-top:6px">'+
-      '<div class="f"><label>Full Address</label>'+
-        '<input type="text" id="tn'+n+'_addr" placeholder="e.g. Wabale wasti, Kanoli, Sangamner, Ahmadnagar, Maharashtra – 422605" value="'+(d.addr||'')+'"/></div>'+
-    '</div>';
-  document.getElementById('tc').appendChild(el);
-  syncPhotos();
-}
-function remTenant(n) {
-  var el = document.getElementById('t'+n);
-  if (el) el.remove();
-  delete photoStore['t'+n];
-  syncPhotos();
-}
-
-// ── Helpers ───────────────────────────────────────────────
-function gv(id) {
-  var el = document.getElementById(id);
-  return el ? el.value.trim() : '';
-}
-function fmtD(str) {
-  if (!str) return '__________';
-  if (/\d{2}\/\d{2}\/\d{4}/.test(str)) return str;
-  var d = new Date(str+'T00:00:00');
-  return pad2(d.getDate())+'/'+pad2(d.getMonth()+1)+'/'+d.getFullYear();
-}
-function fmtDLong(str) {
-  if (!str) return '__________';
-  var d = new Date(str+'T00:00:00');
-  var months=['January','February','March','April','May','June',
-    'July','August','September','October','November','December'];
-  return d.getDate()+'th '+months[d.getMonth()]+' '+d.getFullYear();
-}
-function fmtMoney(n) {
-  return n ? Number(n).toLocaleString('en-IN') : '';
-}
-function getDurLabel() {
-  var s = document.getElementById('duration');
-  return s.options[s.selectedIndex].text;
-}
-function toRoman(n) {
-  return ['I','II','III','IV','V','VI','VII','VIII','IX','X'][n-1] || String(n);
-}
-
-// ── Sample Data ───────────────────────────────────────────
-function fillSample() {
-  document.getElementById('exec_date').value = '2026-03-11';
-  document.getElementById('reg_type').value = 'Notarized';
-  document.getElementById('ll_name').value = 'Komal Navnath Gadakh';
-  document.getElementById('ll_age').value = '32';
-  document.getElementById('ll_occ').value = 'Business';
-  document.getElementById('ll_pan').value = 'CIEPG0170M';
-  document.getElementById('ll_addr').value = 'Paregaon Bk., Limbacha mala, Sangamner, Ahmadnagar, Maharashtra – 422611';
-  document.getElementById('flat_no').value = '405';
-  document.getElementById('buildup').value = '512 Square Foot';
-  document.getElementById('prop_floor').value = '4th';
-  document.getElementById('bldg_name').value = 'Mhada Espacio';
-  document.getElementById('survey_no').value = '38';
-  document.getElementById('village').value = 'Balewadi';
-  document.getElementById('prop_city').value = 'Pune';
-  document.getElementById('taluka').value = 'Haveli';
-  document.getElementById('dist_pin').value = 'Pune 411045';
-  document.getElementById('corp').value = 'Pune Municipal Corporation';
-  document.getElementById('start_date').value = '2025-09-01';
-  document.getElementById('duration').value = '11';
-  calcEnd();
-  document.getElementById('rent').value = '6000'; aw('rent','rent_w');
-  document.getElementById('dep').value = '6000';  aw('dep','dep_w');
-  document.getElementById('dep_mode').value = 'Cash';
-  document.getElementById('misc').value = '';
-  document.getElementById('tc').innerHTML = ''; tenantCount = 0;
-  addTenant({
-    name:'Gagan Nilesh Varpe', age:'19', occ:'Education',
-    addr:'Wabale wasti, Kanoli, Sangamner, Ahmadnagar, Maharashtra – 422605'
-  });
-}
-
-// ── Init ──────────────────────────────────────────────────
-addTenant();
-
-// ── PDF ───────────────────────────────────────────────────
-function genPDF() {
-  try {
-
-    var jsPDF = window.jspdf.jsPDF;
-    // CHANGED: format from 'letter' to 'legal' (8.5 x 14 inches)
-    var doc = new jsPDF({ unit:'pt', format:'legal' });
-    var PW = doc.internal.pageSize.getWidth();
-    var PH = doc.internal.pageSize.getHeight();
-    var ML = 72, MR = 72, TW = PW - ML - MR;
-    var y = 60, pageNum = 1;
-
-    // helpers
-    function addPage() {
-      putPageNum();
-      doc.addPage();
-      pageNum++;
-      y = 60;
-    }
-    function checkY(need) {
-      if (y + (need||30) > PH - 60) addPage();
-    }
-    function putPageNum() {
-      doc.setFont('times','normal'); doc.setFontSize(10);
-      doc.setTextColor(100,100,100);
-      doc.text(String(pageNum), PW/2, PH-20, {align:'center'});
-    }
-    function sf(style, size, r, g, b) {
-      doc.setFont('times', style||'normal');
-      // CHANGED: default font size from 11 to 13
-      doc.setFontSize(size||13);
-      doc.setTextColor(r!=null?r:0, g!=null?g:0, b!=null?b:0);
-    }
-
-    // ── Justified text ────────────────────────────────────
-    function justifyText(lines, x, startY, lineH, maxW, isLast) {
-      for (var li=0; li<lines.length; li++) {
-        var isLastLine = (li === lines.length-1);
-        if (isLast && isLastLine) {
-          doc.text(lines[li], x, startY + li*lineH);
-        } else {
-          var words = lines[li].split(' ');
-          if (words.length <= 1) {
-            doc.text(lines[li], x, startY + li*lineH);
-          } else {
-            var lineW = doc.getTextWidth(lines[li]);
-            var totalSpace = maxW - lineW;
-            var gaps = words.length - 1;
-            var extraPerGap = totalSpace / gaps;
-            var cx = x;
-            for (var wi=0; wi<words.length; wi++) {
-              doc.text(words[wi], cx, startY + li*lineH);
-              cx += doc.getTextWidth(words[wi]) + doc.getTextWidth(' ') + extraPerGap;
-            }
-          }
-        }
-      }
-    }
-
-    function writeLine(text, indent, gap) {
-      // CHANGED: font size from 11 to 13
-      sf('normal', 13, 0,0,0);
-      var w = TW-(indent||0);
-      var lines = doc.splitTextToSize(text, w);
-      // CHANGED: line height from 15 to 17 (proportional to font size increase)
-      var totalH = lines.length * 17 + (gap||4);
-      checkY(totalH);
-      justifyText(lines, ML+(indent||0), y, 17, w, true);
-      y += totalH;
-    }
-
-    function writeLineStyle(text, style, indent, gap) {
-      // CHANGED: font size from 11 to 13
-      sf(style||'normal', 13, 0,0,0);
-      var w = TW-(indent||0);
-      var lines = doc.splitTextToSize(text, w);
-      // CHANGED: line height from 15 to 17
-      var totalH = lines.length * 17 + (gap||4);
-      checkY(totalH);
-      justifyText(lines, ML+(indent||0), y, 17, w, true);
-      y += totalH;
-    }
-
-    function hRule() {
-      y += 6;
-    }
-
-    // ── mixedLine: word-by-word wrap for bold+normal mixed segments ──
-    function mixedLine(segments, indent, gap) {
-      var x = ML + (indent||0);
-      var maxW = TW - (indent||0);
-      // Tokenise all segments into [{word, bold}]
-      var allWords = [];
-      for (var si=0; si<segments.length; si++) {
-        var seg = segments[si];
-        if (!seg.text) continue;
-        var ws = seg.text.split(' ');
-        for (var wi=0; wi<ws.length; wi++) {
-          if (ws[wi] !== '') allWords.push({word: ws[wi], bold: seg.bold});
-          // preserve space between segments at boundary
-          else if (wi===0 && si>0 && allWords.length>0) {
-            allWords[allWords.length-1].trailSpace = true;
-          }
-        }
-      }
-      // Build lines
-      var docLines = [];
-      var curLine = [];
-      var curW = 0;
-      // CHANGED: font size from 11 to 13
-      doc.setFontSize(13);
-      for (var ai=0; ai<allWords.length; ai++) {
-        var wObj = allWords[ai];
-        if (wObj.bold) doc.setFont('times','bold'); else doc.setFont('times','normal');
-        var ww = doc.getTextWidth(wObj.word);
-        var spW = curLine.length > 0 ? doc.getTextWidth(' ') : 0;
-        if (curLine.length > 0 && curW + spW + ww > maxW) {
-          docLines.push(curLine);
-          curLine = [{word: wObj.word, bold: wObj.bold, w: ww}];
-          curW = ww;
-        } else {
-          curLine.push({word: wObj.word, bold: wObj.bold, w: ww});
-          curW += spW + ww;
-        }
-      }
-      if (curLine.length > 0) docLines.push(curLine);
-
-      // Render each line with justification
-      for (var li=0; li<docLines.length; li++) {
-        // CHANGED: checkY from 15 to 17
-        checkY(17);
-        var dLine = docLines[li];
-        var isLastLine = (li === docLines.length-1);
-        // Compute total text width and space
-        var totalW = 0;
-        for (var di=0; di<dLine.length; di++) totalW += dLine[di].w;
-        var gaps = dLine.length - 1;
-        var baseSpW = doc.getTextWidth(' ');
-        var extraSp = (!isLastLine && gaps > 0) ? (maxW - totalW - gaps*baseSpW) / gaps : 0;
-        var cx = x;
-        // CHANGED: font size from 11 to 13
-        doc.setFontSize(13); doc.setTextColor(0,0,0);
-        for (var di=0; di<dLine.length; di++) {
-          var wObj = dLine[di];
-          if (wObj.bold) doc.setFont('times','bold'); else doc.setFont('times','normal');
-          doc.text(wObj.word, cx, y);
-          if (wObj.bold) {
-            doc.setDrawColor(0); doc.setLineWidth(0.4);
-            doc.line(cx, y+2, cx+wObj.w, y+2);
-          }
-          cx += wObj.w + (di < dLine.length-1 ? baseSpW + extraSp : 0);
-        }
-        // CHANGED: line increment from 15 to 17
-        y += 17;
-      }
-      doc.setFont('times','normal');
-      y += (gap||4);
-    }
-
-    function clause(num, title, body) {
-      var parts = body.split('\n');
-      var label = num+') '+title+':';
-      var indent = 18; // body indent from left margin
-
-      checkY(30);
-      // Draw bold label on its own line
-      // CHANGED: font size from 11 to 13
-      doc.setFont('times','bold'); doc.setFontSize(13); doc.setTextColor(0,0,0);
-      doc.text(label, ML, y);
-      y += 18;
-
-      // First paragraph — justified, indented
-      var firstWrapped = doc.splitTextToSize(parts[0], TW - indent);
-      // CHANGED: line height from 15 to 17
-      checkY(firstWrapped.length * 17 + 6);
-      doc.setFont('times','normal'); doc.setFontSize(13);
-      justifyText(firstWrapped, ML + indent, y, 17, TW - indent, true);
-      y += firstWrapped.length * 17 + 4;
-
-      // Extra paragraphs (after \n)
-      for (var pi=1; pi<parts.length; pi++) {
-        if (!parts[pi]) continue;
-        var rLines = doc.splitTextToSize(parts[pi], TW - indent);
-        // CHANGED: line height from 15 to 17
-        checkY(rLines.length*17+4);
-        justifyText(rLines, ML + indent, y, 17, TW - indent, true);
-        y += rLines.length*17+4;
-      }
-      y += 8;
-    }
-
-
-
-    // Collect tenants
-    var tenants = [];
-    for (var ti=1; ti<=tenantCount; ti++) {
-      if (!document.getElementById('t'+ti)) continue;
-      var tnm = gv('tn'+ti+'_name');
-      if (!tnm) continue;
-      tenants.push({
-        name: tnm,
-        age:  gv('tn'+ti+'_age'),
-        occ:  gv('tn'+ti+'_occ'),
-        addr: gv('tn'+ti+'_addr'),
-        key:  't'+ti
-      });
-    }
-
-    // Save to history BEFORE generating PDF
-    var ownerName = gv('ll_name');
-    var tenant1Name = (tenants.length > 0) ? tenants[0].name : '';
-    if (ownerName || tenant1Name) {
-      saveHistory();
-    }
-
-    // Data
-    var execDate    = gv('exec_date');
-    var execLong    = execDate ? fmtDLong(execDate) : '__________';
-    var execPlace   = 'PUNE';
-    var regType     = gv('reg_type') || 'Notarized';
-    var propUse     = gv('prop_use') || 'Residential';
-    var dur         = getDurLabel();
-    var startD      = fmtD(gv('start_date'));
-    var endD        = gv('end_date') || '__________';
-    var rentAmt     = gv('rent') ? fmtMoney(gv('rent')) : '______';
-    var rentW       = gv('rent_w') || '______';
-    var depAmt      = gv('dep') ? fmtMoney(gv('dep')) : '______';
-    var depW        = gv('dep_w') || '______';
-    var depMode     = gv('dep_mode') || 'Cash';
-    var llName      = gv('ll_name') || '________________________';
-    var llAge       = gv('ll_age')  || '__';
-    var llOcc       = gv('ll_occ')  || '____________';
-    var llPAN       = gv('ll_pan')  || '____________';
-    var llAddr      = gv('ll_addr') || '________________________';
-    var flatNo      = gv('flat_no')    || '____';
-    var builtup     = gv('buildup')    || '____';
-    var floorNo     = gv('prop_floor') || '____';
-    var bldgNm      = gv('bldg_name')  || '________________________';
-    var srNo        = gv('survey_no')  || '____';
-    var vill        = gv('village')    || '________________________';
-    var pCity       = gv('prop_city')  || '________________________';
-    var taluka      = gv('taluka')     || '________________________';
-    var distPin     = gv('dist_pin')   || '________________________';
-    var corp        = gv('corp')       || '________________________';
-    var miscText    = gv('misc');
-
-    // ════════════════════════════════════════════
-    // PAGE 1 — Title + Parties + Whereas
-    // ════════════════════════════════════════════
-
-    // Title
-    sf('bold',16); doc.setTextColor(0,0,0);
-    doc.text('LEAVE AND LICENSE AGREEMENT', PW/2, y, {align:'center'});
-    y += 24;
-    // CHANGED: font size from 11 to 13
-    sf('bold',13);
-    doc.text('THIS LEAVE AND LICENSE AGREEMENT IS MADE AND EXECUTED', PW/2, y, {align:'center'});
-    y += 18;
-    doc.text('ON '+execLong.toUpperCase()+' AT '+execPlace.toUpperCase(), PW/2, y, {align:'center'});
-    y += 22;
-    hRule();
-
-    writeLine('Between,', 0, 8);
-
-    // Licensor — user inputs bold+underlined
-    // CHANGED: font size from 11 to 13
-    sf('normal',13); doc.setTextColor(0,0,0);
-    mixedLine([
-      {text:(i+1 ? '' : ''), bold:false},
-      {text:llName, bold:true},
-      {text:', Age:', bold:false},
-      {text:llAge+' Years', bold:true},
-      {text:', Occupation: ', bold:false},
-      {text:llOcc, bold:true},
-      {text:',', bold:false}
-    ], 0, 2);
-    mixedLine([
-      {text:'Residing at: ', bold:false},
-      {text:llAddr, bold:true},
-      {text:'.', bold:false}
-    ], 0, 2);
-    mixedLine([
-      {text:'PAN – ', bold:false},
-      {text:llPAN, bold:true}
-    ], 0, 8);
-    writeLineStyle("HEREINAFTER called 'the Licensors (owner) (which expression shall mean and include the Licensors above named and also his/her/their respective heirs, successors, assigns, executors and administrators)", 'italic', 0, 10);
-    writeLine('AND', 0, 8);
-
-    // Tenants
-    if (tenants.length === 0) {
-      writeLine('1) ________________________, Age: __, Occupation: ____________,', 0, 2);
-      writeLine('Residing at: ________________________.', 0, 8);
-      writeLineStyle("HEREINAFTER called 'the Licensees' (Tenant) (which expression shall mean and include only Licensees above named).", 'italic', 0, 10);
-    } else {
-      for (var i=0; i<tenants.length; i++) {
-        var t = tenants[i];
-        mixedLine([
-          {text:(i+1)+') ', bold:false},
-          {text:t.name, bold:true},
-          {text:', Age: ', bold:false},
-          {text:t.age, bold:true},
-          {text:', Occupation: ', bold:false},
-          {text:t.occ, bold:true},
-          {text:',', bold:false}
-        ], 0, 2);
-        mixedLine([
-          {text:'Residing at: ', bold:false},
-          {text:t.addr, bold:true},
-          {text:'.', bold:false}
-        ], 0, 8);
-        writeLineStyle("HEREINAFTER called 'the Licensees' (Tenant) (which expression shall mean and include only Licensees above named).", 'italic', 0, 10);
-      }
-    }
-
-    hRule();
-
-    writeLine('WHEREAS the Licensors is absolutely seized and possessed of and or otherwise well and sufficiently entitled to all that constructed portion being unit described in Schedule I hereunder written and are hereafter for the sake of brevity called or referred to as Licensed Premises and is/are desirous of giving the said premises on Leave and License basis under Section 24 of the Maharashtra Rent Control Act, 1999.', 0, 8);
-    mixedLine([
-      {text:'AND WHEREAS the Licensees herein is in need of temporary premises for ', bold:false},
-      {text:propUse, bold:true},
-      {text:' use has/have approached the Licensors with a request to allow the Licensees herein to use and occupy the said premises on Leave and License basis for a period of ', bold:false},
-      {text:dur, bold:true},
-      {text:' commencing from ', bold:false},
-      {text:startD, bold:true},
-      {text:' and ending on ', bold:false},
-      {text:endD, bold:true},
-      {text:', on terms and subject to conditions hereafter appearing.', bold:false}
-    ], 0, 8);
-    mixedLine([
-      {text:'AND WHEREAS the Licensor have agreed to allow the Licensees herein to use and occupy the said Licensed premises for his aforesaid ', bold:false},
-      {text:propUse, bold:true},
-      {text:' purposes only, on Leave and License basis for above mentioned period, on terms and subject to conditions hereafter appearing;', bold:false}
-    ], 0, 10);
-    writeLineStyle('NOW THEREFORE IT IS HEREBY AGREED TO, DECLARED AND RECORDED BY AND BETWEEN THE PARTIES HERETO AS FOLLOWS: -', 'bold', 0, 10);
-
-    // clauseV — like clause but replaces [[value]] tokens with bold+underlined text
-    function clauseV(num, title, body) {
-      var label = num+') '+title+':';
-      var indent = 18;
-      checkY(30);
-      // CHANGED: font size from 11 to 13
-      doc.setFont('times','bold'); doc.setFontSize(13); doc.setTextColor(0,0,0);
-      doc.text(label, ML, y);
-      y += 18;
-
-      // Parse body into segments: normal text and [[bold]] tokens
-      var segments = [];
-      var parts2 = body.split(/\n/);
-      for (var pj=0; pj<parts2.length; pj++) {
-        if (pj>0) segments.push({text:'\n', bold:false});
-        var tokens = parts2[pj].split(/(\[\[.*?\]\])/);
-        for (var tk=0; tk<tokens.length; tk++) {
-          var tok = tokens[tk];
-          if (/^\[\[.*\]\]$/.test(tok)) {
-            segments.push({text: tok.slice(2,-2), bold:true});
-          } else if (tok) {
-            segments.push({text: tok, bold:false});
-          }
-        }
-      }
-
-      // Render segments with justification, wrapping at TW-indent
-      var maxW = TW - indent;
-      var cx = ML + indent;
-      var lineWords = []; // {text, bold, w}
-      var lineW = 0;
-
-      function flushLine(isLast) {
-        if (lineWords.length === 0) return;
-        var totalTextW = 0;
-        for (var k=0; k<lineWords.length; k++) totalTextW += lineWords[k].w;
-        var spaces = lineWords.length - 1;
-        var baseSpace = doc.getTextWidth(' ');
-        var extraSpace = (!isLast && spaces > 0) ? (maxW - totalTextW - spaces*baseSpace) / spaces : 0;
-        var rx = ML + indent;
-        for (var k=0; k<lineWords.length; k++) {
-          if (lineWords[k].bold) {
-            doc.setFont('times','bold');
-            doc.text(lineWords[k].text, rx, y);
-            doc.setDrawColor(0); doc.setLineWidth(0.4);
-            doc.line(rx, y+2, rx+lineWords[k].w, y+2);
-          } else {
-            doc.setFont('times','normal');
-            doc.text(lineWords[k].text, rx, y);
-          }
-          rx += lineWords[k].w;
-          if (k < lineWords.length-1) rx += baseSpace + extraSpace;
-        }
-        lineWords = []; lineW = 0;
-        // CHANGED: line height from 15 to 17
-        y += 17;
-      }
-
-      // CHANGED: font size from 11 to 13
-      doc.setFontSize(13); doc.setTextColor(0,0,0);
-      for (var si=0; si<segments.length; si++) {
-        var seg = segments[si];
-        // CHANGED: checkY from 15 to 17
-        if (seg.text === '\n') { flushLine(true); checkY(17); continue; }
-        if (seg.bold) doc.setFont('times','bold'); else doc.setFont('times','normal');
-        var segWords = seg.text.split(' ');
-        for (var wi=0; wi<segWords.length; wi++) {
-          var word = segWords[wi]; if (!word) continue;
-          var ww = doc.getTextWidth(word);
-          var spW = (lineWords.length > 0) ? doc.getTextWidth(' ') : 0;
-          if (lineW + spW + ww > maxW && lineWords.length > 0) {
-            // CHANGED: checkY from 15 to 17
-            flushLine(false); checkY(17);
-          }
-          lineWords.push({text:word, bold:seg.bold, w:ww});
-          lineW += (lineWords.length>1 ? doc.getTextWidth(' ') : 0) + ww;
-        }
-      }
-      flushLine(true); // last line left-aligned
-      y += 6;
-    }
-
-    // Clauses 1 & 2
-    clauseV('1', 'Period',
-      'That the Licensors hereby grants to the Licensees herein a revocable leave and license, to occupy the Licensed Premises, described in Schedule I hereunder written without creating any tenancy rights or any other rights, title and interest in favour of the Licensees for a period of [['+dur+']] commencing from [['+startD+']] and ending on [['+endD+']].');
-
-    clauseV('2', 'License Fee/Rent',
-      'That the Licensees shall pay to the Licensors a total sum of Rs. [['+rentAmt+']]/- ([['+rentW+']]) per month, inclusive of maintenance charges, for the use of the said licensed premises for a period of  [['+dur+']]. The said amount shall be payable within the first five days of the concerned month of Leave and License.');
-
-    clauseV('3', 'Payment of Deposit',
-      'That the Licensees have paid / shall pay the above-mentioned deposit/premium as mentioned above by [['+depMode+']]. Amount [['+depAmt+']]/- ([['+depW+']])');
-
-    clause('4', 'Maintenance Charges',
-      'That the all outgoings including all rates, taxes, levies, assessment, maintenance charges, non-occupancy charges, etc. in respect of the said premises shall be paid by the Licensor.');
-
-    clause('5', 'Electricity Charges',
-      'The Licensees herein shall pay the electricity bills directly for energy consumed on the licensed premises and should submit original receipts to Licensors indicating that the electricity bills are paid.');
-
-    clauseV('6', 'Use',
-      'That the Licensed premises shall only be used by the Licensees for [['+propUse+']] purpose. The Licensees shall maintain the said premises in its existing condition and damage, if any, caused to the said premises, the same shall be repaired by the Licensees at its own cost subject to normal wear and tear. The Licensees shall not do anything in the said premises which is or is likely to cause a nuisance to the other occupants of the said building or to the prejudice in any manner to the rights of Licensors in respect of said premises or shall not do any unlawful activities prohibited by State or Central Government.');
-
-    clause('7', 'Alteration',
-      'That the Licensees shall not make or permit to do any alteration or addition to the construction or arrangements (internal or external) to the Licensed premises without previous consent in writing from the Licensors.');
-
-    clause('8', 'No Tenancy',
-      'That the Licensees shall not claim any tenancy right and shall not have any right to transfer, assign, and sublet or grant any license or sub-license in respect of the Licensed Premises or any part thereof and also shall not mortgage or raise any loan against the said premises.');
-
-    clause('9', 'Inspection',
-      'That, the Licensors shall on reasonable notice given by the Licensors to the Licensees shall have a right of access either by himself / herself / themselves or through authorized representative to enter, view and inspect the Licensed premises at reasonable intervals.');
-
-    clause('10', 'Cancellation',
-      'That, Subject to the condition of lock in period (if any), if the Licensees commits default in regular and punctual payments of monthly compensation as herein before mentioned or commit/s breach of any of the terms, covenants and conditions of this agreement or if any legislation prohibiting the Leave and License is imposed, the Licensors shall be entitled to revoke and / or cancel the License hereby granted, by giving notice in writing of one month and the Licensees too will have the right to vacate the said premises by giving a notice in writing of one month to the Licensors as mentioned earlier.');
-
-    clause('11', 'Possession',
-      'That the immediately at on the expiration or termination or cancellation of this agreement the Licensees shall vacate the said premises without delay with all his goods and belongings. In the event of the Licensees failing and / or neglecting to remove himself and / or his articles from the said premises on expiry or sooner determination of this Agreement, the Licensors shall be entitled to recover damages at the rate of double the daily amount of compensation per day and or alternatively the Licensors shall be entitled to remove the Licensees and his belongings from the Licensed premises, without recourse to the Court of Law.');
-
-    if (miscText) {
-      clauseV('12', 'Miscellaneous', miscText);
-      clauseV('13', 'Registration',
-        'This Agreement is to be [['+regType+']] and the expenditure of Stamp duty and registration fees and incidental charges, if any, shall be borne by the Licensees Only');
-    } else {
-      clauseV('12', 'Registration',
-        'This Agreement is to be [['+regType+']] and the expenditure of Stamp duty and registration fees and incidental charges, if any, shall be borne by the Licensees Only');
-    }
-
-    // ════════════════════════════════════════════
-    // Schedule I — continues after last clause
-    // ════════════════════════════════════════════
-    y += 6;
-    checkY(60);
-    sf('bold',14); doc.setTextColor(0,0,0);
-    doc.text('SCHEDULE I', PW/2, y, {align:'center'}); y+=20;
-    // CHANGED: font size from 11 to 13
-    sf('italic',13);
-    doc.text('(Being the correct description of premise Apartment/Flat which is the subject matter of these presents)', PW/2, y, {align:'center', maxWidth: TW});
-    y += 28;
-
-    // Render Schedule I body — user values bold+underlined
-    (function() {
-      var body = 'All that constructed portion being unit bearing Flat No – [['+flatNo+']] Built-up: [['+builtup+']], situated on the [['+floorNo+']] Floor of a Building known as [['+bldgNm+']], SR Number: [['+srNo+']], of Village: [['+vill+']], [['+pCity+']], situated within the revenue limits of Taluka [['+taluka+']] and Dist. [['+distPin+']] and situated within the limits of [['+corp+']].';
-      var maxW = TW;
-      var tokens = body.split(/(\[\[.*?\]\])/);
-      var segments = [];
-      for (var tk=0; tk<tokens.length; tk++) {
-        var tok = tokens[tk];
-        if (/^\[\[.*\]\]$/.test(tok)) {
-          segments.push({text: tok.slice(2,-2), bold:true});
-        } else if (tok) {
-          segments.push({text: tok, bold:false});
-        }
-      }
-      // Word-wrap segments with justify
-      var lineWords = [];
-      var lineW = 0;
-      function flushLine(isLast) {
-        if (!lineWords.length) return;
-        var totalTextW = 0;
-        for (var k=0; k<lineWords.length; k++) totalTextW += lineWords[k].w;
-        var spaces = lineWords.length - 1;
-        var baseSpace = doc.getTextWidth(' ');
-        var extraSpace = (!isLast && spaces > 0) ? (maxW - totalTextW - spaces*baseSpace) / spaces : 0;
-        var rx = ML;
-        // CHANGED: font size from 11 to 13
-        doc.setFontSize(13); doc.setTextColor(0,0,0);
-        for (var k=0; k<lineWords.length; k++) {
-          if (lineWords[k].bold) {
-            doc.setFont('times','bold');
-            doc.text(lineWords[k].text, rx, y);
-            doc.setDrawColor(0); doc.setLineWidth(0.4);
-            doc.line(rx, y+2, rx+lineWords[k].w, y+2);
-          } else {
-            doc.setFont('times','normal');
-            doc.text(lineWords[k].text, rx, y);
-          }
-          rx += lineWords[k].w + (k < lineWords.length-1 ? baseSpace + extraSpace : 0);
-        }
-        lineWords = []; lineW = 0;
-        // CHANGED: line height from 15 to 17
-        y += 17;
-      }
-      // CHANGED: font size from 11 to 13
-      doc.setFontSize(13);
-      for (var si=0; si<segments.length; si++) {
-        var seg = segments[si];
-        if (seg.bold) doc.setFont('times','bold'); else doc.setFont('times','normal');
-        var segWords = seg.text.split(' ');
-        for (var wi=0; wi<segWords.length; wi++) {
-          var word = segWords[wi]; if (!word) continue;
-          var ww = doc.getTextWidth(word);
-          var spW = lineWords.length > 0 ? doc.getTextWidth(' ') : 0;
-          if (lineW + spW + ww > maxW && lineWords.length > 0) {
-            // CHANGED: checkY from 15 to 17
-            checkY(17); flushLine(false);
-          }
-          if (lineWords.length > 0) lineW += doc.getTextWidth(' ');
-          lineWords.push({text:word, bold:seg.bold, w:ww});
-          lineW += ww;
-        }
-      }
-      // CHANGED: checkY from 15 to 17
-      checkY(17); flushLine(true);
-    })();
-
-    y += 14;
-    writeLine('IN WITNESS WHEREOF the parties hereto have set and subscribed their respective signatures by way of putting thumb impression electronic signature hereto in the presence of witness, who are identifying the executants, on the day, month and year first above written.', 0, 16);
-
-    // ── Signature Table ───────────────────────
-    var allParties = [{ name: llName, role: 'Licensors/ Owner', key: 'lic' }];
-    for (var pi=0; pi<tenants.length; pi++) {
-      allParties.push({ name: tenants[pi].name, role: 'Licensees/Tenant', key: tenants[pi].key });
-    }
-
-    var C1x = ML, C1w = 210;
-    var C2x = ML+C1w, C2w = 110;
-    var C3x = ML+C1w+C2w, C3w = TW-C1w-C2w;
-    var ROW_H = 115, HDR_H = 46;
-
-    checkY(HDR_H + ROW_H + 10);
-    doc.setDrawColor(0); doc.setLineWidth(0.8);
-    doc.rect(C1x, y, C1w, HDR_H);
-    doc.rect(C2x, y, C2w, HDR_H);
-    doc.rect(C3x, y, C3w, HDR_H);
-    sf('bold', 9); doc.setTextColor(0,0,0);
-    doc.text('NAME OF THE EXECUTANTS', C1x+C1w/2, y+16, {align:'center'});
-    doc.text('PHOTOGRAPH',             C2x+C2w/2, y+16, {align:'center'});
-    doc.text('LEFT HAND THUMB',  C3x+C3w/2, y+10, {align:'center'});
-    doc.text('IMPRESSION &',     C3x+C3w/2, y+22, {align:'center'});
-    doc.text('SIGNATURE',        C3x+C3w/2, y+34, {align:'center'});
-    y += HDR_H;
-
-    for (var ri=0; ri<allParties.length; ri++) {
-      var party = allParties[ri];
-      checkY(ROW_H+4);
-      var ry = y;
-      doc.setLineWidth(0.8);
-      doc.rect(C1x, ry, C1w, ROW_H);
-      doc.rect(C2x, ry, C2w, ROW_H);
-      doc.rect(C3x, ry, C3w, ROW_H);
-      sf('bold',9); doc.setTextColor(0,0,0);
-      doc.text(toRoman(ri+1)+'. Signed, Sealed and Delivered', C1x+6, ry+14);
-      sf('normal',9);
-      doc.text('by within named '+party.role, C1x+6, ry+26);
-      sf('bold',10);
-      var nameW = doc.splitTextToSize(party.name, C1w-12);
-      for (var ni=0; ni<nameW.length; ni++) {
-        doc.text(nameW[ni], C1x+6, ry+42+ni*13);
-      }
-      if (photoStore[party.key]) {
-        try {
-          var mime = photoStore[party.key].split(';')[0].split(':')[1];
-          var fmt  = mime === 'image/png' ? 'PNG' : 'JPEG';
-          doc.addImage(photoStore[party.key], fmt, C2x+4, ry+4, C2w-8, ROW_H-8);
-        } catch(imgErr) {
-          sf('normal',8,150,150,150);
-          doc.text('Photo', C2x+C2w/2, ry+ROW_H/2, {align:'center'});
-        }
-      } else {
-        sf('normal',8,170,170,170);
-        doc.text('Affix',      C2x+C2w/2, ry+ROW_H/2-6, {align:'center'});
-        doc.text('Photograph', C2x+C2w/2, ry+ROW_H/2+6, {align:'center'});
-      }
-      sf('normal',8,60,60,60);
-      doc.text('Thumb Impression:', C3x+6, ry+22);
-      doc.setDrawColor(100,100,100); doc.setLineWidth(0.4);
-      doc.line(C3x+6, ry+50, C3x+C3w-6, ry+50);
-      doc.text('Signature:', C3x+6, ry+70);
-      doc.line(C3x+6, ry+95, C3x+C3w-6, ry+95);
-      y += ROW_H;
-    }
-
-    y += 20;
-    // CHANGED: font size from 11 to 13
-    sf('bold',13); doc.setTextColor(0,0,0);
-    writeLine('Witnesses:', 0, 10);
-    sf('normal',13);
-    writeLine('1. Sign : ___________', 0, 4);
-    writeLine('   Name : __________________________________________', 0, 4);
-    writeLine('   Add  : __________________________________________', 0, 12);
-    writeLine('2. Sign : ___________', 0, 4);
-    writeLine('   Name : __________________________________________', 0, 4);
-    writeLine('   Add  : __________________________________________', 0, 6);
-
-    putPageNum();
-
-    var fn = (gv('ll_name')||'Licensor').replace(/[^a-zA-Z0-9]/g,'_').replace(/_+/g,'_');
-    var tn = tenants.length>0 ? tenants[0].name.replace(/[^a-zA-Z0-9]/g,'_').replace(/_+/g,'_') : 'Licensee';
-    doc.save('LeaveAndLicense_'+fn+'_'+tn+'.pdf');
-
-    document.getElementById('toast').classList.add('show');
-    setTimeout(function() { document.getElementById('toast').classList.remove('show'); }, 3000);
-
-  } catch(err) {
-    alert('PDF Error: '+err.message);
-    console.error(err);
-  }
-}
 function toggleSearch() {
   var box = document.getElementById('search_container');
-
   if (box.style.display === 'none') {
     box.style.display = 'block';
     document.getElementById('history_search').focus();
@@ -1472,10 +924,10 @@ function searchHistory() {
 
   var filtered = history.filter(function(entry) {
     return (
-      (entry.ll_name || '').toLowerCase().includes(input) ||
-      (entry.tenant1_name || '').toLowerCase().includes(input) ||
-      (entry.bldg_name || '').toLowerCase().includes(input) ||
-      (entry.prop_city || '').toLowerCase().includes(input)
+      (entry.ll_name        || '').toLowerCase().includes(input) ||
+      (entry.tenant1_name   || '').toLowerCase().includes(input) ||
+      (entry.bldg_name      || '').toLowerCase().includes(input) ||
+      (entry.prop_city      || '').toLowerCase().includes(input)
     );
   });
 
@@ -1484,27 +936,868 @@ function searchHistory() {
     return;
   }
 
-  filtered.forEach(function(entry, idx) {
+  filtered.forEach(function(entry) {
+    var origIdx = history.indexOf(entry);
     var item = document.createElement('div');
     item.className = 'history-item';
 
-    item.innerHTML = 
+    item.innerHTML =
       '<div class="history-text">' +
         '<div><b>Owner:</b> ' + (entry.ll_name || '-') + '</div>' +
         '<div><b>Tenant:</b> ' + (entry.tenant1_name || '-') + '</div>' +
         '<div><b>Property:</b> ' + (entry.flat_no || '') + ' ' + (entry.bldg_name || '') + ', ' + (entry.prop_city || '') + '</div>' +
-        '<div><b>Rent:</b> ₹' + (entry.rent || '-') + '</div>' +
+        '<div><b>Rent:</b> &#8377;' + (entry.rent || '-') + '</div>' +
         '<div><b>Date:</b> ' + (entry.exec_date || '-') + '</div>' +
         '<div style="font-size:11px;color:#777;">Saved: ' + entry.timestamp + '</div>' +
       '</div>' +
       '<div class="history-btns">' +
-        '<button onclick="loadFromHistory(' + history.indexOf(entry) + ')">Load</button>' +
+        '<button onclick="loadFromHistory(' + origIdx + ')">Load</button>' +
       '</div>';
 
     listEl.appendChild(item);
   });
 }
 
+// ════════════════════════════════════════════════════════
+// NUMBER TO WORDS
+// ════════════════════════════════════════════════════════
+
+var WO = ['','One','Two','Three','Four','Five','Six','Seven','Eight','Nine',
+  'Ten','Eleven','Twelve','Thirteen','Fourteen','Fifteen','Sixteen',
+  'Seventeen','Eighteen','Nineteen'];
+var WT = ['','','Twenty','Thirty','Forty','Fifty','Sixty','Seventy','Eighty','Ninety'];
+
+function wHelper(n) {
+  if (n === 0)       return '';
+  if (n < 20)        return WO[n] + ' ';
+  if (n < 100)       return WT[Math.floor(n / 10)] + ' ' + wHelper(n % 10);
+  if (n < 1000)      return WO[Math.floor(n / 100)] + ' Hundred ' + wHelper(n % 100);
+  if (n < 100000)    return wHelper(Math.floor(n / 1000)) + 'Thousand ' + wHelper(n % 1000);
+  if (n < 10000000)  return wHelper(Math.floor(n / 100000)) + 'Lakh ' + wHelper(n % 100000);
+  return wHelper(Math.floor(n / 10000000)) + 'Crore ' + wHelper(n % 10000000);
+}
+
+function n2w(n) {
+  n = parseInt(n);
+  if (isNaN(n) || n <= 0) return '';
+  return wHelper(n).trim().replace(/\s+/g, ' ') + ' Rupees Only';
+}
+
+function aw(srcId, destId) {
+  var val = document.getElementById(srcId).value;
+  document.getElementById(destId).value = val ? n2w(val) : '';
+}
+
+// ════════════════════════════════════════════════════════
+// END DATE
+// ════════════════════════════════════════════════════════
+
+function calcEnd() {
+  var sv = document.getElementById('start_date').value;
+  var m  = parseInt(document.getElementById('duration').value);
+  var el = document.getElementById('end_date');
+  if (!sv || isNaN(m)) { el.value = ''; return; }
+  var d = new Date(sv + 'T00:00:00');
+  d.setMonth(d.getMonth() + m);
+  d.setDate(d.getDate() - 1);
+  el.value = pad2(d.getDate()) + '/' + pad2(d.getMonth() + 1) + '/' + d.getFullYear();
+}
+
+function pad2(n) { return String(n).padStart(2, '0'); }
+
+// ════════════════════════════════════════════════════════
+// PHOTO STORE
+// ════════════════════════════════════════════════════════
+
+var photoStore = {};
+
+function syncPhotos() {
+  var grid = document.getElementById('pg');
+  grid.innerHTML = '';
+  mkSlot(grid, 'lic', 'Licensor\n' + (gv('ll_name') || 'Owner'));
+  for (var i = 1; i <= tenantCount; i++) {
+    if (!document.getElementById('t' + i)) continue;
+    var nm = gv('tn' + i + '_name') || ('Tenant ' + i);
+    mkSlot(grid, 't' + i, 'Tenant ' + i + '\n' + nm);
+  }
+}
+
+function mkSlot(grid, key, lbl) {
+  var slot = document.createElement('div');
+  slot.className = 'ps';
+  var prev = document.createElement('div');
+  prev.className = 'pp' + (photoStore[key] ? ' hi' : '');
+  prev.id = 'pp_' + key;
+  var img = document.createElement('img');
+  img.id = 'pi_' + key;
+  if (photoStore[key]) img.src = photoStore[key];
+  prev.innerHTML = '<span class="pi">&#128444;</span><span class="pt">Click to upload</span>';
+  prev.appendChild(img);
+  var inp = document.createElement('input');
+  inp.type = 'file'; inp.accept = 'image/*';
+  inp.setAttribute('data-key', key);
+  inp.onchange = function(e) { loadPhoto(e, this.getAttribute('data-key')); };
+  prev.appendChild(inp);
+  var lab = document.createElement('label');
+  lab.textContent = lbl;
+  slot.appendChild(prev);
+  slot.appendChild(lab);
+  grid.appendChild(slot);
+}
+
+function loadPhoto(e, key) {
+  var file = e.target.files[0]; if (!file) return;
+  var r = new FileReader();
+  r.onload = function(ev) {
+    photoStore[key] = ev.target.result;
+    var pp = document.getElementById('pp_' + key);
+    var pi = document.getElementById('pi_' + key);
+    if (pp) pp.className = 'pp hi';
+    if (pi) pi.src = ev.target.result;
+  };
+  r.readAsDataURL(file);
+}
+
+// ════════════════════════════════════════════════════════
+// TENANTS
+// ════════════════════════════════════════════════════════
+
+var tenantCount = 0;
+
+function addTenant(data) {
+  tenantCount++;
+  var n = tenantCount;
+  var d = data || {};
+
+  var el = document.createElement('div');
+  el.className = 'tb';
+  el.id = 't' + n;
+
+  // Build inner HTML
+  var removeBtn = n > 1
+    ? '<button class="rb" onclick="remTenant(' + n + ')">&#10005;</button>'
+    : '';
+
+  el.innerHTML =
+    '<h4>Tenant ' + n + removeBtn + '</h4>' +
+    '<div class="g3">' +
+      '<div class="f full"><label>Full Name</label>' +
+        '<input type="text" id="tn' + n + '_name" placeholder="e.g. Gagan Nilesh Varpe" value="' + (d.name || '') + '" oninput="syncPhotos()"/>' +
+      '</div>' +
+    '</div>' +
+
+    // DOB row
+    '<div class="f" style="margin-top:10px;">' +
+      '<label class="dob-label">Date of Birth</label>' +
+      '<div class="dob-row">' +
+        '<div class="f"><select id="tn' + n + '_dob_day" onchange="calculateTenantAge(' + n + ')"><option value="">Day</option></select></div>' +
+        '<div class="f"><select id="tn' + n + '_dob_month" onchange="calculateTenantAge(' + n + ')"><option value="">Month</option></select></div>' +
+        '<div class="f"><select id="tn' + n + '_dob_year" onchange="calculateTenantAge(' + n + ')"><option value="">Year</option></select></div>' +
+      '</div>' +
+    '</div>' +
+
+    // Age + Occupation row
+    '<div class="g3" style="margin-top:10px;">' +
+      '<div class="f"><label>Age (years)</label>' +
+        '<input type="number" id="tn' + n + '_age" placeholder="e.g. 19" value="' + (d.age || '') + '"/>' +
+      '</div>' +
+      '<div class="f"><label>Occupation</label>' +
+        '<input type="text" id="tn' + n + '_occ" placeholder="e.g. Education" value="' + (d.occ || '') + '" list="dl_occ"/>' +
+      '</div>' +
+    '</div>' +
+
+    '<div class="sb" style="margin-top:9px">Permanent Address</div>' +
+    '<div style="margin-top:6px">' +
+      '<div class="f"><label>Full Address</label>' +
+        '<input type="text" id="tn' + n + '_addr" placeholder="e.g. Wabale wasti, Kanoli, Sangamner, Ahmadnagar, Maharashtra – 422605" value="' + (d.addr || '') + '"/>' +
+      '</div>' +
+    '</div>';
+
+  document.getElementById('tc').appendChild(el);
+
+  // Populate DOB selects
+  populateDOBSelects('tn' + n + '_dob', d.dob || '');
+
+  // If a DOB was provided, calculate age; otherwise keep supplied age value
+  if (d.dob) {
+    calculateTenantAge(n);
+  }
+
+  syncPhotos();
+}
+
+function remTenant(n) {
+  var el = document.getElementById('t' + n);
+  if (el) el.remove();
+  delete photoStore['t' + n];
+  syncPhotos();
+}
+
+// ════════════════════════════════════════════════════════
+// HELPERS
+// ════════════════════════════════════════════════════════
+
+function gv(id) {
+  var el = document.getElementById(id);
+  return el ? el.value.trim() : '';
+}
+
+function fmtD(str) {
+  if (!str) return '__________';
+  if (/\d{2}\/\d{2}\/\d{4}/.test(str)) return str;
+  var d = new Date(str + 'T00:00:00');
+  return pad2(d.getDate()) + '/' + pad2(d.getMonth() + 1) + '/' + d.getFullYear();
+}
+
+function fmtDLong(str) {
+  if (!str) return '__________';
+  var d = new Date(str + 'T00:00:00');
+  var months = ['January','February','March','April','May','June',
+    'July','August','September','October','November','December'];
+  return d.getDate() + 'th ' + months[d.getMonth()] + ' ' + d.getFullYear();
+}
+
+function fmtMoney(n) {
+  return n ? Number(n).toLocaleString('en-IN') : '';
+}
+
+function getDurLabel() {
+  var s = document.getElementById('duration');
+  return s.options[s.selectedIndex].text;
+}
+
+function toRoman(n) {
+  return ['I','II','III','IV','V','VI','VII','VIII','IX','X'][n - 1] || String(n);
+}
+
+// ════════════════════════════════════════════════════════
+// SAMPLE DATA
+// ════════════════════════════════════════════════════════
+
+function fillSample() {
+  document.getElementById('exec_date').value = '2026-03-11';
+  document.getElementById('reg_type').value  = 'Notarized';
+  document.getElementById('ll_name').value   = 'Komal Navnath Gadakh';
+  document.getElementById('ll_occ').value    = 'Business';
+  document.getElementById('ll_pan').value    = 'CIEPG0170M';
+  document.getElementById('ll_addr').value   = 'Paregaon Bk., Limbacha mala, Sangamner, Ahmadnagar, Maharashtra – 422611';
+
+  // Owner DOB
+  populateDOBSelects('ll_dob', '1993-10-10');
+  calculateOwnerAge();
+
+  document.getElementById('flat_no').value    = '405';
+  document.getElementById('buildup').value    = '512 Square Foot';
+  document.getElementById('prop_floor').value = '4th';
+  document.getElementById('bldg_name').value  = 'Mhada Espacio';
+  document.getElementById('survey_no').value  = '38';
+  document.getElementById('village').value    = 'Balewadi';
+  document.getElementById('prop_city').value  = 'Pune';
+  document.getElementById('taluka').value     = 'Haveli';
+  document.getElementById('dist_pin').value   = 'Pune 411045';
+  document.getElementById('corp').value       = 'Pune Municipal Corporation';
+
+  document.getElementById('start_date').value = '2025-09-01';
+  document.getElementById('duration').value   = '11';
+  calcEnd();
+
+  document.getElementById('rent').value = '6000'; aw('rent', 'rent_w');
+  document.getElementById('dep').value  = '6000'; aw('dep',  'dep_w');
+  document.getElementById('dep_mode').value = 'Cash';
+  document.getElementById('misc').value = '';
+
+  document.getElementById('tc').innerHTML = '';
+  tenantCount = 0;
+
+  addTenant({
+    name: 'Gagan Nilesh Varpe',
+    dob:  '2005-03-15',
+    occ:  'Education',
+    addr: 'Wabale wasti, Kanoli, Sangamner, Ahmadnagar, Maharashtra – 422605'
+  });
+}
+
+// ════════════════════════════════════════════════════════
+// INIT — populate owner DOB selects & first tenant
+// ════════════════════════════════════════════════════════
+
+populateDOBSelects('ll_dob', '');
+addTenant();
+
+// ════════════════════════════════════════════════════════
+// PDF GENERATION
+// ════════════════════════════════════════════════════════
+
+function genPDF() {
+  try {
+    var jsPDF = window.jspdf.jsPDF;
+    var doc = new jsPDF({ unit: 'pt', format: 'legal' });
+    var PW = doc.internal.pageSize.getWidth();
+    var PH = doc.internal.pageSize.getHeight();
+    var ML = 72, MR = 72, TW = PW - ML - MR;
+    var y = 60, pageNum = 1;
+
+    function addPage() {
+      putPageNum();
+      doc.addPage();
+      pageNum++;
+      y = 60;
+    }
+    function checkY(need) {
+      if (y + (need || 30) > PH - 60) addPage();
+    }
+    function putPageNum() {
+      doc.setFont('times', 'normal'); doc.setFontSize(10);
+      doc.setTextColor(100, 100, 100);
+      doc.text(String(pageNum), PW / 2, PH - 20, { align: 'center' });
+    }
+    function sf(style, size, r, g, b) {
+      doc.setFont('times', style || 'normal');
+      doc.setFontSize(size || 13);
+      doc.setTextColor(r != null ? r : 0, g != null ? g : 0, b != null ? b : 0);
+    }
+
+    function justifyText(lines, x, startY, lineH, maxW, isLast) {
+      for (var li = 0; li < lines.length; li++) {
+        var isLastLine = (li === lines.length - 1);
+        if (isLast && isLastLine) {
+          doc.text(lines[li], x, startY + li * lineH);
+        } else {
+          var words = lines[li].split(' ');
+          if (words.length <= 1) {
+            doc.text(lines[li], x, startY + li * lineH);
+          } else {
+            var lineW = doc.getTextWidth(lines[li]);
+            var totalSpace = maxW - lineW;
+            var gaps = words.length - 1;
+            var extraPerGap = totalSpace / gaps;
+            var cx = x;
+            for (var wi = 0; wi < words.length; wi++) {
+              doc.text(words[wi], cx, startY + li * lineH);
+              cx += doc.getTextWidth(words[wi]) + doc.getTextWidth(' ') + extraPerGap;
+            }
+          }
+        }
+      }
+    }
+
+    function writeLine(text, indent, gap) {
+      sf('normal', 13, 0, 0, 0);
+      var w = TW - (indent || 0);
+      var lines = doc.splitTextToSize(text, w);
+      var totalH = lines.length * 17 + (gap || 4);
+      checkY(totalH);
+      justifyText(lines, ML + (indent || 0), y, 17, w, true);
+      y += totalH;
+    }
+
+    function writeLineStyle(text, style, indent, gap) {
+      sf(style || 'normal', 13, 0, 0, 0);
+      var w = TW - (indent || 0);
+      var lines = doc.splitTextToSize(text, w);
+      var totalH = lines.length * 17 + (gap || 4);
+      checkY(totalH);
+      justifyText(lines, ML + (indent || 0), y, 17, w, true);
+      y += totalH;
+    }
+
+    function hRule() {
+      y += 6;
+    }
+
+    function mixedLine(segments, indent, gap) {
+      var x = ML + (indent || 0);
+      var maxW = TW - (indent || 0);
+      var allWords = [];
+      for (var si = 0; si < segments.length; si++) {
+        var seg = segments[si];
+        if (!seg.text) continue;
+        var ws = seg.text.split(' ');
+        for (var wi = 0; wi < ws.length; wi++) {
+          if (ws[wi] !== '') allWords.push({ word: ws[wi], bold: seg.bold });
+        }
+      }
+      var docLines = [];
+      var curLine = [];
+      var curW = 0;
+      doc.setFontSize(13);
+      for (var ai = 0; ai < allWords.length; ai++) {
+        var wObj = allWords[ai];
+        if (wObj.bold) doc.setFont('times', 'bold'); else doc.setFont('times', 'normal');
+        var ww = doc.getTextWidth(wObj.word);
+        var spW = curLine.length > 0 ? doc.getTextWidth(' ') : 0;
+        if (curLine.length > 0 && curW + spW + ww > maxW) {
+          docLines.push(curLine);
+          curLine = [{ word: wObj.word, bold: wObj.bold, w: ww }];
+          curW = ww;
+        } else {
+          curLine.push({ word: wObj.word, bold: wObj.bold, w: ww });
+          curW += spW + ww;
+        }
+      }
+      if (curLine.length > 0) docLines.push(curLine);
+
+      for (var li = 0; li < docLines.length; li++) {
+        checkY(17);
+        var dLine = docLines[li];
+        var isLastLine = (li === docLines.length - 1);
+        var totalW = 0;
+        for (var di = 0; di < dLine.length; di++) totalW += dLine[di].w;
+        var gaps = dLine.length - 1;
+        var baseSpW = doc.getTextWidth(' ');
+        var extraSp = (!isLastLine && gaps > 0) ? (maxW - totalW - gaps * baseSpW) / gaps : 0;
+        var cx = x;
+        doc.setFontSize(13); doc.setTextColor(0, 0, 0);
+        for (var di = 0; di < dLine.length; di++) {
+          var wObj2 = dLine[di];
+          if (wObj2.bold) doc.setFont('times', 'bold'); else doc.setFont('times', 'normal');
+          doc.text(wObj2.word, cx, y);
+          if (wObj2.bold) {
+            doc.setDrawColor(0); doc.setLineWidth(0.4);
+            doc.line(cx, y + 2, cx + wObj2.w, y + 2);
+          }
+          cx += wObj2.w + (di < dLine.length - 1 ? baseSpW + extraSp : 0);
+        }
+        y += 17;
+      }
+      doc.setFont('times', 'normal');
+      y += (gap || 4);
+    }
+
+    function clause(num, title, body) {
+      var parts = body.split('\n');
+      var label = num + ') ' + title + ':';
+      var indent = 18;
+      checkY(30);
+      doc.setFont('times', 'bold'); doc.setFontSize(13); doc.setTextColor(0, 0, 0);
+      doc.text(label, ML, y);
+      y += 18;
+
+      var firstWrapped = doc.splitTextToSize(parts[0], TW - indent);
+      checkY(firstWrapped.length * 17 + 6);
+      doc.setFont('times', 'normal'); doc.setFontSize(13);
+      justifyText(firstWrapped, ML + indent, y, 17, TW - indent, true);
+      y += firstWrapped.length * 17 + 4;
+
+      for (var pi = 1; pi < parts.length; pi++) {
+        if (!parts[pi]) continue;
+        var rLines = doc.splitTextToSize(parts[pi], TW - indent);
+        checkY(rLines.length * 17 + 4);
+        justifyText(rLines, ML + indent, y, 17, TW - indent, true);
+        y += rLines.length * 17 + 4;
+      }
+      y += 8;
+    }
+
+    function clauseV(num, title, body) {
+      var label = num + ') ' + title + ':';
+      var indent = 18;
+      checkY(30);
+      doc.setFont('times', 'bold'); doc.setFontSize(13); doc.setTextColor(0, 0, 0);
+      doc.text(label, ML, y);
+      y += 18;
+
+      var segments = [];
+      var parts2 = body.split(/\n/);
+      for (var pj = 0; pj < parts2.length; pj++) {
+        if (pj > 0) segments.push({ text: '\n', bold: false });
+        var tokens = parts2[pj].split(/(\[\[.*?\]\])/);
+        for (var tk = 0; tk < tokens.length; tk++) {
+          var tok = tokens[tk];
+          if (/^\[\[.*\]\]$/.test(tok)) {
+            segments.push({ text: tok.slice(2, -2), bold: true });
+          } else if (tok) {
+            segments.push({ text: tok, bold: false });
+          }
+        }
+      }
+
+      var maxW = TW - indent;
+      var lineWords = [];
+      var lineW = 0;
+
+      function flushLine(isLast) {
+        if (lineWords.length === 0) return;
+        var totalTextW = 0;
+        for (var k = 0; k < lineWords.length; k++) totalTextW += lineWords[k].w;
+        var spaces = lineWords.length - 1;
+        var baseSpace = doc.getTextWidth(' ');
+        var extraSpace = (!isLast && spaces > 0) ? (maxW - totalTextW - spaces * baseSpace) / spaces : 0;
+        var rx = ML + indent;
+        for (var k = 0; k < lineWords.length; k++) {
+          if (lineWords[k].bold) {
+            doc.setFont('times', 'bold');
+            doc.text(lineWords[k].text, rx, y);
+            doc.setDrawColor(0); doc.setLineWidth(0.4);
+            doc.line(rx, y + 2, rx + lineWords[k].w, y + 2);
+          } else {
+            doc.setFont('times', 'normal');
+            doc.text(lineWords[k].text, rx, y);
+          }
+          rx += lineWords[k].w;
+          if (k < lineWords.length - 1) rx += baseSpace + extraSpace;
+        }
+        lineWords = []; lineW = 0;
+        y += 17;
+      }
+
+      doc.setFontSize(13); doc.setTextColor(0, 0, 0);
+      for (var si = 0; si < segments.length; si++) {
+        var seg2 = segments[si];
+        if (seg2.text === '\n') { flushLine(true); checkY(17); continue; }
+        if (seg2.bold) doc.setFont('times', 'bold'); else doc.setFont('times', 'normal');
+        var segWords = seg2.text.split(' ');
+        for (var wi2 = 0; wi2 < segWords.length; wi2++) {
+          var word2 = segWords[wi2]; if (!word2) continue;
+          var ww2 = doc.getTextWidth(word2);
+          var spW2 = (lineWords.length > 0) ? doc.getTextWidth(' ') : 0;
+          if (lineW + spW2 + ww2 > maxW && lineWords.length > 0) {
+            flushLine(false); checkY(17);
+          }
+          lineWords.push({ text: word2, bold: seg2.bold, w: ww2 });
+          lineW += (lineWords.length > 1 ? doc.getTextWidth(' ') : 0) + ww2;
+        }
+      }
+      flushLine(true);
+      y += 6;
+    }
+
+    // Collect tenants
+    var tenants = [];
+    for (var ti = 1; ti <= tenantCount; ti++) {
+      if (!document.getElementById('t' + ti)) continue;
+      var tnm = gv('tn' + ti + '_name');
+      if (!tnm) continue;
+      tenants.push({
+        name: tnm,
+        age:  gv('tn' + ti + '_age'),
+        occ:  gv('tn' + ti + '_occ'),
+        addr: gv('tn' + ti + '_addr'),
+        key:  't' + ti
+      });
+    }
+
+    // Save to history BEFORE generating PDF
+    var ownerName   = gv('ll_name');
+    var tenant1Name = (tenants.length > 0) ? tenants[0].name : '';
+    if (ownerName || tenant1Name) {
+      saveHistory();
+    }
+
+    // Data
+    var execDate  = gv('exec_date');
+    var execLong  = execDate ? fmtDLong(execDate) : '__________';
+    var execPlace = 'PUNE';
+    var regType   = gv('reg_type') || 'Notarized';
+    var propUse   = gv('prop_use') || 'Residential';
+    var dur       = getDurLabel();
+    var startD    = fmtD(gv('start_date'));
+    var endD      = gv('end_date') || '__________';
+    var rentAmt   = gv('rent') ? fmtMoney(gv('rent')) : '______';
+    var rentW     = gv('rent_w') || '______';
+    var depAmt    = gv('dep') ? fmtMoney(gv('dep')) : '______';
+    var depW      = gv('dep_w') || '______';
+    var depMode   = gv('dep_mode') || 'Cash';
+    var llName    = gv('ll_name')  || '________________________';
+    var llAge     = gv('ll_age')   || '__';
+    var llOcc     = gv('ll_occ')   || '____________';
+    var llPAN     = gv('ll_pan')   || '____________';
+    var llAddr    = gv('ll_addr')  || '________________________';
+    var flatNo    = gv('flat_no')    || '____';
+    var builtup   = gv('buildup')    || '____';
+    var floorNo   = gv('prop_floor') || '____';
+    var bldgNm    = gv('bldg_name')  || '________________________';
+    var srNo      = gv('survey_no')  || '____';
+    var vill      = gv('village')    || '________________________';
+    var pCity     = gv('prop_city')  || '________________________';
+    var taluka    = gv('taluka')     || '________________________';
+    var distPin   = gv('dist_pin')   || '________________________';
+    var corp      = gv('corp')       || '________________________';
+    var miscText  = gv('misc');
+
+    // ── PAGE 1 — Title + Parties + Whereas ──
+    sf('bold', 16); doc.setTextColor(0, 0, 0);
+    doc.text('LEAVE AND LICENSE AGREEMENT', PW / 2, y, { align: 'center' });
+    y += 24;
+    sf('bold', 13);
+    doc.text('THIS LEAVE AND LICENSE AGREEMENT IS MADE AND EXECUTED', PW / 2, y, { align: 'center' });
+    y += 18;
+    doc.text('ON ' + execLong.toUpperCase() + ' AT ' + execPlace.toUpperCase(), PW / 2, y, { align: 'center' });
+    y += 22;
+    hRule();
+
+    writeLine('Between,', 0, 8);
+
+    sf('normal', 13); doc.setTextColor(0, 0, 0);
+    mixedLine([
+      { text: llName, bold: true },
+      { text: ', Age:', bold: false },
+      { text: llAge + ' Years', bold: true },
+      { text: ', Occupation: ', bold: false },
+      { text: llOcc, bold: true },
+      { text: ',', bold: false }
+    ], 0, 2);
+    mixedLine([
+      { text: 'Residing at: ', bold: false },
+      { text: llAddr, bold: true },
+      { text: '.', bold: false }
+    ], 0, 2);
+    mixedLine([
+      { text: 'PAN – ', bold: false },
+      { text: llPAN, bold: true }
+    ], 0, 8);
+    writeLineStyle("HEREINAFTER called 'the Licensors (owner) (which expression shall mean and include the Licensors above named and also his/her/their respective heirs, successors, assigns, executors and administrators)", 'italic', 0, 10);
+    writeLine('AND', 0, 8);
+
+    if (tenants.length === 0) {
+      writeLine('1) ________________________, Age: __, Occupation: ____________,', 0, 2);
+      writeLine('Residing at: ________________________.', 0, 8);
+      writeLineStyle("HEREINAFTER called 'the Licensees' (Tenant) (which expression shall mean and include only Licensees above named).", 'italic', 0, 10);
+    } else {
+      for (var i = 0; i < tenants.length; i++) {
+        var t = tenants[i];
+        mixedLine([
+          { text: (i + 1) + ') ', bold: false },
+          { text: t.name, bold: true },
+          { text: ', Age: ', bold: false },
+          { text: t.age, bold: true },
+          { text: ', Occupation: ', bold: false },
+          { text: t.occ, bold: true },
+          { text: ',', bold: false }
+        ], 0, 2);
+        mixedLine([
+          { text: 'Residing at: ', bold: false },
+          { text: t.addr, bold: true },
+          { text: '.', bold: false }
+        ], 0, 8);
+        writeLineStyle("HEREINAFTER called 'the Licensees' (Tenant) (which expression shall mean and include only Licensees above named).", 'italic', 0, 10);
+      }
+    }
+
+    hRule();
+
+    writeLine('WHEREAS the Licensors is absolutely seized and possessed of and or otherwise well and sufficiently entitled to all that constructed portion being unit described in Schedule I hereunder written and are hereafter for the sake of brevity called or referred to as Licensed Premises and is/are desirous of giving the said premises on Leave and License basis under Section 24 of the Maharashtra Rent Control Act, 1999.', 0, 8);
+    mixedLine([
+      { text: 'AND WHEREAS the Licensees herein is in need of temporary premises for ', bold: false },
+      { text: propUse, bold: true },
+      { text: ' use has/have approached the Licensors with a request to allow the Licensees herein to use and occupy the said premises on Leave and License basis for a period of ', bold: false },
+      { text: dur, bold: true },
+      { text: ' commencing from ', bold: false },
+      { text: startD, bold: true },
+      { text: ' and ending on ', bold: false },
+      { text: endD, bold: true },
+      { text: ', on terms and subject to conditions hereafter appearing.', bold: false }
+    ], 0, 8);
+    mixedLine([
+      { text: 'AND WHEREAS the Licensor have agreed to allow the Licensees herein to use and occupy the said Licensed premises for his aforesaid ', bold: false },
+      { text: propUse, bold: true },
+      { text: ' purposes only, on Leave and License basis for above mentioned period, on terms and subject to conditions hereafter appearing;', bold: false }
+    ], 0, 10);
+    writeLineStyle('NOW THEREFORE IT IS HEREBY AGREED TO, DECLARED AND RECORDED BY AND BETWEEN THE PARTIES HERETO AS FOLLOWS: -', 'bold', 0, 10);
+
+    // Clauses
+    clauseV('1', 'Period',
+      'That the Licensors hereby grants to the Licensees herein a revocable leave and license, to occupy the Licensed Premises, described in Schedule I hereunder written without creating any tenancy rights or any other rights, title and interest in favour of the Licensees for a period of [[' + dur + ']] commencing from [[' + startD + ']] and ending on [[' + endD + ']].');
+
+    clauseV('2', 'License Fee/Rent',
+      'That the Licensees shall pay to the Licensors a total sum of Rs. [[' + rentAmt + ']]/- ([[' + rentW + ']]) per month, inclusive of maintenance charges, for the use of the said licensed premises for a period of  [[' + dur + ']]. The said amount shall be payable within the first five days of the concerned month of Leave and License.');
+
+    clauseV('3', 'Payment of Deposit',
+      'That the Licensees have paid / shall pay the above-mentioned deposit/premium as mentioned above by [[' + depMode + ']]. Amount [[' + depAmt + ']]/- ([[' + depW + ']])');
+
+    clause('4', 'Maintenance Charges',
+      'That the all outgoings including all rates, taxes, levies, assessment, maintenance charges, non-occupancy charges, etc. in respect of the said premises shall be paid by the Licensor.');
+
+    clause('5', 'Electricity Charges',
+      'The Licensees herein shall pay the electricity bills directly for energy consumed on the licensed premises and should submit original receipts to Licensors indicating that the electricity bills are paid.');
+
+    clauseV('6', 'Use',
+      'That the Licensed premises shall only be used by the Licensees for [[' + propUse + ']] purpose. The Licensees shall maintain the said premises in its existing condition and damage, if any, caused to the said premises, the same shall be repaired by the Licensees at its own cost subject to normal wear and tear. The Licensees shall not do anything in the said premises which is or is likely to cause a nuisance to the other occupants of the said building or to the prejudice in any manner to the rights of Licensors in respect of said premises or shall not do any unlawful activities prohibited by State or Central Government.');
+
+    clause('7', 'Alteration',
+      'That the Licensees shall not make or permit to do any alteration or addition to the construction or arrangements (internal or external) to the Licensed premises without previous consent in writing from the Licensors.');
+
+    clause('8', 'No Tenancy',
+      'That the Licensees shall not claim any tenancy right and shall not have any right to transfer, assign, and sublet or grant any license or sub-license in respect of the Licensed Premises or any part thereof and also shall not mortgage or raise any loan against the said premises.');
+
+    clause('9', 'Inspection',
+      'That, the Licensors shall on reasonable notice given by the Licensors to the Licensees shall have a right of access either by himself / herself / themselves or through authorized representative to enter, view and inspect the Licensed premises at reasonable intervals.');
+
+    clause('10', 'Cancellation',
+      'That, Subject to the condition of lock in period (if any), if the Licensees commits default in regular and punctual payments of monthly compensation as herein before mentioned or commit/s breach of any of the terms, covenants and conditions of this agreement or if any legislation prohibiting the Leave and License is imposed, the Licensors shall be entitled to revoke and / or cancel the License hereby granted, by giving notice in writing of one month and the Licensees too will have the right to vacate the said premises by giving a notice in writing of one month to the Licensors as mentioned earlier.');
+
+    clause('11', 'Possession',
+      'That the immediately at on the expiration or termination or cancellation of this agreement the Licensees shall vacate the said premises without delay with all his goods and belongings. In the event of the Licensees failing and / or neglecting to remove himself and / or his articles from the said premises on expiry or sooner determination of this Agreement, the Licensors shall be entitled to recover damages at the rate of double the daily amount of compensation per day and or alternatively the Licensors shall be entitled to remove the Licensees and his belongings from the Licensed premises, without recourse to the Court of Law.');
+
+    if (miscText) {
+      clauseV('12', 'Miscellaneous', miscText);
+      clauseV('13', 'Registration',
+        'This Agreement is to be [[' + regType + ']] and the expenditure of Stamp duty and registration fees and incidental charges, if any, shall be borne by the Licensees Only');
+    } else {
+      clauseV('12', 'Registration',
+        'This Agreement is to be [[' + regType + ']] and the expenditure of Stamp duty and registration fees and incidental charges, if any, shall be borne by the Licensees Only');
+    }
+
+    // ── Schedule I ──
+    y += 6;
+    checkY(60);
+    sf('bold', 14); doc.setTextColor(0, 0, 0);
+    doc.text('SCHEDULE I', PW / 2, y, { align: 'center' }); y += 20;
+    sf('italic', 13);
+    doc.text('(Being the correct description of premise Apartment/Flat which is the subject matter of these presents)', PW / 2, y, { align: 'center', maxWidth: TW });
+    y += 28;
+
+    (function() {
+      var body = 'All that constructed portion being unit bearing Flat No – [[' + flatNo + ']] Built-up: [[' + builtup + ']], situated on the [[' + floorNo + ']] Floor of a Building known as [[' + bldgNm + ']], SR Number: [[' + srNo + ']], of Village: [[' + vill + ']], [[' + pCity + ']], situated within the revenue limits of Taluka [[' + taluka + ']] and Dist. [[' + distPin + ']] and situated within the limits of [[' + corp + ']].';
+      var maxW = TW;
+      var tokens = body.split(/(\[\[.*?\]\])/);
+      var segs = [];
+      for (var tk = 0; tk < tokens.length; tk++) {
+        var tok = tokens[tk];
+        if (/^\[\[.*\]\]$/.test(tok)) {
+          segs.push({ text: tok.slice(2, -2), bold: true });
+        } else if (tok) {
+          segs.push({ text: tok, bold: false });
+        }
+      }
+      var lineWords2 = [];
+      var lineW2 = 0;
+      function flushLine2(isLast) {
+        if (!lineWords2.length) return;
+        var totalTextW = 0;
+        for (var k = 0; k < lineWords2.length; k++) totalTextW += lineWords2[k].w;
+        var spaces = lineWords2.length - 1;
+        var baseSpace = doc.getTextWidth(' ');
+        var extraSpace = (!isLast && spaces > 0) ? (maxW - totalTextW - spaces * baseSpace) / spaces : 0;
+        var rx = ML;
+        doc.setFontSize(13); doc.setTextColor(0, 0, 0);
+        for (var k = 0; k < lineWords2.length; k++) {
+          if (lineWords2[k].bold) {
+            doc.setFont('times', 'bold');
+            doc.text(lineWords2[k].text, rx, y);
+            doc.setDrawColor(0); doc.setLineWidth(0.4);
+            doc.line(rx, y + 2, rx + lineWords2[k].w, y + 2);
+          } else {
+            doc.setFont('times', 'normal');
+            doc.text(lineWords2[k].text, rx, y);
+          }
+          rx += lineWords2[k].w + (k < lineWords2.length - 1 ? baseSpace + extraSpace : 0);
+        }
+        lineWords2 = []; lineW2 = 0;
+        y += 17;
+      }
+      doc.setFontSize(13);
+      for (var si2 = 0; si2 < segs.length; si2++) {
+        var seg3 = segs[si2];
+        if (seg3.bold) doc.setFont('times', 'bold'); else doc.setFont('times', 'normal');
+        var segWords2 = seg3.text.split(' ');
+        for (var wi3 = 0; wi3 < segWords2.length; wi3++) {
+          var word3 = segWords2[wi3]; if (!word3) continue;
+          var ww3 = doc.getTextWidth(word3);
+          var spW3 = lineWords2.length > 0 ? doc.getTextWidth(' ') : 0;
+          if (lineW2 + spW3 + ww3 > maxW && lineWords2.length > 0) {
+            checkY(17); flushLine2(false);
+          }
+          if (lineWords2.length > 0) lineW2 += doc.getTextWidth(' ');
+          lineWords2.push({ text: word3, bold: seg3.bold, w: ww3 });
+          lineW2 += ww3;
+        }
+      }
+      checkY(17); flushLine2(true);
+    })();
+
+    y += 14;
+    writeLine('IN WITNESS WHEREOF the parties hereto have set and subscribed their respective signatures by way of putting thumb impression electronic signature hereto in the presence of witness, who are identifying the executants, on the day, month and year first above written.', 0, 16);
+
+    // ── Signature Table ──
+    var allParties = [{ name: llName, role: 'Licensors/ Owner', key: 'lic' }];
+    for (var pi2 = 0; pi2 < tenants.length; pi2++) {
+      allParties.push({ name: tenants[pi2].name, role: 'Licensees/Tenant', key: tenants[pi2].key });
+    }
+
+    var C1x = ML, C1w = 210;
+    var C2x = ML + C1w, C2w = 110;
+    var C3x = ML + C1w + C2w, C3w = TW - C1w - C2w;
+    var ROW_H = 115, HDR_H = 46;
+
+    checkY(HDR_H + ROW_H + 10);
+    doc.setDrawColor(0); doc.setLineWidth(0.8);
+    doc.rect(C1x, y, C1w, HDR_H);
+    doc.rect(C2x, y, C2w, HDR_H);
+    doc.rect(C3x, y, C3w, HDR_H);
+    sf('bold', 9); doc.setTextColor(0, 0, 0);
+    doc.text('NAME OF THE EXECUTANTS', C1x + C1w / 2, y + 16, { align: 'center' });
+    doc.text('PHOTOGRAPH',             C2x + C2w / 2, y + 16, { align: 'center' });
+    doc.text('LEFT HAND THUMB',  C3x + C3w / 2, y + 10, { align: 'center' });
+    doc.text('IMPRESSION &',     C3x + C3w / 2, y + 22, { align: 'center' });
+    doc.text('SIGNATURE',        C3x + C3w / 2, y + 34, { align: 'center' });
+    y += HDR_H;
+
+    for (var ri = 0; ri < allParties.length; ri++) {
+      var party = allParties[ri];
+      checkY(ROW_H + 4);
+      var ry = y;
+      doc.setLineWidth(0.8);
+      doc.rect(C1x, ry, C1w, ROW_H);
+      doc.rect(C2x, ry, C2w, ROW_H);
+      doc.rect(C3x, ry, C3w, ROW_H);
+      sf('bold', 9); doc.setTextColor(0, 0, 0);
+      doc.text(toRoman(ri + 1) + '. Signed, Sealed and Delivered', C1x + 6, ry + 14);
+      sf('normal', 9);
+      doc.text('by within named ' + party.role, C1x + 6, ry + 26);
+      sf('bold', 10);
+      var nameW = doc.splitTextToSize(party.name, C1w - 12);
+      for (var ni = 0; ni < nameW.length; ni++) {
+        doc.text(nameW[ni], C1x + 6, ry + 42 + ni * 13);
+      }
+      if (photoStore[party.key]) {
+        try {
+          var mime = photoStore[party.key].split(';')[0].split(':')[1];
+          var fmt  = mime === 'image/png' ? 'PNG' : 'JPEG';
+          doc.addImage(photoStore[party.key], fmt, C2x + 4, ry + 4, C2w - 8, ROW_H - 8);
+        } catch (imgErr) {
+          sf('normal', 8, 150, 150, 150);
+          doc.text('Photo', C2x + C2w / 2, ry + ROW_H / 2, { align: 'center' });
+        }
+      } else {
+        sf('normal', 8, 170, 170, 170);
+        doc.text('Affix',      C2x + C2w / 2, ry + ROW_H / 2 - 6, { align: 'center' });
+        doc.text('Photograph', C2x + C2w / 2, ry + ROW_H / 2 + 6, { align: 'center' });
+      }
+      sf('normal', 8, 60, 60, 60);
+      doc.text('Thumb Impression:', C3x + 6, ry + 22);
+      doc.setDrawColor(100, 100, 100); doc.setLineWidth(0.4);
+      doc.line(C3x + 6, ry + 50, C3x + C3w - 6, ry + 50);
+      doc.text('Signature:', C3x + 6, ry + 70);
+      doc.line(C3x + 6, ry + 95, C3x + C3w - 6, ry + 95);
+      y += ROW_H;
+    }
+
+    y += 20;
+    sf('bold', 13); doc.setTextColor(0, 0, 0);
+    writeLine('Witnesses:', 0, 10);
+    sf('normal', 13);
+    writeLine('1. Sign : ___________', 0, 4);
+    writeLine('   Name : __________________________________________', 0, 4);
+    writeLine('   Add  : __________________________________________', 0, 12);
+    writeLine('2. Sign : ___________', 0, 4);
+    writeLine('   Name : __________________________________________', 0, 4);
+    writeLine('   Add  : __________________________________________', 0, 6);
+
+    putPageNum();
+
+    var fn = (gv('ll_name') || 'Licensor').replace(/[^a-zA-Z0-9]/g, '_').replace(/_+/g, '_');
+    var tn2 = tenants.length > 0 ? tenants[0].name.replace(/[^a-zA-Z0-9]/g, '_').replace(/_+/g, '_') : 'Licensee';
+    doc.save('LeaveAndLicense_' + fn + '_' + tn2 + '.pdf');
+
+    document.getElementById('toast').classList.add('show');
+    setTimeout(function() { document.getElementById('toast').classList.remove('show'); }, 3000);
+
+  } catch (err) {
+    alert('PDF Error: ' + err.message);
+    console.error(err);
+  }
+}
 </script>
 </body>
 </html>
