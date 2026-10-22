@@ -4,120 +4,107 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>स्वाधार विद्यार्थी पत्र निर्माता</title>
+
+<!-- Marathi (Devanagari) fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700&family=Noto+Serif+Devanagari:wght@400;500;600;700&display=swap" rel="stylesheet">
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--gold:#ffd54f}
 body{
-  font-family:'Segoe UI',Arial,sans-serif;
+  font-family:'Noto Sans Devanagari','Segoe UI',Arial,sans-serif;
   min-height:100vh;
   background:linear-gradient(135deg,#1a3a52 0%,#1565c0 50%,#42a5f5 100%);
   display:flex;flex-direction:column;align-items:center;
-  padding:30px 16px 0;
+  padding:30px 16px 70px;
 }
-
 .container{
-  width:100%;max-width:820px;
-  background:#fff;
-  border-radius:14px;
-  overflow:hidden;
-  box-shadow:0 8px 40px rgba(0,0,0,0.25);
-  margin-bottom:20px;
+  width:100%;max-width:820px;background:#fff;border-radius:14px;
+  overflow:hidden;box-shadow:0 8px 40px rgba(0,0,0,.25);margin-bottom:20px;
 }
-
-.site-header{
-  background:#1a3a52;
-  padding:18px 24px;
-  text-align:center;
-}
-.site-header h1{
-  color:#fff;font-size:20px;font-weight:700;letter-spacing:0.01em;
-}
+.site-header{background:#1a3a52;padding:18px 24px;text-align:center}
+.site-header h1{color:#fff;font-size:22px;font-weight:700}
+.site-header p{color:#cfd8dc;font-size:15px;margin-top:5px}
 
 .section{
-  margin:0 16px 14px;
-  background:#f8f9fa;
-  border:1px solid #e0e0e0;
-  border-left:4px solid #1565c0;
-  border-radius:8px;
-  overflow:hidden;
+  margin:16px 16px 0;background:#f8f9fa;border:1px solid #e0e0e0;
+  border-left:4px solid #1565c0;border-radius:8px;overflow:hidden;
 }
-.section-title{
-  font-size:15px;font-weight:700;color:#1a1a2e;
-  padding:14px 18px 10px;
-}
-.section-body{
-  padding:4px 18px 18px;
-}
-
+.section-title{font-size:16px;font-weight:700;color:#1a1a2e;padding:14px 18px 10px}
+.section-body{padding:4px 18px 18px;display:grid;gap:12px}
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
-.full{grid-column:1/-1}
-
 .f{display:flex;flex-direction:column;gap:5px}
-.f label{font-size:12px;font-weight:600;color:#444}
-.f input,.f select,.f textarea{
-  font-family:inherit;font-size:13px;color:#222;
-  background:#fff;border:1px solid #ccc;border-radius:5px;
-  padding:8px 10px;outline:none;
-  transition:border-color 0.2s,box-shadow 0.2s;
+.f label{font-size:13px;font-weight:600;color:#444}
+.f input{
+  font-family:inherit;font-size:14px;color:#222;background:#fff;
+  border:1px solid #ccc;border-radius:5px;padding:9px 10px;outline:none;
+  transition:border-color .2s,box-shadow .2s;
 }
-.f input:focus,.f select:focus,.f textarea:focus{
-  border-color:#1565c0;box-shadow:0 0 0 3px rgba(21,101,192,0.12);
-}
-.f textarea{resize:vertical;min-height:72px}
+.f input:focus{border-color:#1565c0;box-shadow:0 0 0 3px rgba(21,101,192,.15)}
 
+.gen-bar{padding:18px 20px 22px;display:flex;gap:12px;flex-wrap:wrap;align-items:center}
 .btn-action{
-  background:#1565c0;color:#fff;border:none;border-radius:6px;
-  padding:10px 24px;font-size:13.5px;font-weight:700;cursor:pointer;
-  font-family:inherit;display:inline-flex;align-items:center;gap:8px;
-  transition:background 0.15s;margin-right:10px;margin-top:4px;
+  background:#1565c0;color:#fff;border:none;border-radius:6px;padding:11px 26px;
+  font-size:14.5px;font-weight:700;cursor:pointer;font-family:inherit;
+  display:inline-flex;align-items:center;gap:8px;transition:background .15s;
 }
 .btn-action:hover{background:#0d47a1}
-
-.gen-bar{
-  padding:16px 20px 20px;
-  display:flex;gap:12px;flex-wrap:wrap;align-items:center;
-}
+.btn-action:disabled{background:#90a4ae;cursor:wait}
 .toast{
-  display:none;align-items:center;gap:8px;
-  background:#e8f5e9;color:#2e7d32;border:1px solid #a5d6a7;
-  border-radius:6px;padding:9px 16px;font-size:13px;font-weight:600;
+  display:none;align-items:center;gap:8px;background:#e8f5e9;color:#2e7d32;
+  border:1px solid #a5d6a7;border-radius:6px;padding:9px 16px;font-size:13px;font-weight:600;
 }
 .toast.show{display:flex}
 
-/* ── Footer ── */
-.site-footer {
-  position: fixed; bottom: 0; left: 0; width: 100%;
-  background: rgba(39, 101, 233, 0.96);
-  backdrop-filter: blur(12px);
-  border-top: 1px solid white;
-  color: white;
-  text-align: center;
-  padding: 10px;
-  font-size: 14px;
-  z-index: 100;
+.site-footer{
+  position:fixed;bottom:0;left:0;width:100%;
+  background:rgba(21,101,192,.96);backdrop-filter:blur(12px);
+  border-top:1px solid #fff;color:#fff;text-align:center;
+  padding:10px;font-size:14px;z-index:100;
 }
-.site-footer strong { color: var(--gold); font-weight: 600; }
+.site-footer strong{color:var(--gold);font-weight:600}
+
+/* ── PDF page (rendered off-screen, one per A4/Legal page) ── */
+.pdf-page{
+  position:fixed;left:-10000px;top:0;
+  width:720px;background:#fff;color:#000;
+  padding:10px 4px;
+  font-family:'Noto Serif Devanagari','Noto Sans Devanagari',serif;
+  font-size:15.5px;line-height:1.7;letter-spacing:0;
+}
+.pdf-page p{margin-bottom:10px;text-align:justify}
+.pdf-page h4{text-align:center;font-size:18px;font-weight:700;margin-bottom:12px}
+.pdf-page b{font-weight:700}
+.pdf-page .row{display:flex;justify-content:space-between;gap:16px}
+.pdf-page .list{margin:0 0 12px 20px;line-height:1.9}
+
+.photo-up{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.photo-up input[type=file]{font-size:13px}
+#photoPreview{display:none;width:80px;height:100px;object-fit:cover;border:1px solid #999;border-radius:4px}
+.pdf-page .hdr{display:flex;justify-content:space-between;align-items:flex-start;gap:16px}
+.pdf-page .hdr .left{flex:1}
+.pdf-page .photo{width:105px;height:131px;border:1.5px solid #000;display:block}
 
 @media(max-width:600px){
-  .g2,.g3{grid-template-columns:1fr}
-  body{padding:16px 8px 0}
-  .site-header h1{font-size:16px}
+  .g2{grid-template-columns:1fr}
+  body{padding:16px 8px 70px}
+  .site-header h1{font-size:18px}
 }
 </style>
 </head>
 <body>
 
 <div class="container">
-
   <div class="site-header">
     <h1>Onpoint Services</h1>
-    <p style="color:#ccc;font-size:16px;margin-top:5px;">Swadhar Student Affidavit Generator</p>
+    <p>Swadhar Student Affidavit Generator</p>
   </div>
 
-  <!-- 1. अर्जदाराची माहिती -->
   <div class="section">
     <div class="section-title">१. अर्जदाराची व्यक्तिगत माहिती</div>
     <div class="section-body">
@@ -126,27 +113,30 @@ body{
         <div class="f"><label>वय (वर्षे) *</label><input type="number" id="age" placeholder="वय"/></div>
       </div>
       <div class="g2">
-        <div class="f"><label>आधार क्रमांक</label><input type="text" id="aadhar" placeholder="12-अंकी क्रमांक"/></div>
+        <div class="f"><label>आधार क्रमांक</label><input type="text" id="aadhar" maxlength="12" inputmode="numeric" placeholder="12-अंकी क्रमांक"/></div>
         <div class="f"><label>आई / वडिलांचे नाव *</label><input type="text" id="parentName" placeholder="नाव"/></div>
       </div>
-      <div class="g2">
-        <div class="f full"><label>मूळ राहणार (स्थायी पत्ता) *</label><input type="text" id="permanentAddr" placeholder="पत्ता"/></div>
-        <div class="f full"><label>वर्तमान रहिवासी पत्ता *</label><input type="text" id="currentAddr" placeholder="पत्ता"/></div>
+      <div class="f"><label>मूळ राहणार (स्थायी पत्ता) *</label><input type="text" id="permanentAddr" placeholder="पत्ता"/></div>
+      <div class="f"><label>वर्तमान रहिवासी पत्ता *</label><input type="text" id="currentAddr" placeholder="पत्ता"/></div>
+      <div class="f"><label>फोटो अपलोड करा (PDF च्या वरच्या उजव्या कोपऱ्यात येईल)</label>
+        <div class="photo-up">
+          <input type="file" id="photo" accept="image/*"/>
+          <img id="photoPreview" alt="फोटो पूर्वावलोकन"/>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- 2. शैक्षणिक माहिती -->
   <div class="section">
     <div class="section-title">२. शैक्षणिक माहिती</div>
     <div class="section-body">
       <div class="g2">
-        <div class="f"><label>महाविद्यालय/संस्था *</label><input type="text" id="college" placeholder="उदा. झील कॉलेज ऑफ इंजिनीरिंग ऍण्ड रिसर्च पुणे"/></div>
-        <div class="f"><label>अभ्यासक्रम *</label><input type="text" id="course" placeholder="उदा. रोबोटिक्स ऍण्ड ऑटोमेशन "/></div>
+        <div class="f"><label>महाविद्यालय / संस्था *</label><input type="text" id="college" placeholder="उदा. झील कॉलेज ऑफ इंजिनिअरिंग अँड रिसर्च, पुणे"/></div>
+        <div class="f"><label>अभ्यासक्रम *</label><input type="text" id="course" placeholder="उदा. रोबोटिक्स अँड ऑटोमेशन"/></div>
       </div>
       <div class="g2">
-        <div class="f"><label>शैक्षणिक वर्ष *</label><input type="text" id="academicYear" placeholder="२०२३-२०२४"/></div>
-        <div class="f"><label>वर्ष (F.Y/S.Y/T.Y/Final Year) *</label><input type="text" id="year" placeholder="F.Y / S.Y/T.Y / Final Year"/></div>
+        <div class="f"><label>शैक्षणिक वर्ष *</label><input type="text" id="academicYear" placeholder="२०२६-२०२७"/></div>
+        <div class="f"><label>वर्ष (F.Y / S.Y / T.Y / Final Year) *</label><input type="text" id="year" placeholder="F.Y / S.Y / T.Y / Final Year"/></div>
       </div>
       <div class="g2">
         <div class="f"><label>जिल्हा *</label><input type="text" id="district" placeholder="पुणे"/></div>
@@ -155,12 +145,10 @@ body{
     </div>
   </div>
 
-  <!-- Generate -->
   <div class="gen-bar">
-    <button class="btn-action" onclick="genPDF()">📥 PDF डाउनलोड करा</button>
+    <button class="btn-action" id="pdfBtn" onclick="genPDF()">📥 PDF डाउनलोड करा</button>
     <div class="toast" id="toast">✓ PDF यशस्वीरित्या डाउनलोड झाली!</div>
   </div>
-
 </div>
 
 <footer class="site-footer">
@@ -168,257 +156,169 @@ body{
 </footer>
 
 <script>
-function genPDF() {
-
-  if (!validate()) return;
-
-  const element = document.querySelector(".container");
-
-  // 👉 Button hide before capture
-  const btn = document.querySelector(".gen-bar");
-  btn.style.display = "none";
-
-  html2canvas(element, {
-    scale: 2,
-    useCORS: true
-  }).then(canvas => {
-
-    const imgData = canvas.toDataURL("image/png");
-
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF('p', 'pt', 'a4');
-
-    const imgWidth = 595;
-    const pageHeight = 842;
-    const imgHeight = canvas.height * imgWidth / canvas.width;
-
-    let heightLeft = imgHeight;
-    let position = 0;
-
-    // First page
-    doc.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-    heightLeft -= pageHeight;
-
-    // Multiple pages
-    while (heightLeft > 0) {
-      position = heightLeft - imgHeight;
-      doc.addPage();
-      doc.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-      heightLeft -= pageHeight;
-    }
-
-    doc.save("Swadhar_Affidavit.pdf");
-
-    // 👉 Button show again
-    btn.style.display = "flex";
-
-    // Toast
-    document.getElementById('toast').classList.add('show');
-    setTimeout(() => {
-      document.getElementById('toast').classList.remove('show');
-    }, 3000);
-
-  }).catch(err => {
-    alert("PDF Error: " + err.message);
-    console.error(err);
-
-    // restore button if error
-    btn.style.display = "flex";
-  });
-}
-
-
-
 document.getElementById('date').valueAsDate = new Date();
 
-function gv(id) {
-  var el = document.getElementById(id);
-  return el ? el.value.trim() : '';
+let photoData = '';
+document.getElementById('photo').addEventListener('change', e => {
+  const file = e.target.files[0];
+  const prev = document.getElementById('photoPreview');
+  if (!file) { photoData = ''; prev.style.display = 'none'; return; }
+  const img = new Image();
+  const url = URL.createObjectURL(file);
+  img.onload = () => {
+    // Center-crop to 4:5 passport-style ratio and shrink to keep PDF small
+    const ratio = 4 / 5;
+    let sw = img.width, sh = img.height;
+    if (sw / sh > ratio) sw = sh * ratio; else sh = sw / ratio;
+    const sx = (img.width - sw) / 2, sy = (img.height - sh) / 2;
+    const c = document.createElement('canvas');
+    c.width = 400; c.height = 500;
+    c.getContext('2d').drawImage(img, sx, sy, sw, sh, 0, 0, 400, 500);
+    photoData = c.toDataURL('image/jpeg', 0.92);
+    prev.src = photoData; prev.style.display = 'block';
+    URL.revokeObjectURL(url);
+  };
+  img.onerror = () => { alert('हा फोटो उघडता आला नाही. कृपया JPG/PNG निवडा.'); e.target.value = ''; };
+  img.src = url;
+});
+
+const gv = id => (document.getElementById(id)?.value || '').trim();
+const pad2 = n => String(n).padStart(2, '0');
+// Escape user text so it can't break the generated HTML
+const esc = s => s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+function fmtDate(str) {
+  if (!str) return '__________';
+  const d = new Date(str + 'T00:00:00');
+  return pad2(d.getDate()) + '/' + pad2(d.getMonth() + 1) + '/' + d.getFullYear();
 }
 
 function validate() {
-  var req = ['fullName','age','parentName','permanentAddr','currentAddr','college','course','academicYear','year','district','date'];
-  for (var i=0; i<req.length; i++) {
-    if (!gv(req[i])) {
+  const req = ['fullName','age','parentName','permanentAddr','currentAddr','college','course','academicYear','year','district','date'];
+  for (const id of req) {
+    if (!gv(id)) {
       alert('कृपया सर्व आवश्यक फील्ड (*) भरा!');
+      document.getElementById(id).focus();
       return false;
     }
   }
   return true;
 }
 
-function fmtDate(str) {
-  if (!str) return '__________';
-  var d = new Date(str+'T00:00:00');
-  return pad2(d.getDate())+'/'+pad2(d.getMonth()+1)+'/'+d.getFullYear();
+function signBlock(d) {
+  return `
+  <div class="row" style="margin-top:26px"><div>ठिकाण: <b>${d.district}</b></div><div>अर्जदाराची सही: ____________</div></div>
+  <div class="row" style="margin-top:6px"><div>दिनांक: <b>${d.date}</b></div><div>अर्जदाराचे नाव: <b>${d.fullName}</b></div></div>`;
 }
 
-function pad2(n) { 
-  return String(n).padStart(2,'0'); 
-}
-
-window.genPDF = async function () {
-
-  if (!validate()) return;
-
-  try {
-    const element = document.createElement("div");
-
-    element.style.width = "800px";
-    element.style.padding = "40px";
-    element.style.fontFamily = "Noto Sans Devanagari, Arial";
-    element.style.fontSize = "16px";
-    element.style.lineHeight = "1.6";
-    element.style.background = "#fff";
-    element.style.color = "#000";
-
-    const data = {
-      fullName: gv('fullName'),
-      age: gv('age'),
-      aadhar: gv('aadhar') || '________________________',
-      parentName: gv('parentName'),
-      permanentAddr: gv('permanentAddr'),
-      currentAddr: gv('currentAddr'),
-      college: gv('college'),
-      course: gv('course'),
-      academicYear: gv('academicYear'),
-      year: gv('year'),
-      district: gv('district'),
-      date: fmtDate(gv('date'))
-    };
-
-element.innerHTML = `
-<div style="
-  padding-bottom:2cm;
-">
-
-
-  <h4 style="text-align:center; margin-bottom:15px; font-weight:600;">
-    अर्जदाराचे प्रतिज्ञापत्र / शपथपत्र
-  </h4>
-
-  <p>
-    प्रति,<br>
-    मा. सहायक संचालक<br>
-    इतर मागास बहुजन कल्याण, पुणे
-  </p>
-
-  <p>महोदय,</p>
-
-  <p style="text-align:justify; margin-bottom:18px;">
-         मी लिहून देणार <b>${data.fullName}</b> वयः <b>${data.age}</b> वर्षे, मूळ राहणार 
-    <b>${data.permanentAddr}</b> सत्य प्रतिज्ञापत्र कथन करितो/करीते की,
-  </p>
-
-  <p style="text-align:justify; margin-bottom:18px;">
-    मी वरील ठिकाणी कायमस्वरूपी रहिवासी आहे. मी <b>${data.college}</b> येथे 
-    <b>${data.course}</b> या अभ्यासक्रमाकरिता <b>${data.academicYear}</b> या वर्षात 
-    शिक्षण घेत असून मी सध्या <b>${data.currentAddr}</b> शिक्षणाकरिता येथे राहत आहे.
-  </p>
-
-  <p style="margin-bottom:10px;">
-    तथापि सदरच्या शपथपत्रान्वये मी खालीलप्रमाणे लिहून देतो/देते की,
-  </p>
-
-  <p style="margin-left:20px; margin-bottom:20px; line-height:2;">
-    १) मी कोणत्याही शासकीय वसतिगृहात राहत नाही व वसतिगृह संदर्भात कोणतीही सवलत घेतलेली नाही.<br>
+function page1(d) {
+  return `
+  <div class="hdr">
+    <div class="left">
+      <h4>अर्जदाराचे प्रतिज्ञापत्र / शपथपत्र</h4>
+      <p style="text-align:left">प्रति,<br>मा. सहायक संचालक,<br>इतर मागास बहुजन कल्याण, पुणे</p>
+      <p style="text-align:left">महोदय,</p>
+    </div>
+    ${photoData ? `<img class="photo" src="${photoData}" alt="फोटो"/>` : ''}
+  </div>
+  <p>मी लिहून देणार <b>${d.fullName}</b>, वय <b>${d.age}</b> वर्षे, मूळ राहणार <b>${d.permanentAddr}</b>, सत्य प्रतिज्ञापत्र कथन करितो/करीते की,</p>
+  <p>मी वरील ठिकाणी कायमस्वरूपी रहिवासी आहे. मी <b>${d.college}</b> येथे <b>${d.course}</b> या अभ्यासक्रमाकरिता <b>${d.academicYear}</b> या वर्षात (<b>${d.year}</b>) शिक्षण घेत असून, मी सध्या शिक्षणाकरिता <b>${d.currentAddr}</b> येथे राहत आहे.</p>
+  <p>तथापि सदरच्या शपथपत्रान्वये मी खालीलप्रमाणे लिहून देतो/देते की,</p>
+  <p class="list" style="text-align:left">
+    १) मी कोणत्याही शासकीय वसतिगृहात राहत नाही व वसतिगृहासंदर्भात कोणतीही सवलत घेतलेली नाही.<br>
     २) मी पुणे येथील स्थानिक रहिवासी नाही.<br>
     ३) मी कोणतीही नोकरी व व्यवसाय करत नाही.<br>
-    ४) मी माझे आई वडील व कुटुंबासोबत राहत नाही.
+    ४) मी माझे आई-वडील व कुटुंबासोबत राहत नाही.
   </p>
+  <p>शपथपत्रातील सर्व मजकूर खरा व बरोबर आहे. सदरील माहिती खोटी आढळून आल्यास मी भा.दं.वि. कलम १९३ (२), १९९ व २०० प्रमाणे होणाऱ्या शिक्षेस पात्र राहीन.</p>
+  ${signBlock(d)}
+  <p style="text-align:center;margin-top:28px;font-size:15px;margin-bottom:4px">शासन निर्णय क्रमांक: प्रसुधा १६१४/३४५/प्र.क्र.७१/१८ अ</p>
+  <div style="border-bottom:2px solid #000"></div>`;
+}
 
-  <p style="text-align:justify; margin-bottom:25px;">
-    शपथपत्रातील सर्व मजकूर खरा व बरोबर आहे. सदरील माहिती खोटी आढळून आल्यास तर मी 
-    भा.द.वि.क. १९३ (२), १९९ व २०० प्रमाणे होणाऱ्या शिक्षेस पात्र राहील.
-  </p>
+function page2(d) {
+  return `
+  <h4 style="margin-top:22px;margin-bottom:2px">प्रपत्र-अ</h4>
+  <h4 style="margin-bottom:14px">स्वयंघोषणापत्र</h4>
+  <p>मी <b>${d.fullName}</b>, श्री. <b>${d.parentName}</b> यांचा मुलगा/मुलगी, वय <b>${d.age}</b> वर्षे, आधार क्रमांक <b>${d.aadhar}</b>, व्यवसाय: शिक्षण, राहणार: <b>${d.permanentAddr}</b>, याद्वारे घोषित करतो/करते की, वरील सर्व माहिती माझ्या व्यक्तिगत माहितीनुसार व समजुतीनुसार खरी आहे.</p>
+  <p>सदर माहिती खोटी आढळून आल्यास, भारतीय दंड संहितेअन्वये आणि/किंवा संबंधित कायद्यानुसार माझ्यावर खटला भरला जाईल व त्यानुसार मी शिक्षेस पात्र राहीन.</p>
+  ${signBlock(d)}`;
+}
 
-  <div style="display:flex; justify-content:space-between; margin-top:40px;">
-    <div>ठिकाणः <b>${data.district}</b></div>
-    <div>अर्जदाराची सही __________</div>
-  </div>
+// Render one HTML page to a canvas (off-screen)
+async function renderPage(html) {
+  const el = document.createElement('div');
+  el.className = 'pdf-page';
+  el.innerHTML = html;
+  document.body.appendChild(el);
+  try {
+    return await html2canvas(el, { scale: 3, backgroundColor: '#fff', useCORS: true, logging: false });
+  } finally {
+    document.body.removeChild(el);
+  }
+}
 
-  <div style="display:flex; justify-content:space-between; margin-top:10px;">
-    <div>दिनांक: <b>${data.date}</b></div>
-    <div>अर्जदाराचे नावः <b>${data.fullName}</b></div>
-  </div>
+async function genPDF() {
+  if (!validate()) return;
+  const btn = document.getElementById('pdfBtn');
+  btn.disabled = true;
+  btn.textContent = '⏳ PDF तयार होत आहे...';
 
-  <p style="text-align:center; margin-top:30px;">
-    शासन निर्णय क्रमांक: प्रसुधा १६१४/३४५/प्र.क्र.७१/१८ अ
-  </p>
+  try {
+    // Make sure Marathi fonts are fully loaded BEFORE capturing
+    await Promise.all([
+      document.fonts.load('400 17px "Noto Serif Devanagari"', 'अआइई'),
+      document.fonts.load('700 17px "Noto Serif Devanagari"', 'अआइई'),
+      document.fonts.load('400 17px "Noto Sans Devanagari"', 'अआइई')
+    ]);
+    await document.fonts.ready;
 
-  <!-- 🔥 LONG UNDERLINE -->
-  <div style="width:100%; border-bottom:2px solid black; margin-top:5px;"></div>
-
-  <h4 style="text-align:center; margin-top:30px;">प्रपत्र-अ</h3>
-
-  <h4 style="text-align:center; margin-bottom:20px;">स्वयंघोषणापत्र</h3>
-
-  <p style="text-align:justify; margin-bottom:20px;">
-         मी <b>${data.fullName}</b>, श्री. <b>${data.parentName}</b> यांचा मुलगा/मुलगी वय,
-    <b>${data.age}</b> वर्ष, आधार क्रमांक <b>${data.aadhar}</b> व्यवसाय: शिक्षण,  
-    राहणार: <b>${data.permanentAddr}</b> यायाद्वारे घोषित करतो/ करते की, वरील सर्व माहिती 
-    माझ्या व्यक्तीगत माहिती व समजूतीनुसार खरी आहे.
-  </p>
-
-  <p style="text-align:justify; margin-bottom:25px;">
-    सदर माहिती खोटी आढळून आल्यास, भारतीय दंड संहिता अन्वये आणि / किंवा संबंधित 
-    कायदयानुसार माझ्यावर खटला भरला जाईल व त्यानुसार मी शिक्षेस पात्र राहीन.
-  </p>
-
-  <div style="display:flex; justify-content:space-between; margin-top:40px;">
-    <div>ठिकाणः <b>${data.district}</b></div>
-    <div>अर्जदाराची सही __________</div>
-  </div>
-
-  <div style="display:flex; justify-content:space-between; margin-top:10px;">
-    <div>दिनांक: <b>${data.date}</b></div>
-    <div>अर्जदाराचे नावः <b>${data.fullName}</b></div>
-  </div>
-
-</div>
-`;
-
-
-
-
-    document.body.appendChild(element);
-
-    const canvas = await html2canvas(element, { scale: 2 });
-    const imgData = canvas.toDataURL("image/png");
+    const d = {
+      fullName: esc(gv('fullName')), age: esc(gv('age')),
+      aadhar: esc(gv('aadhar')) || '________________________',
+      parentName: esc(gv('parentName')),
+      permanentAddr: esc(gv('permanentAddr')), currentAddr: esc(gv('currentAddr')),
+      college: esc(gv('college')), course: esc(gv('course')),
+      academicYear: esc(gv('academicYear')), year: esc(gv('year')),
+      district: esc(gv('district')), date: fmtDate(gv('date'))
+    };
 
     const { jsPDF } = window.jspdf;
-    const doc = new jsPDF('p', 'pt', [612, 1008]); // Legal size
+    const W = 612, H = 1008;                       // Legal size (pt)
+    const mx = 50, mt = 48, mb = 48;               // margins
+    const boxW = W - mx * 2, boxH = H - mt - mb;
+    const doc = new jsPDF({ unit: 'pt', format: [W, H], compress: true });
 
-    // ✅ FIXED MARGINS
-    const marginLeft = 60;
-    const marginRight = 60;
-    const marginTop = 60;
-    const marginBottom = 71;
+    const pages = [page1(d) + page2(d)]; // दोन्ही भाग एकाच पानावर
+    for (let i = 0; i < pages.length; i++) {
+      if (i > 0) doc.addPage([W, H]);
+      const canvas = await renderPage(pages[i]);
 
-    doc.addImage(
-      imgData,
-      'PNG',
-      marginLeft,
-      marginTop,
-      612 - marginLeft - marginRight,
-      1008 - marginTop - marginBottom
-    );
+      // Keep aspect ratio — never stretch; shrink only if too tall
+      let w = boxW, h = canvas.height * w / canvas.width;
+      if (h > boxH) { h = boxH; w = canvas.width * h / canvas.height; }
 
-    // ✅ BORDER
-    doc.setLineWidth(3);
-    doc.rect(20, 20, 572, 968);
+      doc.addImage(canvas.toDataURL('image/jpeg', 0.95), 'JPEG', mx + (boxW - w) / 2, mt, w, h);
 
-    doc.save("Swadhar_Affidavit.pdf");
+      // Page border
+      doc.setDrawColor(0);
+      doc.setLineWidth(2.5);
+      doc.rect(20, 20, W - 40, H - 40);
+    }
 
-    document.body.removeChild(element);
+    doc.save('Swadhar_Affidavit_' + gv('fullName').replace(/\s+/g, '_') + '.pdf');
 
+    const t = document.getElementById('toast');
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3000);
   } catch (err) {
-    alert("PDF Error: " + err.message);
     console.error(err);
+    alert('PDF Error: ' + err.message);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '📥 PDF डाउनलोड करा';
   }
-};
-
-
+}
 </script>
 </body>
 </html>
